@@ -1,0 +1,259 @@
+---
+import BrandIcon from './BrandIcon.astro';
+import Logo from './Logo.astro';
+import { siteConfig, reviewLink } from '../../site.config';
+/* ============================================================
+   Brava Pass — tarjeta de fidelidad DIGITAL (v1, sin backend).
+   - Se desbloquea dejando una reseña (sistema de confianza).
+   - Cada café se sella con el PIN del personal (anti auto-sellado).
+   - Al llegar a `objetivo` (10) → café gratis → canjear (PIN) → reinicia.
+   - Cumpleaños: guarda la fecha y avisa el día.
+   - Persistencia: localStorage (por dispositivo).
+   Punto de extensión: la versión con cuentas + base de datos + reseña
+   verificada es la v2 (ver NOTAS_UPSELL.md). Todo el estado pasa por
+   readState()/saveState(), fácil de cambiar por llamadas a una API.
+   ============================================================ */
+const { objetivo, pin } = siteConfig.bravaPass;
+const reviewUrl = reviewLink;
+const slots = Array.from({ length: objetivo });
+---
+<div
+  id="brava-pass"
+  class="mx-auto max-w-md"
+  data-pin={pin}
+  data-objetivo={objetivo}
+  data-review={reviewUrl}
+>
+  <!-- ============ ESTADO BLOQUEADO (sin pass) ============ -->
+  <div data-view="locked" class="rounded-[2rem] border rule-soft bg-brand-cream-2/50 p-7 text-center sm:p-9">
+    <div class="mx-auto mb-4 grid h-14 w-14 place-items-center rounded-full bg-brand-brown text-brand-cream">
+      <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
+    </div>
+    <h2 class="text-2xl font-bold text-brand-brown">Consigue tu Brava Pass</h2>
+    <p class="mx-auto mt-2 max-w-sm text-brand-brown-80">
+      Es nuestra forma de darte las gracias. Para activarlo, déjanos una reseña: nos ayuda muchísimo y a ti te abre la puerta a los cafés gratis.
+    </p>
+
+    <a
+      id="bp-review"
+      href={reviewUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="mt-6 inline-flex items-center justify-center gap-2 rounded-full bg-brand-calm px-6 py-3 font-semibold text-brand-brown shadow-sm transition hover:brightness-105"
+    >
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
+      Dejar mi reseña
+    </a>
+
+    <div class="mt-5">
+      <button id="bp-unlock" class="text-sm font-semibold text-brand-brown underline underline-offset-4 hover:text-brand-brown-80">
+        Ya he dejado mi reseña → activar mi pass
+      </button>
+    </div>
+
+    <!-- Formulario de alta (oculto hasta pulsar "activar") -->
+    <form id="bp-form" class="mt-6 hidden text-left">
+      <label class="block">
+        <span class="text-sm font-semibold text-brand-brown">Tu nombre</span>
+        <input
+          id="bp-name" name="name" type="text" required maxlength="40" autocomplete="given-name"
+          placeholder="Ej. María"
+          class="mt-1 w-full rounded-xl border rule-soft bg-brand-cream px-4 py-2.5 text-brand-brown outline-none focus:border-brand-calm"
+        />
+      </label>
+      <label class="mt-4 block">
+        <span class="text-sm font-semibold text-brand-brown">Tu cumpleaños <span class="font-normal text-brand-brown-60">(opcional, para tu brunch gratis)</span></span>
+        <input
+          id="bp-bday" name="bday" type="date"
+          class="mt-1 w-full rounded-xl border rule-soft bg-brand-cream px-4 py-2.5 text-brand-brown outline-none focus:border-brand-calm"
+        />
+      </label>
+      <button type="submit" class="mt-5 w-full rounded-full bg-brand-brown px-6 py-3 font-semibold text-brand-cream transition hover:bg-brand-brown-80">
+        Activar mi Brava Pass
+      </button>
+      <p class="mt-3 text-center text-xs text-brand-brown-60">Tu pass se guarda en este dispositivo. No pedimos email ni instalas nada.</p>
+    </form>
+  </div>
+
+  <!-- ============ ESTADO ACTIVO (con pass) ============ -->
+  <div data-view="active" class="hidden">
+    <!-- Tarjeta -->
+    <div class="relative overflow-hidden rounded-[2rem] bg-brand-brown p-7 text-brand-cream shadow-xl sm:p-9">
+      <div class="flex items-start justify-between">
+        <div>
+          <Logo class="text-2xl text-brand-cream" />
+          <p class="mt-0.5 text-[0.7rem] font-semibold uppercase tracking-[0.25em] text-brand-cream/60">Pass</p>
+        </div>
+        <BrandIcon name="cafe" class="h-9 w-9 text-brand-cream/80" />
+      </div>
+
+      <p class="mt-5 text-sm text-brand-cream/70">Tarjeta de</p>
+      <p id="bp-holder" class="text-xl font-bold text-brand-cream">—</p>
+
+      <!-- Banner cumpleaños -->
+      <div id="bp-bday-banner" class="mt-4 hidden rounded-2xl bg-brand-fresh px-4 py-3 text-sm font-semibold text-brand-brown">
+        🎂 ¡Feliz cumpleaños! Hoy tu brunch lo invitamos nosotros.
+      </div>
+
+      <!-- Sellos (estilo "brava /points" del brandbook: blob amarillo + monograma bv) -->
+      <div class="mt-6 grid grid-cols-5 gap-3">
+        {slots.map((_, i) => (
+          <div data-slot={i} class="bp-slot grid aspect-square place-items-center rounded-full bg-brand-cream/10 text-brand-cream/25 transition-colors">
+            <span class="h-1/2 w-1/2" aria-hidden="true" style="background-color:currentColor;-webkit-mask:url(/brand/monogram.png) center/contain no-repeat;mask:url(/brand/monogram.png) center/contain no-repeat;"></span>
+          </div>
+        ))}
+      </div>
+
+      <p id="bp-progress" class="mt-5 text-center text-sm text-brand-cream/80">—</p>
+
+      <!-- Premio disponible -->
+      <div id="bp-reward" class="mt-4 hidden rounded-2xl bg-brand-fresh px-4 py-3 text-center font-bold text-brand-brown">
+        ☕ ¡Tienes un café gratis! Enséñaselo al personal para canjearlo.
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div class="mt-5 grid gap-3">
+      <button id="bp-add" class="rounded-full bg-brand-calm px-6 py-3.5 font-semibold text-brand-brown shadow-sm transition hover:brightness-105">
+        + Sumar un café
+      </button>
+      <button id="bp-redeem" class="hidden rounded-full bg-brand-brown px-6 py-3.5 font-semibold text-brand-cream transition hover:bg-brand-brown-80">
+        Canjear café gratis
+      </button>
+    </div>
+
+    <p class="mt-5 text-center text-sm text-brand-brown-80">
+      Cafés gratis disfrutados: <span id="bp-free" class="font-bold text-brand-brown">0</span>
+    </p>
+    <p class="mt-1 text-center text-xs text-brand-brown-60">
+      El personal añade cada café y el canjeo con su PIN.
+      <button id="bp-reset" class="ml-1 underline underline-offset-2 hover:text-brand-brown-80">Borrar mi pass</button>
+    </p>
+  </div>
+</div>
+
+<!-- Modal de PIN del personal -->
+<dialog id="bp-pin-dialog" class="rounded-3xl border-0 bg-brand-cream p-0 backdrop:bg-brand-brown/40 backdrop:backdrop-blur-sm">
+  <form method="dialog" id="bp-pin-form" class="w-[20rem] max-w-[90vw] p-7 text-center">
+    <h3 id="bp-pin-title" class="text-lg font-bold text-brand-brown">PIN del personal</h3>
+    <p class="mt-1 text-sm text-brand-brown-80">Pide a Brava que valide tu café.</p>
+    <input
+      id="bp-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="8" autocomplete="off"
+      class="mt-4 w-full rounded-xl border rule-soft bg-white px-4 py-3 text-center text-2xl tracking-[0.4em] text-brand-brown outline-none focus:border-brand-calm"
+      placeholder="••••"
+    />
+    <p id="bp-pin-error" class="mt-2 hidden text-sm font-medium text-red-600">PIN incorrecto. Inténtalo de nuevo.</p>
+    <div class="mt-5 grid grid-cols-2 gap-3">
+      <button type="button" id="bp-pin-cancel" class="rounded-full border-2 border-brand-brown px-4 py-2.5 font-semibold text-brand-brown">Cancelar</button>
+      <button type="submit" id="bp-pin-ok" class="rounded-full bg-brand-brown px-4 py-2.5 font-semibold text-brand-cream">Confirmar</button>
+    </div>
+  </form>
+</dialog>
+
+<script>
+  type PassState = { active: boolean; name: string; bday: string; stamps: number; free: number };
+
+  const root = document.getElementById('brava-pass');
+  if (root) {
+    const KEY = 'bravaPass.v1';
+    const PIN = root.dataset.pin || '';
+    const OBJ = parseInt(root.dataset.objetivo || '10', 10);
+
+    const viewLocked = root.querySelector<HTMLElement>('[data-view="locked"]')!;
+    const viewActive = root.querySelector<HTMLElement>('[data-view="active"]')!;
+    const slots = Array.from(root.querySelectorAll<HTMLElement>('.bp-slot'));
+
+    const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+
+    const read = (): PassState | null => {
+      try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch { return null; }
+    };
+    const save = (s: PassState) => localStorage.setItem(KEY, JSON.stringify(s));
+
+    // ---- PIN dialog ----
+    const dialog = $('bp-pin-dialog') as HTMLDialogElement;
+    const pinInput = $('bp-pin-input') as HTMLInputElement;
+    const pinError = $('bp-pin-error');
+    const pinForm = $('bp-pin-form') as HTMLFormElement;
+    let onPinOk: (() => void) | null = null;
+
+    const askPin = (title: string, cb: () => void) => {
+      $('bp-pin-title').textContent = title;
+      pinInput.value = ''; pinError.classList.add('hidden'); onPinOk = cb;
+      if (typeof dialog.showModal === 'function') dialog.showModal();
+      setTimeout(() => pinInput.focus(), 50);
+    };
+    pinForm.addEventListener('submit', (e) => {
+      if (pinInput.value === PIN) { dialog.close(); onPinOk?.(); }
+      else { e.preventDefault(); pinError.classList.remove('hidden'); pinInput.value=''; pinInput.focus(); }
+    });
+    $('bp-pin-cancel').addEventListener('click', () => dialog.close());
+
+    // ---- Render ----
+    const todayMMDD = () => { const d = new Date(); return String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+
+    const render = () => {
+      const s = read();
+      if (!s?.active) { viewLocked.classList.remove('hidden'); viewActive.classList.add('hidden'); return; }
+      viewLocked.classList.add('hidden'); viewActive.classList.remove('hidden');
+
+      $('bp-holder').textContent = s.name || '—';
+      $('bp-free').textContent = String(s.free || 0);
+
+      slots.forEach((slot, i) => {
+        const on = i < s.stamps;
+        slot.classList.toggle('bg-brand-fresh', on);
+        slot.classList.toggle('bg-brand-cream/10', !on);
+        slot.classList.toggle('text-brand-brown', on);
+        slot.classList.toggle('text-brand-cream/25', !on);
+        if (on) slot.classList.add('scale-100'); // ensure visible
+      });
+
+      const full = s.stamps >= OBJ;
+      $('bp-progress').textContent = full
+        ? '¡Tarjeta completa!'
+        : `${s.stamps}/${OBJ} · Te ${OBJ - s.stamps === 1 ? 'falta' : 'faltan'} ${OBJ - s.stamps} ${OBJ - s.stamps === 1 ? 'café' : 'cafés'}`;
+      $('bp-reward').classList.toggle('hidden', !full);
+      $('bp-redeem').classList.toggle('hidden', !full);
+      ($('bp-add') as HTMLButtonElement).disabled = full;
+      $('bp-add').classList.toggle('opacity-40', full);
+
+      // Cumpleaños
+      const isBday = !!s.bday && s.bday.slice(5) === todayMMDD();
+      $('bp-bday-banner').classList.toggle('hidden', !isBday);
+    };
+
+    // ---- Activación (tras reseña) ----
+    $('bp-unlock').addEventListener('click', () => {
+      $('bp-form').classList.toggle('hidden');
+      ($('bp-name') as HTMLInputElement).focus();
+    });
+    $('bp-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = ($('bp-name') as HTMLInputElement).value.trim();
+      if (!name) return;
+      const bday = ($('bp-bday') as HTMLInputElement).value; // YYYY-MM-DD o ''
+      save({ active: true, name, bday, stamps: 0, free: 0 });
+      render();
+    });
+
+    // ---- Sumar café (PIN) ----
+    $('bp-add').addEventListener('click', () => {
+      const s = read(); if (!s || s.stamps >= OBJ) return;
+      askPin('PIN para sumar café', () => { s.stamps = Math.min(OBJ, s.stamps + 1); save(s); render(); });
+    });
+
+    // ---- Canjear (PIN) → reinicia ----
+    $('bp-redeem').addEventListener('click', () => {
+      const s = read(); if (!s || s.stamps < OBJ) return;
+      askPin('PIN para canjear café gratis', () => { s.stamps = 0; s.free = (s.free || 0) + 1; save(s); render(); });
+    });
+
+    // ---- Borrar pass ----
+    $('bp-reset').addEventListener('click', () => {
+      if (confirm('¿Seguro que quieres borrar tu Brava Pass de este dispositivo?')) { localStorage.removeItem(KEY); render(); }
+    });
+
+    render();
+  }
+</script>

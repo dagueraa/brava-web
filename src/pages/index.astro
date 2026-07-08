@@ -1,0 +1,267 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import Hero from '../components/Hero.astro';
+import ComboCard from '../components/ComboCard.astro';
+import ToGoBlock from '../components/ToGoBlock.astro';
+import Resenas from '../components/Resenas.astro';
+import Button from '../components/Button.astro';
+import Blob from '../components/Blob.astro';
+import Logo from '../components/Logo.astro';
+import { Image } from 'astro:assets';
+import { img } from '../assets/images';
+import { menuFotos } from '../assets/menuImages';
+import { categorias } from '../data/menu';
+import { siteConfig } from '../../site.config';
+
+const combos = categorias.find((c) => c.id === 'combos');
+
+// Frases de la franja de marca (marquesina giratoria)
+const brandClaims = ['Café de especialidad', 'Brunch & repostería', 'Hecho con calma en La Ñora'];
+// Repetimos las frases lo suficiente para que un bloque cubra de sobra cualquier
+// ancho de pantalla (evita el hueco al hacer el bucle). El bloque se duplica en el
+// markup, así el desplazamiento del 50% encaja perfecto y el giro es continuo.
+const marqueeClaims = Array.from({ length: 6 }, () => brandClaims).flat();
+const comboAlts = [
+  'Café de especialidad con croissant recién horneado',
+  'Café de especialidad con cookie gourmet de chocolate',
+  'Brunch con Fit baguel de atún y aguacate',
+];
+
+// Vitrina de categorías con foto real representativa (estilo carta Brava)
+const showcase = [
+  { id: 'combos', suffix: 'combos', foto: 'croissant', cafe: 'cafe-teal', desc: 'Café + dulce o brunch para empezar bien' },
+  { id: 'drinks', suffix: 'drinks', foto: 'cafe-amarillo', desc: 'Espresso, lattes especiales, matcha y batidos' },
+  { id: 'brunch', suffix: 'brunch', foto: 'bagel', desc: 'Tostadas, brioches, baguels y piadinas' },
+  { id: 'treats', suffix: 'treats', foto: 'cookie', desc: 'Repostería recién horneada cada día' },
+] as const;
+---
+<Base title="Inicio" path="">
+  <Hero />
+
+  <!-- Franja de marca (voz del brandbook) — marquesina giratoria -->
+  <div class="brand-marquee border-y border-brand-line bg-brand-cream-2/40 py-4" role="img" aria-label="Café de especialidad · Brunch & repostería · Hecho con calma en La Ñora">
+    <div class="brand-marquee__track">
+      {Array.from({ length: 2 }).map(() => (
+        <div class="brand-marquee__group" aria-hidden="true">
+          {marqueeClaims.map((claim) => (
+            <>
+              <span class="text-sm font-semibold text-brand-brown">{claim}</span>
+              <span class="text-brand-brown-60">·</span>
+            </>
+          ))}
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <!-- Accesos rápidos -->
+  <Section width="wide" class="py-8">
+    <div class="grid gap-4 sm:grid-cols-3">
+      {[
+        { href: '/carta', t: 'Ver la carta', d: 'Combos, drinks, brunch y treats' },
+        { href: '/to-go', t: 'Pedir para llevar', d: 'Por WhatsApp o teléfono' },
+        { href: '/local', t: 'Cómo llegar', d: `${siteConfig.ciudad}, ${siteConfig.provincia}` },
+      ].map((c) => (
+        <a href={c.href} class="group flex items-center gap-4 rounded-2xl border border-brand-line bg-brand-cream-2/40 p-5 transition hover:-translate-y-0.5 hover:bg-brand-cream-2/80">
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-brown text-brand-cream transition group-hover:bg-brand-calm-ink">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+          <span>
+            <span class="block font-bold text-brand-brown">{c.t}</span>
+            <span class="block text-sm text-brand-brown-80">{c.d}</span>
+          </span>
+        </a>
+      ))}
+    </div>
+  </Section>
+
+  <!-- Combos destacados (foto real + blob + flecha, como la carta) -->
+  <Section class="py-14">
+    <div class="mb-10 text-center">
+      <p class="font-hand text-3xl text-brand-brown-60">Nuestros favoritos</p>
+      <Logo as="h2" suffix="combos" class="mt-1 text-4xl text-brand-brown sm:text-5xl" />
+    </div>
+    <div class="space-y-10">
+      {combos?.items?.map((item, i) => (
+        <ComboCard
+          nombre={item.nombre}
+          precio={item.precio!}
+          desc={item.desc}
+          image={menuFotos[item.foto as keyof typeof menuFotos]}
+          alt={comboAlts[i]}
+          coffee={item.cafe ? menuFotos[item.cafe as keyof typeof menuFotos] : undefined}
+          coffeeAlt="Café de especialidad"
+          reverse={i % 2 === 1}
+          index={i}
+        />
+      ))}
+    </div>
+    {combos?.nota && (
+      <p class="mt-10 text-center text-sm font-semibold text-brand-brown-80">{combos.nota}</p>
+    )}
+  </Section>
+
+  <!-- Vitrina de la carta: 4 categorías con foto real -->
+  <Section class="py-10">
+    <div class="mb-8 text-center">
+      <h2 class="text-3xl font-bold text-brand-brown sm:text-4xl">Toda la carta, categoría a categoría</h2>
+      <p class="mt-2 text-brand-brown-80">Producto de verdad, presentado con cariño.</p>
+    </div>
+    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {showcase.map((s, i) => {
+        const cafeKey = 'cafe' in s ? (s.cafe as keyof typeof menuFotos) : undefined;
+        return (
+        <a href={`/carta#${s.id}`} class="group relative flex flex-col items-center overflow-hidden rounded-3xl border border-brand-line bg-brand-cream-2/40 px-5 pb-6 pt-8 text-center transition hover:-translate-y-1 hover:shadow-lg">
+          <Blob class="absolute -top-6 left-1/2 h-40 w-40 -translate-x-1/2 text-brand-cream-2" variant={((i % 3) + 1) as 1 | 2 | 3} />
+          {cafeKey ? (
+            <div class="relative h-32 w-40 transition group-hover:scale-105">
+              <Image
+                src={menuFotos[cafeKey]}
+                alt="Café de especialidad"
+                widths={[140, 200]}
+                sizes="140px"
+                class="absolute left-0 top-0 z-10 w-[56%] object-contain drop-shadow-[0_2px_4px_rgba(68,54,49,0.08)]"
+                loading="lazy"
+              />
+              <Image
+                src={menuFotos[s.foto]}
+                alt={`Brava ${s.suffix}`}
+                widths={[160, 240]}
+                sizes="160px"
+                class="absolute bottom-0 right-0 z-20 w-[62%] object-contain drop-shadow-[0_3px_5px_rgba(68,54,49,0.1)]"
+                loading="lazy"
+              />
+            </div>
+          ) : (
+            <Image
+              src={menuFotos[s.foto]}
+              alt={`Brava ${s.suffix}`}
+              widths={[160, 240]}
+              sizes="160px"
+              class="relative h-32 w-32 object-contain drop-shadow-[0_8px_14px_rgba(68,54,49,0.18)] transition group-hover:scale-105"
+              loading="lazy"
+            />
+          )}
+          <Logo as="h3" suffix={s.suffix} class="relative mt-4 text-2xl text-brand-brown" />
+          <p class="relative mt-2 text-sm leading-relaxed text-brand-brown-80">{s.desc}</p>
+        </a>
+        );
+      })}
+    </div>
+    <div class="mt-8 text-center">
+      <Button href="/carta" variant="primary" size="lg">Ver la carta completa</Button>
+    </div>
+  </Section>
+
+  <!-- Brava To Go (teaser) -->
+  <Section width="wide" class="py-8">
+    <ToGoBlock variant="compact" />
+  </Section>
+
+  <!-- El Alma de Brava (teaser, foto real de la fundadora) -->
+  <Section class="py-16">
+    <div class="grid items-center gap-10 md:grid-cols-2">
+      <div class="relative order-2 md:order-1">
+        <Blob class="absolute -inset-4 -z-10 h-[112%] w-[112%] text-brand-cream-2" variant={2} />
+        <Image
+          src={img.founderSpace}
+          alt="La dueña de Brava junto al rótulo de musgo brava coffee and brunch"
+          widths={[320, 480, 640]}
+          sizes="(max-width: 768px) 85vw, 420px"
+          class="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-lg"
+          loading="lazy"
+        />
+      </div>
+      <div class="order-1 md:order-2">
+        <p class="font-hand text-3xl text-brand-brown-60">El Alma de Brava</p>
+        <h2 class="mt-1 text-3xl font-bold text-brand-brown sm:text-4xl">No es una cafetería más.</h2>
+        <p class="mt-4 leading-relaxed text-brand-brown-80">
+          Un lugar pequeño, pero con alma, creado para disfrutar, desconectar y sentirse como en casa.
+          Donde el café sabe a café, el pan a pan y las cosas se hacen con intención.
+        </p>
+        <div class="mt-6">
+          <Button href="/historia" variant="outline" size="lg">Conoce nuestra historia</Button>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Brava Pass (teaser) -->
+  <Section width="wide" class="py-8">
+    <div class="relative overflow-hidden rounded-[2.5rem] border border-brand-line bg-brand-brown p-7 text-brand-cream sm:p-10">
+      <Blob class="-right-16 -top-20 h-64 w-64 text-brand-fresh/20" variant={1} />
+      <div class="relative grid items-center gap-8 md:grid-cols-[1.3fr_1fr]">
+        <div>
+          <p class="font-hand text-3xl text-brand-cream/70">Por venir, te damos</p>
+          <Logo as="h2" suffix="pass" class="mt-1 text-3xl text-brand-cream sm:text-4xl" />
+          <p class="mt-3 max-w-md leading-relaxed text-brand-cream/80">
+            Tu tarjeta de fidelidad digital. Ven a desayunar, suma cafés y el décimo te lo regalamos.
+            Sin apps complicadas: solo tu nombre y muchos cafés por delante.
+          </p>
+          <div class="mt-6">
+            <Button href="/brava-pass" variant="accent" size="lg">Quiero mi Brava Pass</Button>
+          </div>
+        </div>
+        <ul class="grid gap-3 text-sm">
+          <li class="flex items-center gap-3 rounded-2xl bg-brand-cream/10 px-4 py-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-fresh text-sm font-bold text-brand-brown">10</span><span class="font-semibold">10 cafés = 1 completamente gratis</span></li>
+          <li class="flex items-center gap-3 rounded-2xl bg-brand-cream/10 px-4 py-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-fresh text-brand-brown">🎂</span><span class="font-semibold">Brunch gratis en tu cumpleaños</span></li>
+          <li class="flex items-center gap-3 rounded-2xl bg-brand-cream/10 px-4 py-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-fresh text-brand-brown">★</span><span class="font-semibold">Acceso anticipado a eventos y nueva carta</span></li>
+        </ul>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Reseñas -->
+  <Resenas />
+
+  <!-- Ubicación resumida -->
+  <Section width="wide" class="py-10">
+    <div class="flex flex-col items-center gap-4 rounded-3xl border border-brand-line bg-brand-cream-2/50 px-6 py-10 text-center">
+      <Logo variant="monogram" class="text-5xl text-brand-brown" />
+      <h2 class="text-2xl font-bold text-brand-brown sm:text-3xl">Te esperamos en La Ñora</h2>
+      <p class="text-brand-brown-80">{siteConfig.direccion} · {siteConfig.horarioResumen}</p>
+      <div class="mt-2 flex flex-wrap justify-center gap-3">
+        <Button href="/local" variant="primary" size="lg">Cómo llegar</Button>
+        <Button href="/to-go" variant="outline" size="lg">Pedir para llevar</Button>
+      </div>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  /* Marquesina giratoria de la franja de marca */
+  .brand-marquee {
+    overflow: hidden;
+  }
+  .brand-marquee__track {
+    display: flex;
+    width: max-content;
+    animation: brand-marquee-scroll 50s linear infinite;
+  }
+  .brand-marquee__group {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  /* Separación uniforme entre frases y puntos (· incluido) */
+  .brand-marquee__group > span {
+    padding-inline: 1rem;
+    white-space: nowrap;
+  }
+  @keyframes brand-marquee-scroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  /* Respeta a quien desactiva animaciones: queda estática y centrada */
+  @media (prefers-reduced-motion: reduce) {
+    .brand-marquee__track {
+      animation: none;
+      width: 100%;
+      justify-content: center;
+    }
+    .brand-marquee__group + .brand-marquee__group {
+      display: none;
+    }
+  }
+</style>

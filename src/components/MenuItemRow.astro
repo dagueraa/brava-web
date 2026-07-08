@@ -1,0 +1,29 @@
+---
+import DietBadge from './DietBadge.astro';
+import AllergenIcons from './AllergenIcons.astro';
+import type { MenuItem } from '../data/menu';
+/* Fila de ítem de carta: nombre · (badges dieta) · precio alineado a la derecha,
+   descripción en itálica, e iconos de alérgenos como en el menú original. */
+interface Props { item: MenuItem }
+const { item } = Astro.props;
+---
+<li class="py-2.5">
+  <div class="flex items-baseline gap-3">
+    <span class="font-semibold text-brand-brown">{item.nombre}</span>
+    {item.dietas && (
+      <span class="flex shrink-0 flex-wrap gap-1">
+        {item.dietas.map((d) => <DietBadge dieta={d} />)}
+      </span>
+    )}
+    {item.precio && (
+      <>
+        <span class="mx-1 hidden h-px flex-1 translate-y-[-3px] border-b border-dotted rule-soft sm:block"></span>
+        <span class="ml-auto shrink-0 font-bold text-brand-brown sm:ml-0">
+          {item.precio.startsWith('+') ? item.precio : `${item.precio} €`}
+        </span>
+      </>
+    )}
+  </div>
+  {item.desc && <p class="mt-0.5 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
+  {item.alergenos && <AllergenIcons items={item.alergenos} class="mt-1.5" />}
+</li>

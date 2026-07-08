@@ -1,0 +1,32 @@
+---
+import icons from '../data/brandIcons.json';
+/* Ilustraciones OFICIALES del brandbook (sección 05 "Sistema de ilustraciones").
+   Extraídas del PDF y vectorizadas (no son recreaciones). Heredan el color
+   con currentColor (brand-brown por defecto).
+   Disponibles: muffin, tostada, croissant, cookie, cafe, smoothie,
+   cuenco, cuenco-takeaway, bolsa, botella, taza, lechera, pan. */
+export type BrandIconName = keyof typeof icons;
+
+interface Props {
+  name: BrandIconName;
+  class?: string;
+  title?: string;
+}
+const { name, class: className = '', title } = Astro.props;
+const ic = icons[name];
+const a11y = title
+  ? { role: 'img', 'aria-label': title }
+  : { 'aria-hidden': 'true', focusable: 'false' };
+---
+{ic && (
+  <svg
+    viewBox={`0 0 ${ic.w} ${ic.h}`}
+    class={className}
+    fill="currentColor"
+    xmlns="http://www.w3.org/2000/svg"
+    {...a11y}
+  >
+    {title && <title>{title}</title>}
+    <path d={ic.d} />
+  </svg>
+)}

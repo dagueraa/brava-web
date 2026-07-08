@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from './Section.astro';
+interface Props { title: string; path: string; updated?: string }
+const { title, path, updated } = Astro.props;
+---
+<Base title={title} path={path} noindex>
+  <Section width="narrow" class="py-14">
+    <a href="/" class="text-sm font-medium text-brand-brown-60 hover:text-brand-brown">← Volver al inicio</a>
+    <h1 class="mt-4 text-4xl font-bold text-brand-brown">{title}</h1>
+    {updated && <p class="mt-2 text-sm text-brand-brown-60">Última actualización: {updated}</p>}
+
+    <div class="mt-6 rounded-2xl bg-brand-fresh/20 px-5 py-4 text-sm text-brand-brown-80">
+      <strong>Texto provisional.</strong> Esta página está creada y lista; el contenido legal definitivo
+      lo aporta el cliente (ver <code>PENDIENTE_CLIENTE.md</code>). Sustituye el texto de ejemplo por el real
+      antes de publicar.
+    </div>
+
+    <article class="prose-brava mt-8 space-y-4 leading-relaxed text-brand-brown-80">
+      <slot />
+    </article>
+  </Section>
+</Base>
+
+<style is:global>
+  .prose-brava h2 { font-size: 1.25rem; font-weight: 700; color: var(--color-brand-brown); margin-top: 1.75rem; }
+  .prose-brava p, .prose-brava li { color: var(--color-brand-brown-80); }
+  .prose-brava ul { list-style: disc; padding-left: 1.25rem; }
+  .prose-brava a { color: var(--color-brand-brown); text-decoration: underline; }
+</style>

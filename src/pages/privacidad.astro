@@ -1,0 +1,37 @@
+---
+import LegalLayout from '../components/LegalLayout.astro';
+import { siteConfig } from '../../site.config';
+---
+<LegalLayout title="Política de privacidad" path="/privacidad">
+  <h2>1. Responsable del tratamiento</h2>
+  <ul>
+    <li><strong>Responsable:</strong> {siteConfig.empresa.razonSocial} (NIF {siteConfig.empresa.nif})</li>
+    <li><strong>Domicilio:</strong> {siteConfig.empresa.domicilioLegal}</li>
+    <li><strong>Contacto:</strong> {siteConfig.email || '{{email de contacto}}'} · {siteConfig.telefono}</li>
+  </ul>
+
+  <h2>2. Finalidad del tratamiento</h2>
+  <p>
+    Esta web es informativa y no dispone de formularios de registro ni de compra en línea. Si nos contactas
+    por WhatsApp, teléfono o correo, trataremos tus datos con la única finalidad de atender tu consulta o pedido.
+  </p>
+
+  <h2>3. Legitimación</h2>
+  <p>La base legal es tu consentimiento al ponerte en contacto y el interés legítimo en atenderte.</p>
+
+  <h2>4. Conservación de los datos</h2>
+  <p>
+    Conservaremos tus datos el tiempo necesario para atender tu solicitud y, posteriormente, durante los plazos
+    legalmente exigidos.
+  </p>
+
+  <h2>5. Destinatarios</h2>
+  <p>No se cederán datos a terceros salvo obligación legal.</p>
+
+  <h2>6. Tus derechos</h2>
+  <p>
+    Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad
+    escribiendo a {siteConfig.email || '{{email de contacto}}'}. También puedes reclamar ante la Agencia Española
+    de Protección de Datos (www.aepd.es).
+  </p>
+</LegalLayout>

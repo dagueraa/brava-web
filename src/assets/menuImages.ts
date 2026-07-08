@@ -1,0 +1,67 @@
+/* Fotos REALES de producto extraídas del PDF oficial de la carta
+   ("Menú movil Brava Traz.pdf"), recortadas con fondo transparente para
+   que floten sobre los blobs crema igual que en la carta original.
+   Optimizadas a WebP en build por astro:assets. */
+import type { ImageMetadata } from 'astro';
+
+import cafeTeal from './menu/cafe-teal.png';
+import cafeAmarillo from './menu/cafe-amarillo.png';
+import cafeArt from './menu/cafe-art.png';
+import icedBrava from './menu/iced-brava.png';
+import blueMatcha from './menu/blue-matcha.png';
+import croissant from './menu/croissant.png';
+import cookie from './menu/cookie.png';
+import palmeras from './menu/palmeras.png';
+import empanada from './menu/empanada.png';
+import bagel from './menu/bagel.png';
+import tostadaSalmon from './menu/tostada-salmon.png';
+import tostadaAguacate from './menu/tostada-aguacate.png';
+import panSemillas from './menu/pan-semillas.png';
+import tostadasTrio from './menu/tostadas-trio.png';
+// Fotos enmarcadas de Drinks (recorte exacto del menú sobre crema)
+import drinksClasicos from './menu/drinks-clasicos.png';
+import drinksBatidos from './menu/drinks-batidos.png';
+import drinksTes from './menu/drinks-tes.png';
+// Especiales y horneado — recortes LIMPIOS del PDF (producto sobre crema, sin knockout)
+import espSalmoneBrioche from './menu/esp-salmone-brioche.png';
+import espBravaBrioche from './menu/esp-brava-brioche.png';
+import espSalmoneBaguel from './menu/esp-salmone-baguel.png';
+import espMortadellaBagel from './menu/esp-mortadella-bagel.png';
+import espPistachio from './menu/esp-pistachio.png';
+import espNutella from './menu/esp-nutella.png';
+import hornCookies from './menu/horn-cookies.png';
+import hornHojaldres from './menu/horn-hojaldres.png';
+import hornVegano from './menu/horn-vegano.png';
+import hornSinGluten from './menu/horn-singluten.png';
+
+export const menuFotos = {
+  'cafe-teal': cafeTeal,
+  'cafe-amarillo': cafeAmarillo,
+  'cafe-art': cafeArt,
+  'iced-brava': icedBrava,
+  'blue-matcha': blueMatcha,
+  croissant,
+  cookie,
+  palmeras,
+  empanada,
+  bagel,
+  'tostada-salmon': tostadaSalmon,
+  'tostada-aguacate': tostadaAguacate,
+  'pan-semillas': panSemillas,
+  'tostadas-trio': tostadasTrio,
+  'drinks-clasicos': drinksClasicos,
+  'drinks-batidos': drinksBatidos,
+  'drinks-tes': drinksTes,
+  'esp-salmone-brioche': espSalmoneBrioche,
+  'esp-brava-brioche': espBravaBrioche,
+  'esp-salmone-baguel': espSalmoneBaguel,
+  'esp-mortadella-bagel': espMortadellaBagel,
+  'esp-pistachio': espPistachio,
+  'esp-nutella': espNutella,
+  'horn-cookies': hornCookies,
+  'horn-hojaldres': hornHojaldres,
+  'horn-vegano': hornVegano,
+  'horn-singluten': hornSinGluten,
+} satisfies Record<string, ImageMetadata>;
+
+export type MenuFotoKey = keyof typeof menuFotos;

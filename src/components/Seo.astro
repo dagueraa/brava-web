@@ -1,0 +1,89 @@
+---
+import { siteConfig, horarioDias } from '../../site.config';
+/* Metadatos por página: title, description, Open Graph, Twitter Card,
+   canonical y JSON-LD (Restaurant / LocalBusiness). */
+interface Props {
+  title: string;
+  description?: string;
+  path?: string;       // ruta canónica, p. ej. "/carta"
+  ogImage?: string;    // ruta a imagen OG (en /public)
+  noindex?: boolean;
+}
+const {
+  title,
+  description = siteConfig.descripcionSEO,
+  path = '',
+  ogImage = '/og-image.png',
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const canonical = `${siteUrl}${path}`;
+const ogUrl = `${siteUrl}${ogImage}`;
+const fullTitle = path === '' ? `${siteConfig.nombre} · ${siteConfig.tagline}` : `${title} · ${siteConfig.nombre}`;
+
+// Mapeo de horario a schema.org openingHoursSpecification
+const diaSchema: Record<string, string> = {
+  Lunes: 'Monday', Martes: 'Tuesday', Miércoles: 'Wednesday', Jueves: 'Thursday',
+  Viernes: 'Friday', Sábado: 'Saturday', Domingo: 'Sunday',
+};
+const pad = (t: string) => (t.length === 4 ? '0' + t : t); // 8:00 → 08:00
+const opening = horarioDias
+  .filter((d) => /\d/.test(d.horas))
+  // Soporta jornada partida: cada tramo (separado por ·) genera su propia franja.
+  .flatMap((d) =>
+    d.horas.split('·').map((tramo) => {
+      const [o, c] = tramo.replace(/\s/g, '').split('–');
+      return {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: diaSchema[d.dia],
+        opens: pad(o),
+        closes: pad(c),
+      };
+    }),
+  );
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['Restaurant', 'CafeOrCoffeeShop'],
+  name: siteConfig.nombre,
+  description: siteConfig.descripcionSEO,
+  servesCuisine: ['Café de especialidad', 'Brunch', 'Repostería'],
+  priceRange: '€',
+  url: siteUrl || undefined,
+  telephone: siteConfig.telefonoE164,
+  image: ogUrl,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Calle Mayor, 71',
+    addressLocality: siteConfig.ciudad,
+    addressRegion: siteConfig.provincia,
+    postalCode: siteConfig.cp,
+    addressCountry: 'ES',
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: siteConfig.geo.lat, longitude: siteConfig.geo.lng },
+  openingHoursSpecification: opening,
+  sameAs: [siteConfig.redes.instagram, siteConfig.redes.tiktok].filter(Boolean),
+  hasMenu: `${siteUrl}/carta`,
+  acceptsReservations: 'False',
+};
+---
+<title>{fullTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={siteConfig.nombre} />
+<meta property="og:title" content={fullTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonical} />
+<meta property="og:image" content={ogUrl} />
+<meta property="og:locale" content="es_ES" />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={fullTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogUrl} />
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

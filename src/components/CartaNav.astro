@@ -1,0 +1,48 @@
+---
+import { categorias } from '../data/menu';
+/* Navegación por categorías pegajosa para la carta (Combos · Drinks · Brunch · Treats).
+   Scrollspy ligero resalta la categoría visible. */
+---
+<nav
+  id="carta-nav"
+  class="sticky top-16 z-30 -mx-5 mb-10 border-b rule-soft bg-brand-cream/90 px-5 backdrop-blur-md sm:mx-0 sm:rounded-full sm:border sm:px-2"
+  aria-label="Categorías de la carta"
+>
+  <ul class="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+    {categorias.map((c) => (
+      <li class="shrink-0">
+        <a
+          href={`#${c.id}`}
+          data-cat={c.id}
+          class="carta-tab inline-block rounded-full px-4 py-2 text-sm font-semibold text-brand-brown-60 transition-colors hover:text-brand-brown"
+        >
+          {c.titulo}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  const tabs = Array.from(document.querySelectorAll<HTMLAnchorElement>('.carta-tab'));
+  const setActive = (id: string) => {
+    tabs.forEach((t) => {
+      const on = t.dataset.cat === id;
+      t.classList.toggle('bg-brand-brown', on);
+      t.classList.toggle('text-brand-cream', on);
+      t.classList.toggle('text-brand-brown-60', !on);
+    });
+  };
+  const sections = tabs
+    .map((t) => document.getElementById(t.dataset.cat!))
+    .filter(Boolean) as HTMLElement[];
+  if ('IntersectionObserver' in window && sections.length) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); });
+      },
+      { rootMargin: '-30% 0px -60% 0px', threshold: 0 },
+    );
+    sections.forEach((s) => io.observe(s));
+  }
+</script>

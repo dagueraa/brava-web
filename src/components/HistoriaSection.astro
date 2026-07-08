@@ -1,0 +1,124 @@
+---
+import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import Blob from './Blob.astro';
+import { img } from '../assets/images';
+import { siteConfig } from '../../site.config';
+/* El Alma de Brava — corazón emocional de la web.
+   Retrato + historia en 3 beats + galería editorial + valores + CTA.
+   COPY PROVISIONAL de calidad (lo valida/ajusta la fundadora). No se inventan
+   datos biográficos concretos. Ver PENDIENTE_CLIENTE.md. */
+
+// Foto de la fundadora: usa la oficial del config si existe; si no, foto real del local (marcada como provisional).
+const retrato = img.founderEntrance;
+
+const beats = [
+  {
+    titulo: 'Cómo nació Brava',
+    // PROVISIONAL — ajustar con la historia real de la fundadora
+    texto:
+      'Brava nació de una idea sencilla: crear un sitio pequeño donde el café se tratara con respeto y donde cualquiera se sintiera como en casa desde el primer “hola”. Empezó con más ilusión que certezas, y con la convicción de hacer las cosas bien aunque nadie estuviera mirando.',
+  },
+  {
+    titulo: 'Qué me inspiró a crearla',
+    texto:
+      'Quería un lugar al que siempre apeteciera volver. Un rincón en La Ñora donde el desayuno no fuera prisa, sino una pausa: producto de verdad, brunch hecho con cariño y un café que sabe a café. Esa mezcla de honestidad, cercanía y buen gusto es lo que me empujó a montar Brava.',
+  },
+  {
+    titulo: 'La filosofía del proyecto',
+    texto:
+      'En Brava cuidamos los detalles: el origen del café, el pan, las opciones veganas y sin gluten, la sonrisa con la que servimos. Creemos que comer bien no tiene por qué ser complicado, y que un buen café puede cambiarte el día. Eso es lo que ponemos sobre la mesa, cada mañana.',
+  },
+];
+
+const valores = [
+  { titulo: 'Cercanía', desc: 'Trato de tú, como en casa.' },
+  { titulo: 'Producto de calidad', desc: 'Café de especialidad y materia prima de verdad.' },
+  { titulo: 'Sentirse bien', desc: 'Un espacio para desconectar y disfrutar con calma.' },
+];
+
+const galeria = [
+  { src: img.gallery1, alt: 'Interior de Brava con el rótulo de musgo brava coffee and brunch y sofá' },
+  { src: img.gallery2, alt: 'Barista vertiendo leche para un latte art en una taza azul de Brava' },
+  { src: img.gallery3, alt: 'Máquina de espresso preparando dos cafés en Brava' },
+  { src: img.gallery4, alt: 'Fachada de Brava con el rótulo brava sobre pared vegetal en La Ñora' },
+];
+---
+<div class="reveal">
+  <!-- Apertura -->
+  <div class="relative mx-auto max-w-3xl text-center">
+    <Blob class="-top-12 left-1/2 h-40 w-40 -translate-x-1/2 opacity-60" variant={2} />
+    <Logo class="relative text-2xl text-brand-brown-60" />
+    <h1 class="relative mt-1 font-hand text-6xl font-bold text-brand-brown sm:text-7xl">
+      El <span class="text-brand-calm-ink">Alma</span> de Brava
+    </h1>
+    <p class="relative mx-auto mt-5 max-w-xl text-lg leading-relaxed text-brand-brown-80 italic">
+      {siteConfig.historia.frase}
+    </p>
+  </div>
+
+  <!-- Retrato + primer beat -->
+  <div class="mt-16 grid items-center gap-10 md:grid-cols-2">
+    <div class="relative">
+      <div class="relative mx-auto max-w-sm">
+        <Blob class="inset-0 -z-10 h-full w-full scale-110" variant={3} />
+        <Image
+          src={retrato}
+          alt="La fundadora de Brava sentada en el local, junto al rótulo de musgo brava"
+          widths={[320, 480, 640]}
+          sizes="(max-width: 768px) 85vw, 384px"
+          class="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-xl"
+          loading="lazy"
+        />
+      </div>
+    </div>
+    <div>
+      <h2 class="text-2xl font-bold text-brand-brown">{beats[0].titulo}</h2>
+      <p class="mt-3 leading-relaxed text-brand-brown-80">{beats[0].texto}</p>
+    </div>
+  </div>
+
+  <!-- Beats 2 y 3 -->
+  <div class="mt-14 grid gap-10 md:grid-cols-2">
+    {beats.slice(1).map((b) => (
+      <div class="rounded-3xl bg-brand-cream-2/50 p-7">
+        <h2 class="text-2xl font-bold text-brand-brown">{b.titulo}</h2>
+        <p class="mt-3 leading-relaxed text-brand-brown-80">{b.texto}</p>
+      </div>
+    ))}
+  </div>
+
+  <!-- Galería editorial tipo mosaico -->
+  <div class="mt-16 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+    {galeria.map((g, i) => (
+      <Image
+        src={g.src}
+        alt={g.alt}
+        widths={[200, 320, 440]}
+        sizes="(max-width: 768px) 45vw, 22vw"
+        class="aspect-square w-full rounded-2xl object-cover shadow-sm"
+        loading="lazy"
+      />
+    ))}
+  </div>
+
+  <!-- Valores -->
+  <div class="mt-16 grid gap-5 sm:grid-cols-3">
+    {valores.map((v) => (
+      <div class="text-center">
+        <p class="font-hand text-3xl text-brand-calm-ink">{v.titulo}</p>
+        <p class="mt-1 text-sm text-brand-brown-80">{v.desc}</p>
+      </div>
+    ))}
+  </div>
+
+  <!-- CTA final -->
+  <div class="mt-14 flex flex-wrap justify-center gap-3">
+    <Button href="/local" variant="primary" size="lg">Ven a conocernos</Button>
+    <Button href={siteConfig.redes.instagram} variant="outline" size="lg" target="_blank">Síguenos en Instagram</Button>
+    {siteConfig.redes.tiktok && (
+      <Button href={siteConfig.redes.tiktok} variant="outline" size="lg" target="_blank">Síguenos en TikTok</Button>
+    )}
+  </div>
+</div>

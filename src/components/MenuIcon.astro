@@ -1,0 +1,17 @@
+---
+/* Icono oficial del menú (vaso, pan, batido, te, extras, especiales) extraído del
+   PDF y servido como máscara recoloreada con currentColor (marrón sobre crema). */
+interface Props {
+  name: 'vaso' | 'taza' | 'pan' | 'batido' | 'te' | 'extras' | 'especiales' | 'magdalena';
+  class?: string;
+  label?: string;
+}
+const { name, class: className = 'h-7 w-7', label } = Astro.props;
+---
+<span
+  class={`inline-block shrink-0 bg-brand-brown ${className}`}
+  role="img"
+  aria-label={label ?? ''}
+  aria-hidden={label ? undefined : 'true'}
+  style={`-webkit-mask:url(/brand/menu/${name}.png) center/contain no-repeat;mask:url(/brand/menu/${name}.png) center/contain no-repeat;`}
+></span>

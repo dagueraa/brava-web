@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import LocationBlock from '../components/LocationBlock.astro';
+import Button from '../components/Button.astro';
+import { Image } from 'astro:assets';
+import { img } from '../assets/images';
+import { siteConfig } from '../../site.config';
+---
+<Base title="Local & horario" description={`Visítanos en ${siteConfig.direccion}. Horario, ubicación y cómo llegar a Brava, cafetería de especialidad y brunch en La Ñora, Murcia.`} path="/local">
+  <Section width="wide" class="pt-12 pb-8">
+    <div class="mb-8 grid items-center gap-8 md:grid-cols-2">
+      <div>
+        <h1 class="text-4xl font-bold text-brand-brown sm:text-5xl">Te esperamos en La Ñora</h1>
+        <p class="mt-4 max-w-md leading-relaxed text-brand-brown-80">
+          Un rincón pequeño y cálido donde tomarte tu café con calma o pasarte a recoger tu pedido para llevar.
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <Button href="/to-go" variant="accent" size="lg">Pedir para llevar</Button>
+          <Button href="/carta" variant="outline" size="lg">Ver la carta</Button>
+        </div>
+      </div>
+      <div class="relative">
+        <Image
+          src={img.entrada}
+          alt="Entrada de Brava con el rótulo brava sobre la pared vegetal y la puerta de cristal en La Ñora, Murcia"
+          widths={[400, 600, 800]}
+          sizes="(max-width: 768px) 90vw, 480px"
+          class="mx-auto aspect-[3/4] w-full max-w-sm rounded-[2rem] object-cover shadow-lg"
+          loading="lazy"
+        />
+      </div>
+    </div>
+
+    <LocationBlock />
+  </Section>
+</Base>

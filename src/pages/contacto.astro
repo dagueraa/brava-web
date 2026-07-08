@@ -1,0 +1,65 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import LocationBlock from '../components/LocationBlock.astro';
+import { siteConfig, telLink, waLink } from '../../site.config';
+
+const canales = [
+  {
+    t: 'WhatsApp',
+    d: 'La forma más rápida de pedir o consultar.',
+    href: waLink(),
+    cta: 'Escríbenos',
+    variant: 'whatsapp' as const,
+    target: '_blank',
+  },
+  {
+    t: 'Teléfono',
+    d: siteConfig.telefono,
+    href: telLink,
+    cta: 'Llamar',
+    variant: 'primary' as const,
+  },
+  {
+    t: 'Instagram',
+    d: siteConfig.redes.instagramHandle,
+    href: siteConfig.redes.instagram,
+    cta: 'Síguenos',
+    variant: 'outline' as const,
+    target: '_blank',
+  },
+  {
+    t: 'TikTok',
+    d: siteConfig.redes.tiktokHandle,
+    href: siteConfig.redes.tiktok,
+    cta: 'Síguenos',
+    variant: 'outline' as const,
+    target: '_blank',
+  },
+];
+---
+<Base title="Contacto" description="Contacta con Brava: WhatsApp, teléfono, Instagram, TikTok y ubicación en La Ñora, Murcia." path="/contacto">
+  <Section class="pt-12 pb-8 text-center">
+    <h1 class="text-4xl font-bold text-brand-brown sm:text-5xl">Hablemos</h1>
+    <p class="mx-auto mt-3 max-w-md text-brand-brown-80">
+      ¿Una duda, un pedido para llevar o solo saludar? Estamos a un mensaje de distancia.
+    </p>
+  </Section>
+
+  <Section class="pb-12">
+    <div class="grid gap-5 sm:grid-cols-3">
+      {canales.map((c) => (
+        <div class="flex flex-col items-center rounded-3xl border rule-soft bg-brand-cream-2/40 p-7 text-center">
+          <h2 class="text-xl font-bold text-brand-brown">{c.t}</h2>
+          <p class="mt-1 mb-5 flex-1 text-sm text-brand-brown-80">{c.d}</p>
+          <Button href={c.href} variant={c.variant} target={c.target}>{c.cta}</Button>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section width="wide" class="pb-16">
+    <LocationBlock />
+  </Section>
+</Base>

@@ -1,0 +1,24 @@
+---
+import Logo from './Logo.astro';
+/* Encabezado de categoría con el lockup "brava /categoría" y el icono OFICIAL
+   del menú (vaso take-away / pan), extraído del PDF y servido como máscara. */
+interface Props {
+  suffix: string;                 // p. ej. "combos", "drinks"
+  icon?: 'vaso' | 'pan';          // icono del menú
+  class?: string;
+  size?: 'md' | 'lg';
+}
+const { suffix, icon, class: className = '', size = 'lg' } = Astro.props;
+const sizeCls = size === 'lg' ? 'text-4xl sm:text-5xl' : 'text-3xl sm:text-4xl';
+---
+<div class={`flex items-center justify-between gap-4 border-b rule-soft pb-3 ${className}`}>
+  <Logo as="h2" suffix={suffix} class={`text-brand-brown ${sizeCls}`} />
+  {icon && (
+    <span
+      class="h-9 w-9 shrink-0 bg-brand-brown sm:h-11 sm:w-11"
+      role="img"
+      aria-label={icon === 'vaso' ? 'Bebidas' : 'Panadería'}
+      style={`-webkit-mask:url(/brand/menu/${icon}.png) center/contain no-repeat;mask:url(/brand/menu/${icon}.png) center/contain no-repeat;`}
+    ></span>
+  )}
+</div>

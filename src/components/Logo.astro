@@ -1,0 +1,32 @@
+---
+/* Logotipo Brava — LOGO OFICIAL del brandbook.
+   Se usa el render exacto del PDF como máscara CSS (mask-image), por lo que es
+   pixel-perfect (sin aproximaciones) y se recolorea con `currentColor`.
+   - variant "wordmark" (def.): la palabra "brava" oficial.
+   - variant "lockup": brava + "coffee and brunch".
+   - variant "monogram": el monograma "bv".
+   - suffix: añade el lockup "/categoría" (combos, drinks, brunch, treats, to go…). */
+interface Props {
+  class?: string;
+  variant?: 'wordmark' | 'lockup' | 'monogram';
+  suffix?: string;
+  as?: 'span' | 'div' | 'h1' | 'h2' | 'h3';
+  label?: string;
+}
+const { class: className = '', variant = 'wordmark', suffix, as = 'span', label } = Astro.props;
+const Tag = as;
+const ar: Record<string, number> = { wordmark: 2052 / 686, lockup: 2681 / 698, monogram: 1439 / 1383 };
+const h = variant === 'monogram' ? '1em' : '0.78em';
+const aria = label ?? `brava${suffix ? ' /' + suffix : ''}${variant === 'lockup' ? ' coffee and brunch' : ''}`;
+const isHeading = as === 'h1' || as === 'h2' || as === 'h3';
+---
+<Tag class={`brava-logo inline-flex items-end leading-none ${className}`} aria-label={aria} role={isHeading ? undefined : 'img'}>
+  <span
+    class="brava-mark shrink-0"
+    aria-hidden="true"
+    style={`display:inline-block;height:${h};aspect-ratio:${ar[variant]};background-color:currentColor;-webkit-mask:url(/brand/${variant}.png) center/contain no-repeat;mask:url(/brand/${variant}.png) center/contain no-repeat;`}
+  ></span>
+  {suffix && (
+    <span class="brava-suffix font-light tracking-tight" aria-hidden="true" style="font-size:0.62em;margin-left:0.16em;line-height:0.95">/{suffix}</span>
+  )}
+</Tag>

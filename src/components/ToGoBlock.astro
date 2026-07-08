@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import Blob from './Blob.astro';
+import ToGoOrder from './ToGoOrder.astro';
+import BrandIcon from './BrandIcon.astro';
+import { img } from '../assets/images';
+import { siteConfig } from '../../site.config';
+/* Bloque destacado "Brava To Go" reutilizable (home e interior de /to-go).
+   variant="compact" para el teaser de la home; "full" para la página. */
+interface Props { variant?: 'compact' | 'full' }
+const { variant = 'compact' } = Astro.props;
+const pasos = [
+  { icon: 'cookie', titulo: 'Elige de la carta', desc: 'Mira la carta y decide tus favoritos.' },
+  { icon: 'cafe', titulo: 'Escríbenos o llámanos', desc: 'Haz tu pedido por WhatsApp o teléfono.' },
+  { icon: 'bolsa', titulo: 'Pásate a recogerlo', desc: 'Lo dejamos listo para llevar.' },
+] as const;
+---
+<section class="relative overflow-hidden rounded-[2.5rem] bg-brand-brown text-brand-cream">
+  <Blob class="hidden -right-20 -top-24 h-72 w-72 text-brand-calm/20 md:block" variant={2} />
+  <Blob class="hidden -left-16 bottom-0 h-56 w-56 text-brand-fresh/15 md:block" variant={3} />
+
+  <div class="relative grid items-center gap-8 p-7 sm:p-10 md:grid-cols-2 md:p-14">
+    <div>
+      <Logo as={variant === 'full' ? 'h1' : 'h2'} suffix="to go" class="text-4xl text-brand-cream sm:text-5xl" />
+      <p class="mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">
+        Tu Brava favorito, para llevar. Pídelo por WhatsApp o teléfono y pásate a recogerlo. Sin esperas, sin complicaciones.
+      </p>
+
+      {variant === 'full' && (
+        <ol class="mt-8 grid gap-4 sm:grid-cols-3">
+          {pasos.map((p, i) => (
+            <li class="rounded-2xl bg-brand-cream/10 p-4">
+              <div class="flex items-center gap-2">
+                <BrandIcon name={p.icon} class="h-7 w-7 text-brand-cream" />
+                <span class="text-sm font-bold text-brand-cream/60">0{i + 1}</span>
+              </div>
+              <h3 class="mt-2 font-bold text-brand-cream">{p.titulo}</h3>
+              <p class="mt-1 text-sm text-brand-cream/75">{p.desc}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+
+      <div class="mt-8">
+        {variant === 'full' ? (
+          <ToGoOrder />
+        ) : (
+          <div class="flex flex-wrap gap-3">
+            <Button href="/to-go" variant="accent" size="lg">Pedir para llevar</Button>
+            <Button href="/carta" variant="ghost" size="lg" class="text-brand-cream hover:bg-brand-cream/10">Ver la carta</Button>
+          </div>
+        )}
+      </div>
+
+      <p class="mt-6 text-sm text-brand-cream/70">
+        <span class="font-semibold text-brand-cream">Recogida:</span> {siteConfig.horarioResumen}
+        {variant === 'full' && siteConfig.toGo.tiempoPreparacionMin && (
+          <> · Preparación aprox. {siteConfig.toGo.tiempoPreparacionMin} min</>
+        )}
+      </p>
+    </div>
+
+    <div class="relative">
+      <div class="relative mx-auto max-w-xs">
+        <Blob class="inset-0 -z-0 h-full w-full scale-125 text-brand-cream/10" variant={1} />
+        <Image
+          src={img.smoothieStreet}
+          alt="Smoothie Brava en vaso para llevar, sostenido en la calle"
+          widths={[280, 400, 520]}
+          sizes="(max-width: 768px) 70vw, 320px"
+          class="relative aspect-[3/4] w-full rounded-[2rem] object-cover shadow-xl"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,47 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import CartaNav from '../components/CartaNav.astro';
+import MenuCategory from '../components/MenuCategory.astro';
+import Button from '../components/Button.astro';
+import Logo from '../components/Logo.astro';
+import { categorias, alergenos, alergenoLabels } from '../data/menu';
+import type { Alergeno } from '../data/menu';
+const leyenda = Object.keys(alergenoLabels) as Alergeno[];
+---
+<Base title="Carta" description="La carta de Brava: combos, café de especialidad, brunch saludable, tostadas, batidos funcionales y repostería en La Ñora, Murcia." path="/carta">
+  <Section class="pt-12 pb-2 text-center">
+    <Logo as="h1" suffix="carta" class="text-5xl text-brand-brown sm:text-6xl" />
+    <p class="mx-auto mt-3 max-w-md text-brand-brown-80">
+      Café de especialidad, brunch y repostería. Hecho con calma y buen producto.
+    </p>
+  </Section>
+
+  <Section>
+    <CartaNav />
+
+    <div class="space-y-20">
+      {categorias.map((cat) => <MenuCategory cat={cat} />)}
+    </div>
+
+    <!-- Alérgenos + leyenda de iconos -->
+    <div class="mt-16 rounded-3xl bg-brand-cream-2/60 p-7 text-center reveal">
+      <h2 class="text-xl font-bold text-brand-brown">¿Tienes alguna alergia o intolerancia?</h2>
+      <p class="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-brand-brown-80">{alergenos}</p>
+      <ul class="mx-auto mt-5 flex max-w-2xl flex-wrap items-center justify-center gap-x-5 gap-y-2">
+        {leyenda.map((a) => (
+          <li class="flex items-center gap-2 text-xs font-medium text-brand-brown-80">
+            <span class="h-5 w-5 shrink-0 bg-brand-brown-80" style={`-webkit-mask:url(/brand/diet/${a}.png) center/contain no-repeat;mask:url(/brand/diet/${a}.png) center/contain no-repeat;`} aria-hidden="true"></span>
+            {alergenoLabels[a]}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <!-- CTA para llevar -->
+    <div class="mt-10 flex flex-col items-center gap-3 text-center">
+      <p class="text-lg font-semibold text-brand-brown">¿Te lo llevas?</p>
+      <Button href="/to-go" variant="accent" size="lg">Pedir para llevar</Button>
+    </div>
+  </Section>
+</Base>

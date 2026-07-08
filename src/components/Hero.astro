@@ -1,0 +1,45 @@
+---
+import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import Blob from './Blob.astro';
+import { img } from '../assets/images';
+import { siteConfig } from '../../site.config';
+---
+<section class="relative overflow-hidden">
+  <!-- Formas orgánicas de fondo -->
+  <Blob class="-left-24 -top-24 h-72 w-72 opacity-70" variant={2} />
+  <Blob class="-right-16 top-40 h-56 w-56 opacity-60" color="text-brand-calm/15" variant={3} />
+
+  <div class="mx-auto grid max-w-6xl items-center gap-10 px-5 py-14 sm:px-6 md:grid-cols-2 md:py-20">
+    <div class="relative z-10 text-center md:text-left">
+      <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-brand-cream-2 px-3 py-1 text-xs font-semibold text-brand-brown-80">
+        Café de especialidad · Brunch · La Ñora, Murcia
+      </p>
+      <Logo as="h1" variant="lockup" class="text-6xl text-brand-brown sm:text-7xl" />
+      <p class="mx-auto mt-6 max-w-md text-lg leading-relaxed text-brand-brown-80 md:mx-0">
+        {siteConfig.claim} Un sitio pequeño, pero con alma, donde el café sabe a café y todo se hace con intención.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-3 md:justify-start">
+        <Button href="/carta" variant="primary" size="lg">Ver la carta</Button>
+        <Button href="/to-go" variant="accent" size="lg">Pedir para llevar</Button>
+        <Button href="/local" variant="outline">Cómo llegar</Button>
+      </div>
+    </div>
+
+    <div class="relative z-10">
+      <div class="relative mx-auto max-w-sm">
+        <Blob class="inset-0 -z-10 h-full w-full scale-125" variant={1} />
+        <Image
+          src={img.hero}
+          alt="Vaso Brava con café con leche y arte latte junto a un iced coffee y un gofre en Brava"
+          widths={[320, 480, 640]}
+          sizes="(max-width: 768px) 80vw, 384px"
+          class="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-xl"
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </div>
+  </div>
+</section>

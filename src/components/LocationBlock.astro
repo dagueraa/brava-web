@@ -1,0 +1,53 @@
+---
+import Button from './Button.astro';
+import { siteConfig, telLink, waLink, horarioDias } from '../../site.config';
+/* Ubicación & horario: dirección, horario por días, contacto y mapa ligero
+   (iframe lazy). Todo desde site.config. */
+interface Props { showMap?: boolean }
+const { showMap = true } = Astro.props;
+const hoy = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date().getDay()];
+const diaActual: Record<string,string> = {
+  lunes:'Lunes',martes:'Martes',miercoles:'Miércoles',jueves:'Jueves',viernes:'Viernes',sabado:'Sábado',domingo:'Domingo'
+};
+---
+<div class="grid gap-8 md:grid-cols-2">
+  <div>
+    <h2 class="text-2xl font-bold text-brand-brown">Dónde estamos</h2>
+    <address class="mt-3 space-y-1 not-italic text-brand-brown-80">
+      <p class="text-lg font-semibold text-brand-brown">{siteConfig.direccion}</p>
+      <p><a href={telLink} class="hover:text-brand-brown">{siteConfig.telefono}</a></p>
+      {siteConfig.email && <p><a href={`mailto:${siteConfig.email}`} class="hover:text-brand-brown">{siteConfig.email}</a></p>}
+    </address>
+
+    <h3 class="mt-7 text-lg font-bold text-brand-brown">Horario</h3>
+    <ul class="mt-2 max-w-xs divide-y divide-dotted rule-soft">
+      {horarioDias.map((d) => {
+        const activo = diaActual[hoy] === d.dia;
+        return (
+          <li class={`flex items-center justify-between py-1.5 ${activo ? 'font-bold text-brand-brown' : 'text-brand-brown-80'}`}>
+            <span>{d.dia}{activo && <span class="ml-2 rounded-full bg-brand-fresh px-2 py-0.5 text-[0.65rem] font-semibold text-brand-brown">Hoy</span>}</span>
+            <span class={d.horas === 'Cerrado' ? 'text-brand-brown-60' : ''}>{d.horas}</span>
+          </li>
+        );
+      })}
+    </ul>
+
+    <div class="mt-7 flex flex-wrap gap-3">
+      <Button href={siteConfig.mapsUrl} variant="primary" target="_blank">Cómo llegar</Button>
+      <Button href={waLink()} variant="whatsapp" target="_blank">WhatsApp</Button>
+    </div>
+  </div>
+
+  {showMap && (
+    <div class="overflow-hidden rounded-3xl border rule-soft shadow-sm">
+      <iframe
+        title={`Mapa de ${siteConfig.nombre} en ${siteConfig.direccion}`}
+        src={siteConfig.mapsEmbed}
+        class="h-72 w-full md:h-full"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        style="border:0; min-height: 320px;"
+      ></iframe>
+    </div>
+  )}
+</div>

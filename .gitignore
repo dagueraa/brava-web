@@ -1,0 +1,15 @@
+# Dependencias e intermedios (se regeneran con npm install / npm run build)
+node_modules/
+.astro/
+
+# Artefactos que NO van al repo
+*.zip
+Brava-Presentacion-Cliente.pdf
+
+# Entorno / secretos (nunca subir claves)
+.env
+.env.*
+
+# Sistema
+.DS_Store
+Thumbs.db

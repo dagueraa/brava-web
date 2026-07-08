@@ -1,0 +1,22 @@
+---
+/* Fila de iconos de alérgenos bajo cada plato — siluetas OFICIALES extraídas
+   del menú de Brava (gluten, lácteos, huevo, frutos secos, cacahuete, pescado,
+   apio). Se renderizan como máscara para heredar el color de marca. */
+import type { Alergeno } from '../data/menu';
+import { alergenoLabels } from '../data/menu';
+interface Props { items: Alergeno[]; class?: string }
+const { items, class: className = '' } = Astro.props;
+---
+{items.length > 0 && (
+  <span class={`inline-flex flex-wrap items-center gap-2 ${className}`} role="group" aria-label="Alérgenos">
+    {items.map((a) => (
+      <span
+        class="block h-5 w-5 bg-brand-brown-80"
+        role="img"
+        aria-label={alergenoLabels[a]}
+        title={alergenoLabels[a]}
+        style={`-webkit-mask:url(/brand/diet/${a}.png) center/contain no-repeat;mask:url(/brand/diet/${a}.png) center/contain no-repeat;`}
+      ></span>
+    ))}
+  </span>
+)}

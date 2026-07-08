@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import ToGoBlock from '../components/ToGoBlock.astro';
+import Button from '../components/Button.astro';
+import { siteConfig } from '../../site.config';
+---
+<Base title="Brava To Go · Para llevar" description="Pide tu Brava favorito para llevar por WhatsApp o teléfono. Café de especialidad, brunch y batidos listos para recoger en La Ñora, Murcia." path="/to-go">
+  <Section width="wide" class="pt-10 pb-6">
+    <ToGoBlock variant="full" />
+  </Section>
+
+  <!-- Sin carrito: aclaración amable -->
+  <Section class="py-10">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <div class="rounded-3xl border rule-soft bg-brand-cream-2/40 p-7">
+        <h2 class="text-xl font-bold text-brand-brown">Así de fácil</h2>
+        <p class="mt-2 leading-relaxed text-brand-brown-80">
+          Elige lo que te apetece de la carta, escríbenos por WhatsApp o llámanos con tu pedido,
+          y pásate a recogerlo cuando esté listo. Nosotros lo dejamos todo preparado.
+        </p>
+        <div class="mt-5">
+          <Button href="/carta" variant="outline">Ver la carta</Button>
+        </div>
+      </div>
+      <div class="rounded-3xl border rule-soft bg-brand-cream-2/40 p-7">
+        <h2 class="text-xl font-bold text-brand-brown">Horario de recogida</h2>
+        <p class="mt-2 leading-relaxed text-brand-brown-80">{siteConfig.horarioResumen}.</p>
+        <p class="mt-2 text-sm text-brand-brown-80">
+          {siteConfig.toGo.tiempoPreparacionMin && <>Tiempo medio de preparación: aprox. {siteConfig.toGo.tiempoPreparacionMin} min. </>}
+          Si tienes prisa, avísanos al hacer el pedido.
+        </p>
+      </div>
+    </div>
+  </Section>
+</Base>

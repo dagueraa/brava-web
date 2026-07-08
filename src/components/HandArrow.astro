@@ -1,0 +1,22 @@
+---
+/* Flecha dibujada a mano / discontinua que conecta foto ↔ texto,
+   recurso de marca visto en la página de Combos. Decorativa. */
+interface Props {
+  class?: string;
+  flip?: boolean; // invierte la curva
+}
+const { class: className = '', flip = false } = Astro.props;
+---
+<svg
+  viewBox="0 0 120 60"
+  class={`pointer-events-none ${flip ? '-scale-x-100' : ''} ${className}`}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2.4"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+>
+  <path d="M6 14 C 34 4, 66 8, 96 34" stroke-dasharray="5 7" />
+  <path d="M86 26 L98 36 L88 47" />
+</svg>

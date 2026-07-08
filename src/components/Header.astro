@@ -1,0 +1,95 @@
+---
+import Logo from './Logo.astro';
+import { waLink } from '../../site.config';
+/* Header pegajoso, compacto en móvil, con "Para llevar" destacado como acción. */
+const nav = [
+  { href: '/', label: 'Inicio' },
+  { href: '/carta', label: 'Carta' },
+  { href: '/brava-pass', label: 'Brava Pass' },
+  { href: '/historia', label: 'Historia' },
+  { href: '/local', label: 'Local' },
+  { href: '/contacto', label: 'Contacto' },
+];
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="sticky top-0 z-50 border-b rule-soft bg-brand-cream/85 backdrop-blur-md">
+  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6" aria-label="Principal">
+    <a href="/" class="shrink-0" aria-label="Brava — Inicio">
+      <Logo class="text-2xl text-brand-brown" />
+    </a>
+
+    <!-- Nav escritorio -->
+    <ul class="hidden items-center gap-6 lg:flex">
+      {nav.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class={`text-sm font-medium transition-colors hover:text-brand-brown ${isActive(item.href) ? 'text-brand-brown' : 'text-brand-brown-60'}`}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+      <li>
+        <a
+          href="/to-go"
+          class={`rounded-full bg-brand-calm px-4 py-2 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105 ${isActive('/to-go') ? 'ring-2 ring-brand-brown/20' : ''}`}
+        >
+          Para llevar
+        </a>
+      </li>
+    </ul>
+
+    <!-- Botón hamburguesa móvil -->
+    <button
+      id="nav-toggle"
+      class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+    >
+      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path id="icon-open" d="M4 7h16M4 12h16M4 17h16" />
+        <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Menú móvil -->
+  <div id="mobile-menu" class="hidden border-t rule-soft bg-brand-cream lg:hidden">
+    <ul class="space-y-1 px-5 py-4">
+      {nav.map((item) => (
+        <li>
+          <a href={item.href} class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+            {item.label}
+          </a>
+        </li>
+      ))}
+      <li class="grid grid-cols-2 gap-3 pt-3">
+        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown">
+          Para llevar
+        </a>
+        <a href={waLink()} target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white">
+          WhatsApp
+        </a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const open = document.getElementById('icon-open');
+  const close = document.getElementById('icon-close');
+  toggle?.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    toggle.setAttribute('aria-label', expanded ? 'Abrir menú' : 'Cerrar menú');
+    menu?.classList.toggle('hidden');
+    open?.classList.toggle('hidden');
+    close?.classList.toggle('hidden');
+  });
+</script>

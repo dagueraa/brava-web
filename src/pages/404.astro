@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import Button from '../components/Button.astro';
+import Logo from '../components/Logo.astro';
+import BrandIcon from '../components/BrandIcon.astro';
+---
+<Base title="Página no encontrada" path="/404" noindex>
+  <Section width="narrow" class="py-24 text-center">
+    <BrandIcon name="cafe" class="mx-auto mb-6 h-16 w-16 text-brand-brown-60" />
+    <Logo class="text-4xl text-brand-brown-60" />
+    <h1 class="mt-6 text-6xl font-bold text-brand-brown">404</h1>
+    <p class="mt-3 text-lg text-brand-brown-80">Esta página se nos ha escapado. Pero el café sigue caliente.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <Button href="/" variant="primary" size="lg">Ir al inicio</Button>
+      <Button href="/carta" variant="outline" size="lg">Ver la carta</Button>
+    </div>
+  </Section>
+</Base>

@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+/* Self-hosted variable fonts (no Google Fonts at runtime) */
+@import "@fontsource-variable/dm-sans/index.css";
+@import "@fontsource-variable/caveat/index.css";
+
+/* ===========================================================
+   Brava — Design tokens (FUENTE: Brava's Brandbook.pdf)
+   Colores oficiales, tipografías oficiales. El brandbook manda.
+   =========================================================== */
+@theme {
+  /* Paleta oficial del brandbook */
+  --color-brand-brown: #443631;        /* Brava brown  */
+  --color-brand-brown-80: #6c5e57;     /* 80% derivado */
+  --color-brand-brown-60: #7a665e;     /* texto terciario — oscurecido para AA sobre crema */
+  --color-brand-cream: #fef9f5;        /* Brava cream (fondo) */
+  --color-brand-cream-2: #f7ede3;      /* crema cálida para tarjetas/blobs */
+  --color-brand-fresh: #e7e251;        /* Brava fresh (amarillo) */
+  --color-brand-calm: #6cb3e3;         /* Brava calm (azul) — rellenos / decorativo grande */
+  --color-brand-calm-ink: #2b6f96;     /* Calm oscurecido para TEXTO sobre crema (AA accesible) */
+
+  /* Tipografías oficiales */
+  --font-sans: "DM Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-hand: "Caveat Variable", ui-serif, cursive;
+
+  /* Radios y sombras suaves de marca */
+  --radius-blob: 42% 58% 53% 47% / 47% 42% 58% 53%;
+
+  /* Animaciones */
+  --animate-float: float 7s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(1.5deg); }
+}
+
+@layer base {
+  :root { color-scheme: light; }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem; /* compensa header pegajoso */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-brand-cream);
+    color: var(--color-brand-brown);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+
+  /* Patrón de rayas verticales crema del brandbook (muy sutil) */
+  .bg-stripes {
+    background-color: var(--color-brand-cream);
+    background-image: repeating-linear-gradient(
+      90deg,
+      #f3e6da 0 1px,
+      transparent 1px 26px
+    );
+  }
+
+  /* Foco accesible y visible (objetivo AA) */
+  :where(a, button, [tabindex]):focus-visible {
+    outline: 3px solid var(--color-brand-calm);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Respeta preferencias de movimiento reducido */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Logotipo "brava": sans (DM Sans) con la v en serif itálica, según construcción del brandbook */
+  .wordmark { font-family: var(--font-sans); font-weight: 700; letter-spacing: -0.03em; }
+  .wordmark .v {
+    font-family: Georgia, "Times New Roman", serif;
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  /* sufijo /categoría del lockup */
+  .lock-suffix { font-weight: 300; letter-spacing: -0.01em; }
+
+  /* Línea fina bajo títulos (brand-line = brown 20%) */
+  .rule-soft { border-color: color-mix(in srgb, var(--color-brand-brown) 18%, transparent); }
+
+  /* Reveal sutil al hacer scroll. Mejora progresiva: el contenido es visible
+     por defecto; solo se oculta cuando hay JS (clase .js en <html>), de modo
+     que sin JavaScript nada desaparece. */
+  .reveal { transition: opacity .7s ease, transform .7s ease; }
+  .js .reveal:not(.is-visible) { opacity: 0; transform: translateY(18px); }
+}

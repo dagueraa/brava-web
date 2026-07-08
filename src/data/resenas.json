@@ -1,0 +1,26 @@
+{
+  "source": "google",
+  "updatedAt": "2026-07-02",
+  "rating": 4.3,
+  "total": 11,
+  "items": [
+    {
+      "author": "Barrafite Marius",
+      "rating": 5,
+      "text": "Un brunch excelente, un ambiente agradable y un personal muy atento. La comida es fresca y está muy bien preparada. Me encantó especialmente el mortadella bagel y el Nutella brioche, su pan también está buenísimo. ¡Lo recomiendo al 200%!",
+      "relativeTime": "Hace 2 meses"
+    },
+    {
+      "author": "Ana Marval",
+      "rating": 5,
+      "text": "He ido esta tarde por primera vez y me ha encantado, las galletas muy buenas y el local a pesar de ser pequeño es muy bonito y acogedor, hacía falta algo así en la ñora.",
+      "relativeTime": "Hace 2 meses"
+    },
+    {
+      "author": "pedro castejon",
+      "rating": 5,
+      "text": "Lugar único en la ñora, la comida súper rica y se nota que trabajan con productos frescos y pedí unos dulces italianos junto a un café. Se nota la calidad y sin olvidar mencionar que es un lugar donde puedes comer sin ruidos: tan solo el lugar te acoge y te hace sentir a gusto.",
+      "relativeTime": "Hace 2 meses"
+    }
+  ]
+}

@@ -1,0 +1,160 @@
+---
+import Section from './Section.astro';
+import Blob from './Blob.astro';
+import { resenas, resenasMeta, sonEjemplos } from '../data/resenas';
+import { reviewLink, siteConfig } from '../../site.config';
+
+const stars = (n: number) => Array.from({ length: 5 }, (_, i) => i < Math.round(n));
+const initial = (name: string) => (name?.trim()?.[0] || 'B').toUpperCase();
+const googleSearch = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${siteConfig.nombre} ${siteConfig.direccion}`)}`;
+---
+<Section width="wide" class="relative overflow-hidden py-16">
+  <Blob class="-left-20 top-10 h-60 w-60 text-brand-calm/15" variant={3} />
+
+  <!-- Cabecera -->
+  <div class="relative mb-10 flex flex-col items-center gap-4 text-center md:flex-row md:justify-between md:text-left">
+    <div>
+      <p class="font-hand text-3xl text-brand-calm-ink">Lo que dicen de Brava</p>
+      <h2 class="mt-1 text-3xl font-bold text-brand-brown sm:text-4xl">Reseñas de verdad</h2>
+      <div class="mt-3 flex items-center justify-center gap-2 md:justify-start">
+        <span class="flex" aria-hidden="true">
+          {stars(resenasMeta.rating).map((on) => (
+            <svg class={`h-5 w-5 ${on ? 'text-brand-fresh' : 'text-brand-brown/20'}`} viewBox="0 0 24 24" fill="currentColor"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
+          ))}
+        </span>
+        <span class="text-sm font-semibold text-brand-brown">
+          {resenasMeta.rating.toFixed(1).replace('.', ',')}
+          {resenasMeta.total > 0 && <span class="font-normal text-brand-brown-60"> · {resenasMeta.total} reseñas en Google</span>}
+        </span>
+      </div>
+      {sonEjemplos && (
+        <p class="mt-2 text-xs text-brand-brown-60 italic">
+          Ejemplos provisionales — se sustituyen por tus reseñas reales de Google al activar la integración.
+        </p>
+      )}
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-3">
+      <a href={googleSearch} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full border-2 border-brand-brown px-5 py-2.5 text-sm font-semibold text-brand-brown transition hover:bg-brand-brown hover:text-brand-cream">
+        Ver en Google
+      </a>
+      <a href={reviewLink} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-full bg-brand-calm px-5 py-2.5 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105">
+        Dejar reseña
+      </a>
+    </div>
+  </div>
+
+  <!-- Carrusel -->
+  <div id="resenas" class="relative" aria-roledescription="carrusel" aria-label="Reseñas de clientes">
+    <!-- Flechas -->
+    <button data-rev-prev class="absolute -left-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-brand-cream text-brand-brown shadow-md transition hover:bg-brand-cream-2 md:grid" aria-label="Reseña anterior">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18 9 12l6-6"/></svg>
+    </button>
+    <button data-rev-next class="absolute -right-2 top-1/2 z-10 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-brand-cream text-brand-brown shadow-md transition hover:bg-brand-cream-2 md:grid" aria-label="Reseña siguiente">
+      <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+
+    <!-- Pista -->
+    <ul data-rev-track class="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 py-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      {resenas.map((r) => (
+        <li data-rev-card class="resena-card w-[85%] shrink-0 snap-center sm:w-[60%] lg:w-[31%]">
+          <figure class="flex h-full flex-col rounded-[1.75rem] border rule-soft bg-brand-cream p-6 shadow-sm">
+            <div class="mb-3 flex items-center justify-between">
+              <span class="flex" role="img" aria-label={`${r.rating} de 5 estrellas`}>
+                {stars(r.rating).map((on) => (
+                  <svg class={`h-4 w-4 ${on ? 'text-brand-fresh' : 'text-brand-brown/20'}`} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
+                ))}
+              </span>
+              <svg class="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1Z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84Z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.06l3.66 2.84C6.71 7.3 9.14 5.38 12 5.38Z"/></svg>
+            </div>
+            <blockquote class="flex-1 text-brand-brown-80">
+              <p class="leading-relaxed">“{r.text}”</p>
+            </blockquote>
+            <figcaption class="mt-5 flex items-center gap-3">
+              <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-brown text-sm font-bold text-brand-cream">{initial(r.author)}</span>
+              <span>
+                <span class="block font-semibold text-brand-brown">{r.author}</span>
+                {r.relativeTime && <span class="block text-xs text-brand-brown-60">{r.relativeTime}</span>}
+              </span>
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Puntos -->
+    <div data-rev-dots class="mt-5 flex justify-center gap-2"></div>
+  </div>
+</Section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('#resenas').forEach((root) => {
+    const track = root.querySelector<HTMLElement>('[data-rev-track]')!;
+    const cards = Array.from(root.querySelectorAll<HTMLElement>('[data-rev-card]'));
+    const dotsBox = root.querySelector<HTMLElement>('[data-rev-dots]')!;
+    const prev = root.querySelector<HTMLButtonElement>('[data-rev-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('[data-rev-next]')!;
+    if (!cards.length) return;
+
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let idx = 0;
+
+    // Puntos (el botón es el área táctil ≥24px; el pill interior es lo visible)
+    const dots = cards.map((_, i) => {
+      const b = document.createElement('button');
+      b.className = 'grid h-6 w-6 place-items-center';
+      b.setAttribute('aria-label', `Ir a la reseña ${i + 1}`);
+      const pill = document.createElement('span');
+      pill.className = 'h-2.5 w-2.5 rounded-full bg-brand-brown/20 transition-all';
+      b.appendChild(pill);
+      b.addEventListener('click', () => go(i, true));
+      dotsBox.appendChild(b);
+      return pill;
+    });
+
+    const setActive = (i: number) => {
+      idx = i;
+      cards.forEach((c, k) => c.classList.toggle('is-active', k === i));
+      dots.forEach((d, k) => {
+        d.classList.toggle('bg-brand-brown', k === i);
+        d.classList.toggle('w-6', k === i);
+        d.classList.toggle('bg-brand-brown/20', k !== i);
+      });
+    };
+
+    const go = (i: number, user = false) => {
+      const n = (i + cards.length) % cards.length;
+      const target = cards[n];
+      // Desplaza SOLO el carrusel en horizontal; nunca el scroll de la página.
+      const left = target.offsetLeft - track.offsetLeft - (track.clientWidth - target.clientWidth) / 2;
+      track.scrollTo({ left: Math.max(0, left), behavior: reduce ? 'auto' : 'smooth' });
+      setActive(n);
+    };
+
+    prev.addEventListener('click', () => go(idx - 1, true));
+    next.addEventListener('click', () => go(idx + 1, true));
+
+    // Sincroniza el punto activo con el scroll/swipe manual
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) setActive(cards.indexOf(e.target as HTMLElement));
+          });
+        },
+        { root: track, threshold: 0.6 },
+      );
+      cards.forEach((c) => io.observe(c));
+    }
+
+    // Sin auto-avance: el carrusel solo se mueve con las flechas, al deslizar o con los puntos.
+    setActive(0);
+  });
+</script>
+
+<style>
+  .resena-card { transition: transform .45s ease, opacity .45s ease; }
+  @media (min-width: 1024px) {
+    .resena-card { opacity: .55; transform: scale(.93); }
+    .resena-card.is-active { opacity: 1; transform: scale(1); }
+  }
+</style>

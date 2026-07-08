@@ -1,0 +1,19 @@
+---
+/* Contenedor de sección con aire generoso y ancho cómodo de lectura. */
+interface Props {
+  id?: string;
+  class?: string;
+  width?: 'narrow' | 'default' | 'wide';
+  as?: 'section' | 'div' | 'article' | 'header' | 'footer';
+}
+const { id, class: className = '', width = 'default', as = 'section' } = Astro.props;
+const Tag = as;
+const widths = {
+  narrow: 'max-w-2xl',
+  default: 'max-w-5xl',
+  wide: 'max-w-6xl',
+};
+---
+<Tag id={id} class={`mx-auto w-full ${widths[width]} px-5 sm:px-6 ${className}`}>
+  <slot />
+</Tag>
