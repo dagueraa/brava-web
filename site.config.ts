@@ -30,17 +30,17 @@ export const siteConfig = {
   email: 'bravabrunch@gmail.com',
 
   // --- Horario (real) ---
-  // Lunes a Sábado: 8:00–14:00 y 17:00–20:30 · Domingo cerrado (jornada partida)
+  // Lun-Vie: 8:00–14:00 y 17:30–20:30 · Sábado: solo mañana 8:00–14:00 · Domingo cerrado
   horario: {
-    lunes: '8:00–14:00 · 17:00–20:30',
-    martes: '8:00–14:00 · 17:00–20:30',
-    miercoles: '8:00–14:00 · 17:00–20:30',
-    jueves: '8:00–14:00 · 17:00–20:30',
-    viernes: '8:00–14:00 · 17:00–20:30',
-    sabado: '8:00–14:00 · 17:00–20:30',
+    lunes: '8:00–14:00 · 17:30–20:30',
+    martes: '8:00–14:00 · 17:30–20:30',
+    miercoles: '8:00–14:00 · 17:30–20:30',
+    jueves: '8:00–14:00 · 17:30–20:30',
+    viernes: '8:00–14:00 · 17:30–20:30',
+    sabado: '8:00–14:00',
     domingo: 'Cerrado',
   } as Record<string, string>,
-  horarioResumen: 'Lunes a Sábado · 8:00–14:00 y 17:00–20:30',
+  horarioResumen: 'Lun–Vie 8:00–14:00 y 17:30–20:30 · Sáb 8:00–14:00',
 
   // --- Ubicación / mapa ---
   // Enlace a la ficha EXACTA de Brava en Google Maps (por CID del local).
