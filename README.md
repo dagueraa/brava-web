@@ -26,6 +26,8 @@ Casi todo se cambia en **un solo archivo**: [`site.config.ts`](site.config.ts)
 
 La **carta** se edita en [`src/data/menu.ts`](src/data/menu.ts) (precios, productos, descripciones).
 Es la **fuente de verdad**: las páginas se renderizan desde ahí. No hay precios escritos a mano en las páginas.
+La versión vigente se ha contrastado con el último menú impreso corregido aportado el 15/09/2026;
+las fotografías originales de la carta están en `src/assets/menu/`.
 
 Las **fotos** están en `src/assets/fotos/`. Para cambiarlas, sustituye el archivo manteniendo el nombre
 o actualiza [`src/assets/images.ts`](src/assets/images.ts).

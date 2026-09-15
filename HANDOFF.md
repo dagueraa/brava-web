@@ -3,6 +3,14 @@
 > Pega este archivo entero como primer mensaje en el chat nuevo. Contiene todo lo
 > necesario para continuar la web de Brava sin repetir trabajo.
 
+> **Actualización 15/09/2026:** la carta vigente se basa en el último menú impreso
+> corregido que aportó el usuario. Sustituye a `Menú movil Brava Traz.pdf` para
+> nombres, ingredientes, precios, orden e imágenes. Las notas de versiones anteriores
+> que aparecen más abajo son históricas cuando contradicen `src/data/menu.ts`.
+> El horario vigente es lunes a sábado de 8:00 a 14:00 y de 17:00 a 20:00;
+> domingo cerrado. El usuario exige revisar todo en local antes de publicar:
+> GitHub está conectado a Dokploy y cada cambio debe poder revertirse.
+
 ---
 
 ## 0. Qué es esto
@@ -15,11 +23,12 @@ iconos deben ser los **oficiales** (no recreaciones ni aproximaciones).
 - **Proyecto web:** `c:\Users\j.agueraa\Desktop\Orquestador-Programacion-main\Orquestador-Programacion-main\proyectos\BRAVA`
 - **Fuentes oficiales (NO usar otras):** `C:\Users\j.agueraa\Desktop\necesidades brava\`
   - `Brava's Brandbook.pdf` (manda en lo visual)
-  - `Menú movil Brava Traz.pdf` (manda en la carta — la web debe clavar su estructura)
+  - Último menú impreso corregido aportado el 15/09/2026 (manda en la carta vigente)
+  - `Menú movil Brava Traz.pdf` (referencia histórica de la primera versión)
   - `BRAVA_WEB_SPEC.md` (alcance del proyecto, 400 €)
 - **Herramientas de extracción (scripts node, fuera del proyecto):**
   `c:\Users\j.agueraa\Desktop\Orquestador-Programacion-main\_pdftool\`
-  - PDFs copiados a nombre ASCII: `brandbook_src.pdf`, `menu_src.pdf` (el apóstrofo del
+  - PDFs copiados a nombre ASCII: `brandbook_src.pdf`, `menu_src.pdf`, `menu_latest.pdf` (el apóstrofo del
     nombre original rompe Node; usar siempre las copias ASCII).
   - Deps: `@napi-rs/canvas`, `pdfjs-dist`, `potrace`, `puppeteer-core`.
   - Chrome para screenshots/Lighthouse: `C:/Program Files/Google/Chrome/Application/chrome.exe`
@@ -51,23 +60,22 @@ iconos deben ser los **oficiales** (no recreaciones ni aproximaciones).
 - En `SectionHeading.astro` como máscara. `menu.ts` → `icono?: 'vaso' | 'pan'`.
 - Reglas del menú: **Combos NO lleva icono**; Drinks = vaso; Brunch/Treats = pan.
 
-### Iconos de alérgenos (siluetas oficiales del menú)
+### Iconos de alérgenos (referencia histórica del menú anterior)
 - `public/brand/diet/` → `gluten, lacteos, huevo, frutos-secos, cacahuete, pescado, apio`.
 - Componente `src/components/AllergenIcons.astro` (máscaras, `role="img"` con aria-label).
-- Datos por plato en `menu.ts` campo `alergenos: Alergeno[]` (derivados de los ingredientes,
-  igual que el menú). Leyenda al pie de la carta. Aviso: el detalle oficial se pide en barra.
+- El menú impreso vigente presenta solo el aviso de solicitar la carta detallada en barra.
+  La web ya no muestra iconos ni atribuye alérgenos a platos individuales.
 
 ### Fotos de producto (LIMPIAS — esto fue lo más difícil)
 - Método correcto: **recorte EXACTO del rect de cada foto del render del menú (escala 6,
   fondo crema), SIN knockout.** El knockout dejaba rectángulos blancos/bordes → NO usarlo
   para fotos enmarcadas.
 - En `src/assets/menu/`:
-  - Brunch especiales (las 4 primeras, como el PDF): `esp-salmone-brioche, esp-brava-brioche,
-    esp-salmone-baguel, esp-mortadella-bagel`. (Fit Baguel y siguientes = SOLO texto, igual que el menú.)
-  - Treats especiales: `esp-pistachio, esp-nutella`.
-  - Horneado: `horn-cookies` (galleta), `horn-hojaldres` (croissant), `horn-vegano` (empanada),
-    `horn-singluten` (palmeras).
-  - Tostadas: `tostadas-trio` (los 3 panes, completos).
+  - Brunch especiales: las fotos anteriores que siguen vigentes, más los originales del
+    último PDF para `focaccia-pompeyana`, `focaccia-especial` y `savori-focaccia`.
+  - Treats especiales: `esp-pistachio`, `esp-nutella`, `focaccia-lotus` y `brava-pop`.
+  - Horneado: el impreso actual ilustra `horn-cookies` y `horn-vegano`.
+  - Tostadas: solo tabla Media/Entera; la foto de panes pertenecía al menú anterior.
   - Combos/Drinks (home + vitrina): `croissant, cookie, bagel, cafe-teal, cafe-amarillo,
     cafe-art, iced-brava, blue-matcha`.
 - Mapa de imports: `src/assets/menuImages.ts`. Datos: `src/data/menu.ts` campo `foto`.
@@ -76,13 +84,13 @@ iconos deben ser los **oficiales** (no recreaciones ni aproximaciones).
   contenido + 6% margen, sobre crema, máx 760px → copia al proyecto). `diet_extract.mjs` +
   `diet_finalize.mjs` (alérgenos). `icon_extract.mjs` (vaso/pan). `logo_raster.mjs` (logo).
 
-### Carta (`src/components/MenuCategory.astro`) — fiel al menú
-- Texto SIEMPRE marrón sobre crema (sin azul/amarillo). Color = fotos.
-- Especiales = tarjetas con foto enmarcada (object-contain, fondo crema) + nombre subrayado +
-  precio marrón + desc en cursiva + fila de iconos de alérgenos.
-- Drinks = lista limpia (sin miniaturas), con iconos de alérgenos en los batidos.
-- Tostadas = foto de los 3 panes + tabla Media/Entera.
-- Horneado = tarjetas con foto.
+### Carta (`src/components/MenuCategory.astro`) — menú impreso vigente
+- Texto marrón sobre crema; las tres focaccias destacadas usan el fondo azul y el sello
+  original extraído del PDF.
+- Especiales = tarjetas con fotografía original, nombre, precio y descripción.
+- Drinks = listas de las subsecciones en las dos columnas y el orden del PDF.
+- Tostadas = una tabla Media/Entera para panes y añadidos.
+- Horneado = fotos de Cookies y Vegano; Hojaldres y Sin Gluten se presentan como texto.
 
 ### Brava Pass (`src/components/BravaPass.astro`)
 - Tarjeta fidelidad digital (localStorage, sin backend). Sellos = monograma `bv` sobre blob
@@ -92,7 +100,7 @@ iconos deben ser los **oficiales** (no recreaciones ni aproximaciones).
 
 ### Otros
 - `site.config.ts`: único archivo editable por el cliente (dirección, tel `611 931 742`,
-  WhatsApp E.164 `34611931742`, horario L-S 7:00–21:00 / domingo cerrado, Instagram
+  WhatsApp E.164 `34611931742`, horario L-S 8:00–14:00 y 17:00–20:00 / domingo cerrado, Instagram
   **@hellobravaes**, Brava Pass, historia, legal).
 - Footer: ya NO tiene la tira de iconos (se quitó por petición del cliente).
 - Lighthouse móvil actual: Home ~96-99, Carta 100 · Accesibilidad 99 · SEO/BP 100. CLS 0.
@@ -109,13 +117,13 @@ iconos deben ser los **oficiales** (no recreaciones ni aproximaciones).
 ## 5. PENDIENTE / POSIBLES SIGUIENTES PASOS
 
 ### ⚠️ LO PRIMERO en el chat nuevo (lo dijo el cliente)
-- [ ] **La CARTA todavía NO está bien — hay que modificarla.** No darla por buena. El cliente
-      indicará en el chat nuevo qué cambiar exactamente. Trabajar SIEMPRE contra el PDF
-      `Menú movil Brava Traz.pdf` y verificar con screenshot antes de decir "hecho".
+- [x] **Carta actualizada con el último menú impreso corregido.** Compilada y capturada
+      en local para móvil y escritorio; queda pendiente la revisión visual del usuario
+      antes de cualquier publicación en GitHub/Dokploy.
 - [ ] **El resto de la web necesita "ligeros cambios"** (home, historia, to-go, local,
       contacto, brava-pass…). El cliente los irá detallando. Son retoques, no rehacer.
-- [ ] Preguntar al cliente, plato a plato / sección a sección, qué no cuadra, en vez de
-      asumir. El cliente se fija en todo.
+- [ ] Incorporar las correcciones concretas que indique el usuario después de revisar
+      la versión local. El cliente se fija en todo.
 
 ### Otros pendientes
 - [ ] Revisar que CADA foto cuadra con su plato (mapeo hecho por posición en el PDF; la

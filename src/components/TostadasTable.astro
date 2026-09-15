@@ -1,49 +1,36 @@
 ---
 import type { TostadaRow } from '../data/menu';
-/* Tostadas: dos precios (Media / Entera). En móvil se renderiza como tarjetas
-   legibles (no una tabla que desborde); en sm+ como tabla con columnas. */
 interface Props {
-  titulo: string;
-  subtitulo: string;
   columnas: [string, string];
-  rows: TostadaRow[];
+  bases: TostadaRow[];
+  toppings: TostadaRow[];
 }
-const { titulo, subtitulo, columnas, rows } = Astro.props;
-const fmt = (v: string | null) => (v ? `${v} €` : '—');
+const { columnas, bases, toppings } = Astro.props;
+const fmt = (value: string | null) => value ? `${value} €` : '';
 ---
-<div>
-  <h3 class="mb-1 text-sm font-bold uppercase tracking-wider text-brand-brown-60">{subtitulo}</h3>
-
-  <!-- Móvil: tarjetas -->
-  <ul class="space-y-2 sm:hidden">
-    {rows.map((r) => (
-      <li class="flex items-center justify-between rounded-xl bg-brand-cream-2/60 px-4 py-2.5">
-        <span class="font-semibold text-brand-brown">{r.nombre}</span>
-        <span class="flex gap-4 text-sm font-bold text-brand-brown">
-          <span class="text-right"><span class="block text-[0.65rem] font-medium text-brand-brown-60">{columnas[0]}</span>{fmt(r.media)}</span>
-          <span class="text-right"><span class="block text-[0.65rem] font-medium text-brand-brown-60">{columnas[1]}</span>{fmt(r.entera)}</span>
-        </span>
-      </li>
-    ))}
-  </ul>
-
-  <!-- sm+: tabla -->
-  <table class="hidden w-full border-collapse text-left sm:table">
-    <thead>
-      <tr class="border-b rule-soft text-sm text-brand-brown-60">
-        <th class="py-2 font-semibold">{titulo}</th>
-        <th class="py-2 text-right font-semibold">{columnas[0]}</th>
-        <th class="py-2 text-right font-semibold">{columnas[1]}</th>
+<table class="w-full border-collapse text-left text-sm text-brand-brown sm:text-base">
+  <thead>
+    <tr class="border-y rule-soft text-brand-brown-80 italic">
+      <th scope="col" class="py-2 font-normal"><span class="sr-only">Producto</span></th>
+      <th scope="col" class="w-20 py-2 text-right font-normal">{columnas[0]}</th>
+      <th scope="col" class="w-20 py-2 text-right font-normal">{columnas[1]}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {bases.map((row) => (
+      <tr class="border-b rule-soft">
+        <th scope="row" class="py-1.5 font-medium">{row.nombre}</th>
+        <td class="py-1.5 text-right tabular-nums">{fmt(row.media)}</td>
+        <td class="py-1.5 text-right tabular-nums">{fmt(row.entera)}</td>
       </tr>
-    </thead>
-    <tbody>
-      {rows.map((r) => (
-        <tr class="border-b border-dotted rule-soft last:border-0">
-          <td class="py-2 font-semibold text-brand-brown">{r.nombre}</td>
-          <td class="py-2 text-right font-bold text-brand-brown tabular-nums">{fmt(r.media)}</td>
-          <td class="py-2 text-right font-bold text-brand-brown tabular-nums">{fmt(r.entera)}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+    ))}
+    <tr aria-hidden="true"><td colspan="3" class="h-5"></td></tr>
+    {toppings.map((row) => (
+      <tr class="border-b rule-soft">
+        <th scope="row" class="py-1.5 font-medium">{row.nombre}</th>
+        <td class="py-1.5 text-right tabular-nums">{fmt(row.media)}</td>
+        <td class="py-1.5 text-right tabular-nums">{fmt(row.entera)}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>

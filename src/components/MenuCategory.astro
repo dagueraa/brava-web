@@ -4,20 +4,19 @@ import SectionHeading from './SectionHeading.astro';
 import MenuItemRow from './MenuItemRow.astro';
 import ComboCard from './ComboCard.astro';
 import TostadasTable from './TostadasTable.astro';
-import DietBadge from './DietBadge.astro';
-import AllergenIcons from './AllergenIcons.astro';
 import MenuIcon from './MenuIcon.astro';
 import { menuFotos } from '../assets/menuImages';
+import starBrava from '../assets/menu/star-brava.png';
 import type { Categoria } from '../data/menu';
-/* Carta fiel al menú original de Brava: títulos brava /categoría, fotos REALES
-   enmarcadas donde el menú las usa (tostadas, especiales, horneado) e iconos de
-   alérgenos bajo cada plato. Texto marrón sobre crema, sin colores extra. */
+/* Carta adaptada a pantalla con los textos, fotos y acentos del menú impreso actualizado. */
 interface Props { cat: Categoria }
 const { cat } = Astro.props;
 const foto = (k?: string) => (k && k in menuFotos ? menuFotos[k as keyof typeof menuFotos] : null);
 // Especiales: el menú muestra los que llevan foto como tarjetas y el resto como lista de filas.
 const espFoto = cat.especiales?.items.filter((i) => foto(i.foto)) ?? [];
 const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
+const hornFoto = cat.horneado?.items.filter((i) => foto(i.foto)) ?? [];
+const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
 ---
 <section id={cat.id} class="scroll-mt-28">
   <SectionHeading suffix={cat.titulo.toLowerCase()} class="mb-8" />
@@ -55,24 +54,24 @@ const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
     </ul>
   )}
 
-  <!-- Subsecciones (Drinks) — icono oficial junto al subtítulo + foto enmarcada como en el menú -->
+  <!-- En escritorio, las tres subsecciones de cada columna siguen el orden del PDF. -->
   {cat.subsecciones && (
     <div class="grid gap-x-12 gap-y-9 md:grid-cols-2">
-      {cat.subsecciones.map((sub) => (
-        <div class="break-inside-avoid">
-          <div class="mb-3 flex items-center justify-between gap-3 border-b rule-soft pb-2">
-            <h3 class="text-xl font-bold text-brand-brown">{sub.titulo}</h3>
-            {sub.icono && <MenuIcon name={sub.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
-          </div>
-          {foto(sub.foto) && (
-            <Image src={foto(sub.foto)!} alt={`${sub.titulo} de Brava`} widths={[400, 640, 960]} sizes="(max-width: 768px) 90vw, 460px" class="mx-auto mb-4 block h-auto w-full max-w-md object-contain" loading="lazy" />
-          )}
-          <ul>
-            {sub.items.map((item) => <MenuItemRow item={item} />)}
-          </ul>
-          {sub.nota && (
-            <p class="mt-3 rounded-xl bg-brand-cream-2/60 px-4 py-3 text-xs leading-relaxed text-brand-brown-80">{sub.nota}</p>
-          )}
+      {[cat.subsecciones.slice(0, 3), cat.subsecciones.slice(3)].map((column) => (
+        <div class="space-y-9">
+          {column.map((sub) => (
+            <div>
+              <div class="mb-3 flex items-center justify-between gap-3 border-b rule-soft pb-2">
+                <h3 class="text-xl font-bold text-brand-brown">{sub.titulo}</h3>
+                {sub.icono && <MenuIcon name={sub.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
+              </div>
+              {foto(sub.foto) && (
+                <Image src={foto(sub.foto)!} alt={`${sub.titulo} de Brava`} widths={[400, 640, 960]} sizes="(max-width: 768px) 90vw, 460px" class="mx-auto mb-4 block h-auto w-full max-w-md object-contain" loading="lazy" />
+              )}
+              <ul>{sub.items.map((item) => <MenuItemRow item={item} />)}</ul>
+              {sub.nota && <p class="mt-3 rounded-xl bg-brand-cream-2/60 px-4 py-3 text-xs leading-relaxed text-brand-brown-80">{sub.nota}</p>}
+            </div>
+          ))}
         </div>
       ))}
     </div>
@@ -88,10 +87,7 @@ const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
       {foto(cat.tostadas.foto) && (
         <Image src={foto(cat.tostadas.foto)!} alt="Panes para tostadas: blanco, de semillas e integral" widths={[640, 960, 1200]} sizes="(max-width: 768px) 90vw, 720px" class="mx-auto mb-6 block h-auto w-full max-w-xl object-contain" loading="lazy" />
       )}
-      <div class="grid gap-8 md:grid-cols-2">
-        <TostadasTable titulo={cat.tostadas.titulo} subtitulo="Bases" columnas={cat.tostadas.columnas} rows={cat.tostadas.bases} />
-        <TostadasTable titulo="Toppings" subtitulo="Toppings" columnas={cat.tostadas.columnas} rows={cat.tostadas.toppings} />
-      </div>
+      <TostadasTable columnas={cat.tostadas.columnas} bases={cat.tostadas.bases} toppings={cat.tostadas.toppings} />
     </div>
   )}
 
@@ -103,13 +99,16 @@ const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
         {cat.especiales.icono && <MenuIcon name={cat.especiales.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
       </div>
 
-      <!-- Especiales con foto: tarjetas (rejilla 2x2 como el menú) -->
+      <!-- Fotografías originales del menú, con el azul reservado a los destacados. -->
       {espFoto.length > 0 && (
         <ul class="grid gap-5 sm:grid-cols-2">
           {espFoto.map((item) => (
             <li class="overflow-hidden rounded-2xl border border-brand-line bg-brand-cream-2/25">
-              <div class="grid aspect-square place-items-center overflow-hidden bg-brand-cream p-3">
+              <div class={`relative grid aspect-square place-items-center overflow-hidden p-3 ${item.destacado ? 'bg-[#d1eff8]' : 'bg-brand-cream'}`}>
                 <Image src={foto(item.foto)!} alt={item.nombre} widths={[320, 480, 640]} sizes="(max-width: 640px) 90vw, 320px" class="max-h-full w-auto object-contain" loading="lazy" />
+                {item.destacado && (
+                  <Image src={starBrava} alt="" widths={[56, 112]} sizes="56px" class="absolute right-2 top-2 h-14 w-14 object-contain" loading="eager" />
+                )}
               </div>
               <div class="p-4">
                 <div class="flex items-baseline gap-2 border-b rule-soft pb-1">
@@ -117,10 +116,6 @@ const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
                   {item.precio && <span class="ml-auto shrink-0 font-bold text-brand-brown">{item.precio} €</span>}
                 </div>
                 {item.desc && <p class="mt-1.5 text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
-                <div class="mt-2 flex flex-wrap items-center gap-2">
-                  {item.dietas?.map((d) => <DietBadge dieta={d} />)}
-                  {item.alergenos && <AllergenIcons items={item.alergenos} />}
-                </div>
               </div>
             </li>
           ))}
@@ -137,18 +132,17 @@ const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
                 {item.precio && <span class="ml-auto shrink-0 font-bold text-brand-brown">{item.precio} €</span>}
               </div>
               {item.desc && <p class="mt-1 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
-              <div class="mt-2 flex flex-wrap items-center gap-2">
-                {item.dietas?.map((d) => <DietBadge dieta={d} />)}
-                {item.alergenos && <AllergenIcons items={item.alergenos} />}
-              </div>
             </li>
           ))}
         </ul>
       )}
+      {cat.id === 'brunch' && cat.nota && (
+        <p class="mt-8 border-t rule-soft pt-5 text-sm text-brand-brown-80">{cat.nota}</p>
+      )}
     </div>
   )}
 
-  <!-- Horneado (Treats) — fotos enmarcadas reales -->
+  <!-- Horneado: el PDF ilustra Cookies y Vegano; Hojaldres y Sin Gluten son texto. -->
   {cat.horneado && (
     <div class="mt-12">
       <div class="mb-2 flex items-center justify-between gap-3 border-b rule-soft pb-2">
@@ -156,22 +150,24 @@ const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
         {cat.horneado.icono && <MenuIcon name={cat.horneado.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
       </div>
       <p class="mb-6 mt-3 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{cat.horneado.intro}</p>
-      <ul class="grid grid-cols-2 gap-5 sm:grid-cols-4">
-        {cat.horneado.items.map((item) => (
+      <ul class="grid grid-cols-2 gap-5">
+        {hornFoto.map((item) => (
           <li class="overflow-hidden rounded-2xl border border-brand-line bg-brand-cream-2/25">
             <div class="grid aspect-square place-items-center overflow-hidden bg-brand-cream">
-              {foto(item.foto) && (
-                <Image src={foto(item.foto)!} alt={item.nombre} widths={[200, 320]} sizes="200px" class="h-[78%] w-[78%] object-contain" loading="lazy" />
-              )}
+              <Image src={foto(item.foto)!} alt={item.nombre} widths={[200, 320, 480]} sizes="(max-width: 640px) 45vw, 300px" class="h-[78%] w-[78%] object-contain" loading="lazy" />
             </div>
             <div class="px-3 pb-3 pt-2.5 text-center">
               <span class="font-bold text-brand-brown">{item.nombre}</span>
-              <div class="mt-1 flex flex-wrap items-center justify-center gap-1.5">
-                {item.dietas?.map((d) => <DietBadge dieta={d} />)}
-                {item.alergenos && <AllergenIcons items={item.alergenos} />}
-              </div>
               {item.desc && <p class="mt-1 text-xs leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
             </div>
+          </li>
+        ))}
+      </ul>
+      <ul class="mt-5 grid gap-5 sm:grid-cols-2">
+        {hornTexto.map((item) => (
+          <li class="border-b rule-soft pb-3">
+            <span class="font-bold text-brand-brown">{item.nombre}</span>
+            {item.desc && <p class="mt-1 text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
           </li>
         ))}
       </ul>

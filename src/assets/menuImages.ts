@@ -1,7 +1,7 @@
-/* Fotos REALES de producto extraídas del PDF oficial de la carta
-   ("Menú movil Brava Traz.pdf"), recortadas con fondo transparente para
-   que floten sobre los blobs crema igual que en la carta original.
-   Optimizadas a WebP en build por astro:assets. */
+/* Fotografías reales de los menús oficiales de BRAVA. Las nuevas focaccias y
+   treats se extrajeron como imágenes originales del último PDF impreso; el resto
+   sigue la versión anterior cuando el producto y la foto coinciden.
+   Astro las optimiza a WebP durante el build. */
 import type { ImageMetadata } from 'astro';
 
 import cafeTeal from './menu/cafe-teal.png';
@@ -33,6 +33,12 @@ import hornCookies from './menu/horn-cookies.png';
 import hornHojaldres from './menu/horn-hojaldres.png';
 import hornVegano from './menu/horn-vegano.png';
 import hornSinGluten from './menu/horn-singluten.png';
+// Nuevas fotografías originales extraídas del menú impreso actualizado.
+import focacciaPompeyana from './menu/focaccia-pompeyana.png';
+import focacciaEspecial from './menu/focaccia-especial.png';
+import savoriFocaccia from './menu/savori-focaccia.png';
+import focacciaLotus from './menu/focaccia-lotus.png';
+import bravaPop from './menu/brava-pop.png';
 
 export const menuFotos = {
   'cafe-teal': cafeTeal,
@@ -62,6 +68,11 @@ export const menuFotos = {
   'horn-hojaldres': hornHojaldres,
   'horn-vegano': hornVegano,
   'horn-singluten': hornSinGluten,
+  'focaccia-pompeyana': focacciaPompeyana,
+  'focaccia-especial': focacciaEspecial,
+  'savori-focaccia': savoriFocaccia,
+  'focaccia-lotus': focacciaLotus,
+  'brava-pop': bravaPop,
 } satisfies Record<string, ImageMetadata>;
 
 export type MenuFotoKey = keyof typeof menuFotos;
