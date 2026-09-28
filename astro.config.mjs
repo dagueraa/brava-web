@@ -12,7 +12,8 @@ export default defineConfig({
   site: SITE,
   trailingSlash: 'ignore',
   build: { inlineStylesheets: 'auto' },
-  integrations: [sitemap()],
+  // La campaña /instagram se descubre desde el QR del local, no desde buscadores.
+  integrations: [sitemap({ filter: (page) => !page.replace(/\/$/, '').endsWith('/instagram') })],
   vite: {
     plugins: [tailwindcss()],
   },
