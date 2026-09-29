@@ -3,6 +3,9 @@ import Logo from './Logo.astro';
 import { siteConfig, telLink, waLink } from '../../site.config';
 import { alergenos } from '../data/menu';
 const year = new Date().getFullYear();
+const analyticsAvailable = Boolean(
+  import.meta.env.PUBLIC_GA_MEASUREMENT_ID || siteConfig.google.analyticsMeasurementId,
+) || import.meta.env.DEV;
 const nav = [
   { href: '/carta', label: 'Carta' },
   { href: '/to-go', label: 'Para llevar' },
@@ -89,6 +92,13 @@ const legal = [
         {legal.map((i) => (
           <li><a href={i.href} class="hover:text-brand-cream">{i.label}</a></li>
         ))}
+        {analyticsAvailable && (
+          <li>
+            <button type="button" data-open-cookie-preferences class="hover:text-brand-cream">
+              Configurar cookies
+            </button>
+          </li>
+        )}
       </ul>
     </div>
   </div>

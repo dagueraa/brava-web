@@ -74,6 +74,9 @@ export const siteConfig = {
     //            reseñas elegidas a mano en resenas.json (recomendado).
     //   'full' → sustituye también las reseñas por las que devuelva Google (máx. 5).
     reviewsMode: 'meta',
+    // Google Analytics 4. Es público y tiene el formato G-XXXXXXXXXX.
+    // Se completará al crear la propiedad de Analytics de Brava.
+    analyticsMeasurementId: 'G-G8B3K41EGR',
   },
 
   // --- Brava To Go (para llevar) ---

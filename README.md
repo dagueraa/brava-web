@@ -85,7 +85,10 @@ Incluye `robots.txt` y `sitemap-index.xml` generados automáticamente.
 - Fuentes self-hosted (DM Sans + Caveat), sin Google Fonts en runtime.
 - SEO: meta + Open Graph + Twitter Card + `sitemap.xml` + `robots.txt` + JSON-LD `Restaurant`.
 - Accesibilidad: semántica correcta, foco visible, navegación por teclado, `alt`, `prefers-reduced-motion`.
-- Sin tracking ni cookies de terceros (salvo el mapa de Google al interactuar).
+- Google Analytics 4 opcional, bloqueado hasta obtener consentimiento. Se activa indicando
+  `analyticsMeasurementId` en `site.config.ts` (o `PUBLIC_GA_MEASUREMENT_ID` durante el build)
+  y mide la campaña QR mediante los eventos
+  `qr_landing_view` e `instagram_click`.
 
 ## Documentación del proyecto
 - [BRAND_TOKENS.md](BRAND_TOKENS.md) — colores/tipos del brandbook.

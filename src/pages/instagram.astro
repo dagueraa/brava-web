@@ -60,6 +60,7 @@ import { siteConfig } from '../../site.config';
 
         <div class="mt-7 flex flex-col items-center">
           <a
+            id="instagram-campaign-cta"
             href={siteConfig.redes.instagram}
             target="_blank"
             rel="noopener noreferrer"
@@ -102,3 +103,27 @@ import { siteConfig } from '../../site.config';
     opacity: 0.78;
   }
 </style>
+
+<script>
+  const landingEventKey = 'brava_qr_landing_view_sent';
+
+  const trackQrLanding = () => {
+    if (sessionStorage.getItem(landingEventKey)) return;
+    const sent = window.bravaAnalytics?.track('qr_landing_view', {
+      campaign_name: 'instagram_local',
+      campaign_source: 'qr',
+    });
+    if (sent) sessionStorage.setItem(landingEventKey, 'true');
+  };
+
+  trackQrLanding();
+  window.addEventListener('brava:analytics-ready', trackQrLanding);
+
+  document.querySelector('#instagram-campaign-cta')?.addEventListener('click', () => {
+    window.bravaAnalytics?.track('instagram_click', {
+      campaign_name: 'instagram_local',
+      campaign_source: 'qr',
+      link_url: 'https://instagram.com/hellobravaes',
+    });
+  });
+</script>

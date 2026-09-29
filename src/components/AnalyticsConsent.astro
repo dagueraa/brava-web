@@ -1,0 +1,177 @@
+---
+import { siteConfig } from '../../site.config';
+
+const measurementId = (
+  import.meta.env.PUBLIC_GA_MEASUREMENT_ID || siteConfig.google.analyticsMeasurementId
+).trim();
+const demoMode = measurementId === 'G-BRAVADEMO' || (import.meta.env.DEV && !measurementId);
+const analyticsEnabled = /^G-[A-Z0-9]+$/i.test(measurementId) && !demoMode;
+const showConsent = analyticsEnabled || demoMode;
+---
+
+{showConsent && (
+  <>
+    <script is:inline define:vars={{ measurementId, analyticsEnabled }}>
+      (() => {
+        const storageKey = 'brava_analytics_consent';
+        const grantedValue = 'v1:granted';
+        const deniedValue = 'v1:denied';
+        const storedConsent = localStorage.getItem(storageKey);
+        const isLocalPreview = ['localhost', '127.0.0.1', '::1'].includes(location.hostname);
+        const runtimeAnalyticsEnabled = analyticsEnabled && !isLocalPreview;
+
+        window.dataLayer = window.dataLayer || [];
+        window.gtag = window.gtag || function () {
+          window.dataLayer.push(arguments);
+        };
+
+        window.gtag('consent', 'default', {
+          analytics_storage: 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+          wait_for_update: 500,
+        });
+
+        const setPageState = (state) => {
+          document.documentElement.dataset.analyticsConsent = state;
+        };
+
+        const clearAnalyticsCookies = () => {
+          document.cookie.split(';').forEach((cookie) => {
+            const name = cookie.split('=')[0]?.trim();
+            if (!name || (name !== '_ga' && !name.startsWith('_ga_'))) return;
+            document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+            document.cookie = `${name}=; Max-Age=0; path=/; domain=.${location.hostname}; SameSite=Lax`;
+          });
+        };
+
+        const loadAnalytics = () => {
+          if (!runtimeAnalyticsEnabled || !measurementId || document.querySelector('[data-brava-ga]')) {
+            window.dispatchEvent(new CustomEvent('brava:analytics-ready'));
+            return;
+          }
+
+          window.gtag('consent', 'update', {
+            analytics_storage: 'granted',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+          });
+          window.gtag('js', new Date());
+          window.gtag('config', measurementId, {
+            allow_google_signals: false,
+            allow_ad_personalization_signals: false,
+          });
+
+          const script = document.createElement('script');
+          script.async = true;
+          script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+          script.dataset.bravaGa = 'true';
+          script.addEventListener('load', () => {
+            window.dispatchEvent(new CustomEvent('brava:analytics-ready'));
+          }, { once: true });
+          document.head.appendChild(script);
+        };
+
+        window.bravaAnalytics = {
+          get consent() {
+            return localStorage.getItem(storageKey) === grantedValue ? 'granted' :
+              localStorage.getItem(storageKey) === deniedValue ? 'denied' : 'pending';
+          },
+          track(eventName, parameters = {}) {
+            if (localStorage.getItem(storageKey) !== grantedValue || !runtimeAnalyticsEnabled) return false;
+            window.gtag('event', eventName, parameters);
+            return true;
+          },
+          grant() {
+            localStorage.setItem(storageKey, grantedValue);
+            setPageState('granted');
+            loadAnalytics();
+          },
+          deny() {
+            localStorage.setItem(storageKey, deniedValue);
+            window.gtag('consent', 'update', {
+              analytics_storage: 'denied',
+              ad_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+            });
+            clearAnalyticsCookies();
+            setPageState('denied');
+          },
+          openPreferences() {
+            setPageState('pending');
+            requestAnimationFrame(() => document.querySelector('[data-consent-accept]')?.focus());
+          },
+        };
+
+        if (storedConsent === grantedValue) {
+          setPageState('granted');
+          loadAnalytics();
+        } else if (storedConsent === deniedValue) {
+          setPageState('denied');
+        } else {
+          setPageState('pending');
+        }
+      })();
+    </script>
+
+    <aside
+      id="analytics-consent"
+      class="analytics-consent fixed inset-x-3 bottom-3 z-[100] mx-auto max-w-3xl rounded-[1.6rem] border border-brand-brown/15 bg-brand-cream p-5 text-brand-brown shadow-[0_20px_55px_rgba(68,54,49,0.24)] sm:bottom-5 sm:p-6"
+      role="dialog"
+      aria-modal="false"
+      aria-labelledby="analytics-consent-title"
+      aria-describedby="analytics-consent-description"
+    >
+      <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="max-w-xl">
+          <p id="analytics-consent-title" class="text-base font-bold">¿Nos ayudas a mejorar Brava?</p>
+          <p id="analytics-consent-description" class="mt-1.5 text-sm leading-relaxed text-brand-brown-80">
+            Usamos Google Analytics únicamente si lo aceptas para conocer las visitas a la web y medir esta campaña.
+            <a href="/cookies" class="font-semibold text-brand-brown underline underline-offset-2">Más información</a>.
+          </p>
+        </div>
+        <div class="grid shrink-0 grid-cols-2 gap-2 sm:flex">
+          <button
+            type="button"
+            data-consent-deny
+            class="min-h-11 rounded-full border-2 border-brand-brown px-4 py-2.5 text-sm font-bold text-brand-brown transition hover:bg-brand-cream-2"
+          >
+            Rechazar
+          </button>
+          <button
+            type="button"
+            data-consent-accept
+            class="min-h-11 rounded-full bg-brand-brown px-4 py-2.5 text-sm font-bold text-brand-cream transition hover:bg-brand-brown-80"
+          >
+            Aceptar
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <script>
+      document.querySelector('[data-consent-accept]')?.addEventListener('click', () => {
+        window.bravaAnalytics?.grant();
+      });
+
+      document.querySelector('[data-consent-deny]')?.addEventListener('click', () => {
+        window.bravaAnalytics?.deny();
+      });
+
+      document.querySelectorAll('[data-open-cookie-preferences]').forEach((button) => {
+        button.addEventListener('click', () => window.bravaAnalytics?.openPreferences());
+      });
+    </script>
+  </>
+)}
+
+<style>
+  :global(html[data-analytics-consent='granted']) .analytics-consent,
+  :global(html[data-analytics-consent='denied']) .analytics-consent {
+    display: none;
+  }
+</style>
+
