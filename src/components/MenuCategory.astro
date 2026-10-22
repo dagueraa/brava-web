@@ -75,7 +75,8 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
               {foto(sub.foto) && (
                 <Image src={foto(sub.foto)!} alt={`${sub.titulo} de Brava`} widths={[400, 640, 960]} sizes="(max-width: 768px) 90vw, 460px" class="mx-auto mb-4 block h-auto w-full max-w-md object-contain" loading="lazy" />
               )}
-              <ul>{sub.items.map((item) => <MenuItemRow item={item} a={anadible(item, sub.titulo)} />)}</ul>
+              <ul>{sub.items.map((item) => <MenuItemRow item={item} a={sub.titulo === 'Extras' ? undefined : anadible(item, sub.titulo)} />)}</ul>
+              {sub.titulo === 'Extras' && <p class="mt-2 text-sm font-semibold text-brand-calm-ink">Añádelos al pedir cada bebida.</p>}
               {sub.nota && <p class="mt-3 rounded-xl bg-brand-cream-2/60 px-4 py-3 text-xs leading-relaxed text-brand-brown-80">{sub.nota}</p>}
             </div>
           ))}

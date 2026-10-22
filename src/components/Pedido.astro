@@ -61,7 +61,7 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
 </div>
 
 <script>
-  type Anadible = { id: string; nombre: string; precio: number | null; opciones?: { titulo: string; valores: string[] }; extras?: { nombre: string; precio: number }[]; pista?: string };
+  type Anadible = { id: string; nombre: string; precio: number | null; opciones?: { titulo: string; valores: string[] }; extras?: { nombre: string; precio: number; valores?: string[] }[]; pista?: string };
   type Linea = { key: string; id: string; nombre: string; precio: number | null; cant: number; opcion?: string; extras: { nombre: string; precio: number }[]; nota?: string };
   const CLAVE = 'brava.pedido.v1';
   const root = document.getElementById('pd')!;
@@ -111,7 +111,13 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
   let actual: Anadible | null = null, cantE = 1;
   function totalE() {
     if (!actual) return;
-    const ex = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input:checked')].reduce((a, i) => a + Number(i.value), 0);
+    const ex = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input[type="checkbox"]:checked')].reduce((a, i) => a + Number(i.value), 0);
+    // con sirope, la nota pregunta el sabor (la carta no los enumera)
+    const sirope = !!dlgE.querySelector('#pd-e-ext-v input[data-n="Sirope de sabor"]:checked');
+    const nota = $<HTMLInputElement>('pd-e-nota');
+    if (!actual.pista) { nota.placeholder = sirope ? '¿De qué sabor quieres el sirope?' : 'Ej. bien caliente'; $('pd-e-nota-t').textContent = sirope ? 'Sabor del sirope (nota)' : 'Nota (opcional)'; }
+    // el tipo (avena, maca…) solo se ve con su extra marcado
+    dlgE.querySelectorAll<HTMLElement>('.pd-sub').forEach((s) => { s.hidden = !(s.previousElementSibling!.querySelector('input') as HTMLInputElement).checked; });
     $('pd-e-total').textContent = actual.precio == null ? 'precio en tienda' : eur((actual.precio + ex) * cantE);
     $('pd-e-cant').textContent = String(cantE);
   }
@@ -127,7 +133,8 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
     $('pd-e-ext').hidden = !a.extras;
     $('pd-e-opc-v').innerHTML = a.opciones ? $('pd-e-opc-v').innerHTML : ''; // nada de restos del plato anterior
     $('pd-e-ext-v').innerHTML = '';
-    if (a.extras) $('pd-e-ext-v').innerHTML = a.extras.map((e) => `<label class="pd-chip"><input type="checkbox" value="${e.precio}" data-n="${esc(e.nombre)}"><span>${esc(e.nombre)} +${eur(e.precio)}</span></label>`).join('');
+    if (a.extras) $('pd-e-ext-v').innerHTML = a.extras.map((e, k) => `<label class="pd-chip"><input type="checkbox" value="${e.precio}" data-n="${esc(e.nombre)}"><span>${esc(e.nombre)} +${eur(e.precio)}</span></label>` +
+      (e.valores ? `<div class="pd-sub" hidden>${e.valores.map((v, i) => `<label class="pd-chip pd-chip--peq"><input type="radio" name="pd-sub-${k}" value="${esc(v)}" ${i === 0 ? 'checked' : ''}><span>${esc(v)}</span></label>`).join('')}</div>` : '')).join('');
     $('pd-e-nota-t').textContent = a.pista ? `${a.pista} (nota)` : 'Nota (opcional)';
     const nota = $<HTMLInputElement>('pd-e-nota');
     nota.value = '';
@@ -140,7 +147,11 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
   dlgE.addEventListener('close', () => {
     if (dlgE.returnValue !== 'ok' || !actual) return;
     const opcion = dlgE.querySelector<HTMLInputElement>('#pd-e-opc-v input:checked')?.value;
-    const extras = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input:checked')].map((i) => ({ nombre: i.dataset.n!, precio: Number(i.value) }));
+    const extras = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input[type="checkbox"]:checked')].map((i) => {
+      const sub = i.parentElement!.nextElementSibling as HTMLElement | null;
+      const tipo = sub?.classList.contains('pd-sub') ? sub.querySelector<HTMLInputElement>('input:checked')?.value : undefined;
+      return { nombre: tipo ? `${i.dataset.n}: ${tipo.toLowerCase()}` : i.dataset.n!, precio: Number(i.value) };
+    });
     anadir(actual, cantE, actual.opciones ? opcion : undefined, extras, $<HTMLInputElement>('pd-e-nota').value.trim() || undefined);
   });
   dlgE.addEventListener('click', (e) => { if (e.target === dlgE) dlgE.close(); });
@@ -216,7 +227,7 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
     const filas = lineas.map((l) => {
       const p = precioLinea(l);
       let t = `• ${l.cant} x ${l.nombre}${l.opcion ? ` (${l.opcion})` : ''} — ${p == null ? 'precio en tienda' : eur(p)}`;
-      l.extras.forEach((e) => { t += `\n   + ${e.nombre} (+${eur(e.precio)} c/u)`; });
+      l.extras.forEach((e) => { t += `\n   + ${e.nombre} (+${eur(e.precio)}${l.cant > 1 ? ' c/u' : ''})`; });
       if (l.nota) t += `\n   Nota: ${l.nota}`;
       return t;
     });
@@ -292,6 +303,9 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
   .pd-opc legend { font-weight: 700; margin-bottom: .5rem; }
   .pd-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
   .pd-chip input { position: absolute; opacity: 0; }
+  .pd-sub { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .4rem; margin: -.1rem 0 .3rem 1rem; padding-left: .8rem; border-left: 2px solid var(--color-brand-fresh); }
+  .pd-sub[hidden] { display: none; }
+  .pd-chip--peq span { padding: .35rem .75rem; font-size: .85rem; }
   .pd-chip span { display: inline-block; border-radius: 999px; border: 2px solid color-mix(in srgb, var(--color-brand-brown) 20%, transparent); padding: .55rem .95rem; font-weight: 600; cursor: pointer; transition: all .15s; }
   .pd-chip input:checked + span { background: var(--color-brand-brown); border-color: var(--color-brand-brown); color: var(--color-brand-cream); }
   .pd-chip input:focus-visible + span { outline: 3px solid var(--color-brand-calm); }
