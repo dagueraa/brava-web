@@ -3,6 +3,8 @@ import { Image } from 'astro:assets';
 import SectionHeading from './SectionHeading.astro';
 import MenuItemRow from './MenuItemRow.astro';
 import ComboCard from './ComboCard.astro';
+import Plato from './Plato.astro';
+import type { MenuFotoKey } from '../assets/menuImages';
 import TostadasTable from './TostadasTable.astro';
 import MenuIcon from './MenuIcon.astro';
 import { menuFotos } from '../assets/menuImages';
@@ -30,9 +32,9 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
             nombre={item.nombre}
             precio={item.precio!}
             desc={item.desc}
-            image={foto(item.foto)!}
+            image={item.foto as MenuFotoKey}
             alt={`${item.nombre}: ${item.desc ?? ''}`}
-            coffee={foto(item.cafe) ?? undefined}
+            coffee={item.cafe as MenuFotoKey | undefined}
             coffeeAlt="Café de especialidad"
             reverse={i % 2 === 1}
             index={i}
@@ -105,7 +107,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
           {espFoto.map((item) => (
             <li class="overflow-hidden rounded-2xl border border-brand-line bg-brand-cream-2/25">
               <div class={`relative grid aspect-square place-items-center overflow-hidden p-3 ${item.destacado ? 'bg-[#d1eff8]' : 'bg-brand-cream'}`}>
-                <Image src={foto(item.foto)!} alt={item.nombre} widths={[320, 480, 640]} sizes="(max-width: 640px) 90vw, 320px" class="max-h-full w-auto object-contain" loading="lazy" />
+                <Plato foto={item.foto as MenuFotoKey} alt={item.nombre} nombre={item.nombre} precio={item.precio} desc={item.desc} widths={[320, 480, 640]} sizes="(max-width: 640px) 80vw, 320px" class="w-[86%]" />
                 {item.destacado && (
                   <Image src={starBrava} alt="" widths={[56, 112]} sizes="56px" class="absolute right-2 top-2 h-14 w-14 object-contain" loading="eager" />
                 )}
@@ -154,7 +156,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
         {hornFoto.map((item) => (
           <li class="overflow-hidden rounded-2xl border border-brand-line bg-brand-cream-2/25">
             <div class="grid aspect-square place-items-center overflow-hidden bg-brand-cream">
-              <Image src={foto(item.foto)!} alt={item.nombre} widths={[200, 320, 480]} sizes="(max-width: 640px) 45vw, 300px" class="h-[78%] w-[78%] object-contain" loading="lazy" />
+              <Plato foto={item.foto as MenuFotoKey} alt={item.nombre} nombre={item.nombre} desc={item.desc} widths={[200, 320, 480]} sizes="(max-width: 640px) 45vw, 300px" class="w-[74%]" />
             </div>
             <div class="px-3 pb-3 pt-2.5 text-center">
               <span class="font-bold text-brand-brown">{item.nombre}</span>

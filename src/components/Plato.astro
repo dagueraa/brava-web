@@ -1,0 +1,236 @@
+---
+/* Plato "que se puede comer": foto recortada con volumen.
+   - Se inclina con el ratón (o con el móvil), con brillo que sigue la luz y sombra que se mueve.
+   - Los platos vistos desde arriba (tazas, cookie, bagel…) giran despacio; los cafés llevan vapor.
+   - Al tocarlo se abre en grande (y en grande se puede girar arrastrando).
+   Todo son transformaciones de GPU y se para fuera de pantalla: no pesa. */
+import { Image, getImage } from 'astro:assets';
+import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
+import { siteConfig } from '../../site.config';
+
+interface Props {
+  foto: MenuFotoKey;
+  alt: string;
+  nombre?: string;
+  precio?: string;
+  desc?: string;
+  class?: string;
+  imgClass?: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  zoom?: boolean;
+}
+const { foto, alt, nombre, precio, desc, class: cls = '', imgClass = '', sizes = '(max-width: 768px) 50vw, 320px', widths = [240, 360, 520], loading = 'lazy', zoom = true } = Astro.props;
+const src = menuFotos[foto];
+const GIRAN = ['cafe-teal', 'cafe-amarillo', 'cafe-art', 'cookie', 'bagel', 'iced-brava', 'blue-matcha', 'horn-cookies', 'esp-salmone-baguel'];
+const HUMO = ['cafe-teal', 'cafe-amarillo', 'cafe-art'];
+const grande = await getImage({ src, width: Math.min(1000, src.width), format: 'webp' });
+---
+<figure
+  class={`plato ${cls}`}
+  data-gira={GIRAN.includes(foto) ? '' : undefined}
+  data-zoom={zoom ? grande.src : undefined}
+  data-nombre={nombre}
+  data-precio={precio}
+  data-desc={desc}
+  data-wa={siteConfig.whatsapp}
+  tabindex={zoom ? 0 : undefined}
+  role={zoom ? 'button' : undefined}
+  aria-label={zoom ? `Ver ${nombre ?? alt} de cerca` : undefined}
+>
+  <span class="plato__sombra" aria-hidden="true"></span>
+  <span class="plato__cuerpo">
+    <span class="plato__giro">
+      <Image src={src} alt={alt} widths={widths} sizes={sizes} class={`plato__img ${imgClass}`} loading={loading} draggable="false" />
+      <span class="plato__brillo" style={`-webkit-mask-image:url(${grande.src});mask-image:url(${grande.src})`} aria-hidden="true"><i></i></span>
+    </span>
+    {HUMO.includes(foto) && <span class="plato__humo" aria-hidden="true"><i></i><i></i><i></i></span>}
+  </span>
+</figure>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const tactil = matchMedia('(pointer: coarse)').matches;
+  const platos = [...document.querySelectorAll<HTMLElement>('.plato')];
+  const vivos = new Set<HTMLElement>();
+
+  // Solo se anima lo que está en pantalla
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    const el = e.target as HTMLElement;
+    el.classList.toggle('vivo', e.isIntersecting);
+    e.isIntersecting ? vivos.add(el) : vivos.delete(el);
+  }), { rootMargin: '80px' });
+  platos.forEach((p) => io.observe(p));
+
+  const poner = (el: HTMLElement, x: number, y: number) => {
+    // x, y en -1…1
+    el.style.setProperty('--rx', `${(-y * 12).toFixed(2)}deg`);
+    el.style.setProperty('--ry', `${(x * 14).toFixed(2)}deg`);
+    el.style.setProperty('--lx', `${(x * 35).toFixed(1)}%`);
+    el.style.setProperty('--ly', `${(y * 35).toFixed(1)}%`);
+    el.style.setProperty('--sx', `${(-x * 14).toFixed(1)}px`);
+    el.style.setProperty('--sy', `${(-y * 8).toFixed(1)}px`);
+  };
+
+  if (!reduce) {
+    // Ratón: cada plato sigue al cursor mientras está encima
+    platos.forEach((el) => {
+      let raf = 0;
+      el.addEventListener('pointermove', (ev) => {
+        if (ev.pointerType !== 'mouse') return;
+        const r = el.getBoundingClientRect();
+        const x = ((ev.clientX - r.left) / r.width) * 2 - 1, y = ((ev.clientY - r.top) / r.height) * 2 - 1;
+        cancelAnimationFrame(raf);
+        raf = requestAnimationFrame(() => { el.classList.add('activo'); poner(el, x, y); });
+      });
+      el.addEventListener('pointerleave', () => { cancelAnimationFrame(raf); el.classList.remove('activo'); poner(el, 0, 0); });
+    });
+    // Móvil: el teléfono es la luz (al inclinarlo, los platos visibles se mueven)
+    if (tactil) {
+      let pend = false, gx = 0, gy = 0, base: number | null = null;
+      window.addEventListener('deviceorientation', (e) => {
+        if (e.gamma == null || e.beta == null) return;
+        base ??= e.beta;
+        gx = Math.max(-1, Math.min(1, e.gamma / 25));
+        gy = Math.max(-1, Math.min(1, (e.beta - base) / 25));
+        if (pend) return;
+        pend = true;
+        requestAnimationFrame(() => { pend = false; vivos.forEach((el) => poner(el, gx, gy)); });
+      }, { passive: true });
+    }
+  }
+
+  /* ---------- De cerca ---------- */
+  let dlg: HTMLDialogElement | null = null;
+  function crearDialogo() {
+    dlg = document.createElement('dialog');
+    dlg.className = 'pz';
+    dlg.innerHTML = `
+      <button class="pz__cerrar" type="button" aria-label="Cerrar">✕</button>
+      <div class="pz__escena"><figure class="plato plato--grande vivo"><span class="plato__sombra"></span><span class="plato__cuerpo"><span class="plato__giro"><img class="plato__img" alt="" draggable="false"><span class="plato__brillo"><i></i></span></span></span></figure></div>
+      <div class="pz__info"><p class="pz__pista"></p><h3></h3><p class="pz__desc"></p><div class="pz__pie"><b></b><a class="pz__pedir" target="_blank" rel="noopener noreferrer">Pedir para llevar</a></div></div>`;
+    document.body.appendChild(dlg);
+    dlg.querySelector('.pz__cerrar')!.addEventListener('click', cerrar);
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) cerrar(); });
+    dlg.addEventListener('cancel', (e) => { e.preventDefault(); cerrar(); });
+    const fig = dlg.querySelector<HTMLElement>('.plato--grande')!;
+    // arrastrar para girarlo; si no gira, inclinarlo
+    let arrastre: { x: number; y: number; a: number } | null = null, angulo = 0;
+    fig.addEventListener('pointerdown', (e) => { arrastre = { x: e.clientX, y: e.clientY, a: angulo }; fig.setPointerCapture(e.pointerId); fig.classList.add('agarrado'); });
+    fig.addEventListener('pointermove', (e) => {
+      const r = fig.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 2 - 1, y = ((e.clientY - r.top) / r.height) * 2 - 1;
+      if (arrastre && fig.hasAttribute('data-gira')) {
+        angulo = arrastre.a + (e.clientX - arrastre.x) * 0.6;
+        fig.style.setProperty('--giro', `${angulo}deg`);
+      }
+      if (!reduce) poner(fig, Math.max(-1, Math.min(1, x)), Math.max(-1, Math.min(1, y)));
+    });
+    const soltar = () => { arrastre = null; fig.classList.remove('agarrado'); };
+    fig.addEventListener('pointerup', soltar);
+    fig.addEventListener('pointercancel', soltar);
+    fig.addEventListener('pointerleave', () => { if (!arrastre) poner(fig, 0, 0); });
+  }
+
+  let origen: HTMLElement | null = null;
+  function abrir(el: HTMLElement) {
+    if (!dlg) crearDialogo();
+    origen = el;
+    const d = el.dataset;
+    const fig = dlg!.querySelector<HTMLElement>('.plato--grande')!;
+    const img = fig.querySelector('img')!;
+    img.src = d.zoom!;
+    img.alt = el.querySelector('img')?.alt ?? '';
+    fig.querySelector<HTMLElement>('.plato__brillo')!.style.cssText = `-webkit-mask-image:url(${d.zoom});mask-image:url(${d.zoom})`;
+    fig.toggleAttribute('data-gira', 'gira' in d);
+    fig.style.setProperty('--giro', '0deg');
+    poner(fig, 0, 0);
+    dlg!.querySelector('h3')!.textContent = d.nombre ?? img.alt;
+    dlg!.querySelector('.pz__desc')!.textContent = d.desc ?? '';
+    dlg!.querySelector('.pz__pista')!.textContent = 'gira' in d ? 'arrastra para girarlo' : 'muévelo para verlo';
+    const precio = dlg!.querySelector<HTMLElement>('.pz__pie b')!;
+    precio.textContent = d.precio ? `${d.precio} €` : '';
+    const pedir = dlg!.querySelector<HTMLAnchorElement>('.pz__pedir')!;
+    pedir.hidden = !d.nombre;
+    pedir.href = `https://wa.me/${d.wa}?text=${encodeURIComponent(`¡Hola Brava! Para llevar quiero: ${d.nombre}${d.precio ? ` (${d.precio} €)` : ''}`)}`;
+    dlg!.showModal();
+    document.documentElement.classList.add('pz-abierto');
+    // vuelo desde la foto pequeña hasta el centro
+    const desde = el.querySelector('img')!.getBoundingClientRect();
+    const hacia = fig.getBoundingClientRect();
+    if (!reduce && desde.width && hacia.width) {
+      const s = desde.width / hacia.width;
+      fig.animate([
+        { transform: `translate(${desde.left + desde.width / 2 - (hacia.left + hacia.width / 2)}px, ${desde.top + desde.height / 2 - (hacia.top + hacia.height / 2)}px) scale(${s})` },
+        { transform: 'none' },
+      ], { duration: 520, easing: 'cubic-bezier(.2,.9,.25,1)' });
+      dlg!.querySelector('.pz__info')!.animate([{ opacity: 0, transform: 'translateY(20px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: 160, easing: 'ease-out', fill: 'backwards' });
+    }
+  }
+  function cerrar() {
+    if (!dlg?.open) return;
+    const fig = dlg.querySelector<HTMLElement>('.plato--grande')!;
+    const a = reduce ? null : dlg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in' });
+    fig.animate?.([{ transform: 'none' }, { transform: 'scale(.85)' }], { duration: 220 });
+    const fin = () => { dlg!.close(); document.documentElement.classList.remove('pz-abierto'); origen?.focus({ preventScroll: true }); };
+    a ? (a.onfinish = fin) : fin();
+  }
+
+  platos.forEach((el) => {
+    if (!el.dataset.zoom) return;
+    el.addEventListener('click', () => abrir(el));
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrir(el); } });
+  });
+</script>
+
+<style is:global>
+  .plato { position: relative; display: block; margin: 0; perspective: 900px; cursor: zoom-in; -webkit-tap-highlight-color: transparent; }
+  .plato:not([data-zoom]) { cursor: default; }
+  .plato__cuerpo { position: relative; display: block; transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--esc, 1)); transition: transform .7s cubic-bezier(.2,.8,.2,1); transform-style: preserve-3d; }
+  .plato.activo .plato__cuerpo { --esc: 1.05; transition: transform .15s ease-out; }
+  .plato__giro { position: relative; display: block; transform: rotate(var(--giro, 0deg)); }
+  .plato__img { position: relative; display: block; width: 100%; height: auto; user-select: none; -webkit-user-drag: none; }
+  /* luz que resbala por el plato: el degradado se mueve con transform (no repinta) */
+  .plato__brillo { position: absolute; inset: 0; overflow: hidden; pointer-events: none; -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; mix-blend-mode: soft-light; opacity: .55; transition: opacity .4s; }
+  .plato__brillo i { position: absolute; left: -50%; top: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 50% 50%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.35) 18%, transparent 38%); transform: translate(var(--lx, -12%), var(--ly, -16%)); transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+  .plato.activo .plato__brillo { opacity: .9; }
+  .plato.activo .plato__brillo i { transition: transform .15s ease-out; }
+  /* sombra de contacto: una elipse desenfocada que se mueve al revés que la luz */
+  .plato__sombra { position: absolute; left: 12%; right: 12%; bottom: -2%; height: 16%; border-radius: 50%; background: rgba(40,24,16,.42); filter: blur(14px); transform: translate(var(--sx, 0), var(--sy, 0)) scale(var(--esc-s, 1)); transition: transform .7s cubic-bezier(.2,.8,.2,1), opacity .4s; opacity: .8; pointer-events: none; }
+  .plato.activo .plato__sombra { --esc-s: 1.08; opacity: .55; transition: transform .15s ease-out, opacity .4s; }
+  .plato[data-gira] .plato__sombra { left: 8%; right: 8%; bottom: 2%; height: 80%; filter: blur(18px); background: rgba(40,24,16,.28); }
+  /* giro lento de lo que se ve desde arriba (solo en pantalla) */
+  @keyframes plato-giro { to { rotate: 360deg; } }
+  .plato[data-gira].vivo:not(.plato--grande) .plato__giro { animation: plato-giro 70s linear infinite; }
+  .plato[data-gira].vivo .plato__brillo i { animation: plato-giro 70s linear infinite reverse; } /* la luz no gira con el plato */
+  .plato--grande[data-gira] .plato__brillo i { animation: none; }
+  /* vapor del café */
+  .plato__humo { position: absolute; left: 30%; top: 8%; width: 30%; height: 60%; pointer-events: none; transform: translateZ(30px); }
+  .plato__humo i { position: absolute; bottom: 30%; left: 30%; width: 40%; height: 55%; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(255,255,255,.55), transparent 65%); filter: blur(8px); opacity: 0; }
+  .plato.vivo .plato__humo i { animation: humo 4.8s ease-out infinite; }
+  .plato.vivo .plato__humo i:nth-child(2) { animation-delay: 1.6s; left: 10%; }
+  .plato.vivo .plato__humo i:nth-child(3) { animation-delay: 3.2s; left: 48%; }
+  @keyframes humo { 0% { transform: translateY(20%) scale(.6, .8); opacity: 0; } 25% { opacity: .9; } 100% { transform: translateY(-110%) scale(1.3, 1.6) rotate(12deg); opacity: 0; } }
+
+  /* ---------- De cerca ---------- */
+  .pz { position: fixed; inset: 0; width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: radial-gradient(ellipse at 50% 40%, #5f4c44 0%, #3a2d28 60%, #261d1a 100%); color: var(--color-brand-cream); display: none; overflow: hidden; }
+  .pz[open] { display: grid; grid-template-rows: 1fr auto; }
+  .pz::backdrop { background: rgba(20,14,11,.6); }
+  html.pz-abierto { overflow: hidden; }
+  .pz__cerrar { position: absolute; z-index: 3; top: max(1rem, env(safe-area-inset-top)); right: 1rem; width: 3rem; height: 3rem; border-radius: 999px; background: rgba(254,249,245,.12); color: var(--color-brand-cream); font-size: 1.1rem; }
+  .pz__escena { display: grid; place-items: center; padding: 4.5rem 1.5rem 0; min-height: 0; }
+  .plato--grande { width: min(82vw, 58vh, 34rem); cursor: grab; touch-action: none; }
+  .plato--grande.agarrado { cursor: grabbing; }
+  .plato--grande .plato__sombra { opacity: .9; }
+  .pz__info { padding: 1.2rem 1.5rem max(1.6rem, env(safe-area-inset-bottom)); max-width: 40rem; margin-inline: auto; width: 100%; text-align: center; }
+  .pz__pista { font: 600 1.4rem var(--font-hand); color: var(--color-brand-fresh); }
+  .pz__info h3 { margin-top: .2rem; font-size: clamp(1.8rem, 5vw, 2.6rem); font-weight: 700; letter-spacing: -.03em; }
+  .pz__desc { margin-top: .4rem; color: rgba(254,249,245,.75); line-height: 1.5; }
+  .pz__pie { margin-top: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 1.2rem; }
+  .pz__pie b { font-size: 2rem; font-weight: 800; letter-spacing: -.04em; }
+  .pz__pedir { border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .9rem 1.4rem; font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) {
+    .plato__giro, .plato__brillo i, .plato__humo i { animation: none !important; }
+  }
+</style>
