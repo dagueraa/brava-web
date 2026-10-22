@@ -218,18 +218,18 @@ const objetivo = siteConfig.bravaPass.objetivo;
   <!-- ═════════ 5 · BRAVA PASS v2 ═════════ -->
   <section class="pass relative bg-brand-brown text-brand-cream" aria-label="Brava Pass">
     <div class="pass__stage">
-      <div class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:px-6 md:grid-cols-[1.1fr_1fr]">
-        <div>
+      <div class="pass__rejilla mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:px-6 md:grid-cols-[1.1fr_1fr]">
+        <div class="pass__txt">
           <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">por venir, te damos</p>
           <Logo as="h2" suffix="pass" class="mt-1 text-5xl text-brand-cream sm:text-6xl" />
-          <p class="mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">Tu tarjeta de cafés, en el móvil y sin cartón. Pagas, escaneas el QR de la barra y el sello se pone solo.</p>
+          <p class="pass__desc mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">Tu tarjeta de cafés, en el móvil y sin cartón. Pagas, escaneas el QR de la barra y el sello se pone solo.</p>
           <ol class="pass__pasos">
             <li data-at="0.05"><b>1</b><span><strong>Hazte el pass en 20 segundos.</strong> Solo tu nombre. Sin apps ni contraseñas.</span></li>
             <li data-at="0.3"><b>2</b><span><strong>Pide y escanea.</strong> En la barra te enseñan un QR; lo apuntas con la cámara y tu café queda sellado.</span></li>
             <li data-at="0.6"><b>3</b><span><strong>Al {objetivo}º, invita Brava.</strong> El café gratis aparece en tu pass y lo canjeas cuando quieras.</span></li>
             <li data-at="0.85"><b><BrandIcon name="muffin" class="h-5 w-5" /></b><span><strong>Y en tu cumpleaños,</strong> el brunch corre de nuestra cuenta.</span></li>
           </ol>
-          <a href="/brava-pass" class="btn-e btn-e--fresh mt-8">Consigue tu Brava Pass</a>
+          <a href="/brava-pass" class="pass__cta btn-e btn-e--fresh mt-8">Consigue tu Brava Pass</a>
         </div>
         <div class="pass__phone" aria-hidden="true">
           <div class="phone">
@@ -300,11 +300,19 @@ const objetivo = siteConfig.bravaPass.objetivo;
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v: number) => Math.min(1, Math.max(0, v));
-  /* Avance (0–1) de una sección alta mientras su escenario está fijo en pantalla. */
+  /* Avance (0–1) de una sección alta mientras su escenario está fijo en pantalla.
+     Se mide con el escenario real (alto y margen superior del sticky), no con la ventana,
+     y la animación acaba al 88 %: el último estado se queda quieto antes de soltarse. */
+  const FIN = 0.88;
+  const escenarios = new Map<HTMLElement, HTMLElement | null>();
   const avance = (el: HTMLElement) => {
+    if (!escenarios.has(el)) escenarios.set(el, el.querySelector<HTMLElement>(':scope > [class$="__stage"]'));
+    const st = escenarios.get(el);
+    const fijo = st && getComputedStyle(st).position === 'sticky';
+    const arriba = fijo ? parseFloat(getComputedStyle(st!).top) || 0 : 0;
+    const recorrido = el.offsetHeight - (fijo ? st!.offsetHeight : window.innerHeight);
     const r = el.getBoundingClientRect();
-    const recorrido = el.offsetHeight - window.innerHeight;
-    return recorrido > 0 ? clamp(-r.top / recorrido) : 0;
+    return recorrido > 0 ? clamp((arriba - r.top) / recorrido / FIN) : 0;
   };
 
   /* ---------- 1 · taza 3D ---------- */
@@ -392,6 +400,8 @@ const objetivo = siteConfig.bravaPass.objetivo;
     passN.textContent = String(n);
     pass.classList.toggle('premio', n >= total);
     pasos.forEach((li) => li.classList.toggle('on', p >= parseFloat(li.dataset.at!)));
+    const ult = pasos.filter((li) => li.classList.contains('on')).pop() ?? pasos[0];
+    pasos.forEach((li) => li.classList.toggle('actual', li === ult));
   }
   // QR de muestra (el de verdad lo genera el pass de cada cliente)
   const qr = qrcode(3, 'M');
@@ -507,6 +517,8 @@ const objetivo = siteConfig.bravaPass.objetivo;
     .epica__stage { background: radial-gradient(ellipse 90% 55% at 50% 38%, #5f4c44 0%, #4a3a34 40%, #3a2d28 75%, #2b211e 100%); }
     .epica__hint { display: none; }
     .epica__p { font-size: 1rem; }
+    .epica__h1 { font-size: clamp(1.75rem, 8.4vw, 2.6rem); }
+    .epica__h2 { font-size: clamp(1.7rem, 8vw, 2.4rem); }
     .epica__fallback { right: 50%; top: 30%; width: 62vw; transform: translate(50%, -50%) rotate(3deg); }
   }
 
@@ -556,8 +568,21 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .hpanel__mas.bpd { width: 1.9rem; height: 1.9rem; }
   .hpanel--fin { place-content: center; justify-items: center; text-align: center; }
   @media (max-width: 767px) {
-    .hpanel { grid-template-rows: 9.5rem 1fr; }
-    .hpanel__txt .btn-e { padding: .8rem 1.3rem; }
+    .hcarta__stage { justify-content: flex-start; gap: 1rem; padding-top: 1.2rem; }
+    .hcarta__head h2 { font-size: 1.7rem; }
+    .hcarta__head .font-hand { font-size: 1.5rem; }
+    .hpanel { grid-template-rows: auto 1fr; height: auto; max-height: calc(100svh - 4rem - 7.5rem); padding: 1.1rem 1.1rem 1.3rem; }
+    .hpanel__fotos { height: clamp(5.5rem, 22svh, 9rem); min-height: 0; }
+    .hpanel__foto--0 { width: 36%; } .hpanel__foto--1 { width: 32%; left: 32%; top: 6%; } .hpanel__foto--2 { width: 30%; }
+    .hpanel__txt h3 { font-size: 2rem !important; }
+    .hpanel__lista { margin-top: .6rem; gap: .35rem; font-size: .92rem; }
+    .hpanel__lista li { padding-bottom: .3rem; }
+    .hpanel__lista span { min-width: 0; }
+    .hpanel__txt .btn-e { margin-top: .8rem; padding: .75rem 1.2rem; }
+  }
+  @media (max-width: 767px) and (max-height: 700px) {
+    .hpanel__lista li:nth-child(n+4) { display: none; }
+    .hpanel__fotos { height: 5rem; }
   }
   @media (min-width: 768px) {
     .hpanel { grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2.5rem; }
@@ -568,7 +593,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
   }
 
   /* ── 5 · pass ── */
-  .pass { height: 260vh; border-radius: 3rem 3rem 0 0; margin-top: 3rem; }
+  .pass { height: 260vh; border-radius: 3rem 3rem 0 0; margin-top: 3rem; z-index: 2; } /* encima de la foto que viene detrás */
   .pass__stage { position: sticky; top: 4rem; min-height: calc(100svh - 4rem); display: flex; align-items: center; padding: 3rem 0; overflow: hidden; }
   .pass__pasos { margin-top: 2rem; display: grid; gap: 1rem; }
   .pass__pasos li { display: grid; grid-template-columns: 2.4rem 1fr; gap: .9rem; align-items: start; opacity: .35; transform: translateX(-8px); transition: opacity .5s, transform .5s; }
@@ -590,11 +615,26 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .pass.premio .pass__premio { opacity: 1; transform: none; }
   .pass__qr { margin-top: auto; align-self: center; width: 7.5rem; aspect-ratio: 1; padding: .35rem; border-radius: .8rem; background: #fff; color: var(--color-brand-brown); }
   @media (max-width: 767px) {
-    .pass { height: auto; }
-    .pass__stage { position: relative; top: 0; }
-    .pass__phone { order: -1; }
-    .phone { width: min(70vw, 16rem); }
+    .pass { height: 320vh; border-radius: 2rem 2rem 0 0; }
+    .pass__stage { height: calc(100svh - 4rem); min-height: 0; padding: 1rem 0 1.2rem; align-items: stretch; }
+    .pass__rejilla { display: flex; flex-direction: column; gap: .7rem; height: 100%; }
+    .pass__txt { display: contents; }
+    .pass__txt > p:first-child { order: 1; font-size: 1.6rem; line-height: 1; }
+    .pass__txt > h2 { order: 2; font-size: 2.4rem !important; margin-top: 0 !important; }
+    .pass__desc { display: none; }
+    .pass__phone { order: 3; flex: 1 1 auto; min-height: 0; }
+    .phone { height: 100%; width: auto; max-width: 74vw; transform: rotate(2deg); }
+    .phone__screen { padding: 2.2rem .9rem .9rem; overflow: hidden; }
+    .pass__cuenta { font-size: 2.6rem; }
+    .pass__qr { width: 5rem; }
+    .pass__pasos { order: 4; margin-top: 0; min-height: 4.4rem; }
+    .pass__pasos li { display: none; transform: none; }
+    .pass__pasos li.actual { display: grid; opacity: 1; animation: paso-entra .45s ease; font-size: .9rem; }
+    @keyframes paso-entra { from { opacity: 0; transform: translateY(10px); } }
+    .pass__cta { order: 5; margin-top: 0 !important; align-self: center; }
   }
+  @media (max-width: 767px) and (max-height: 700px) { .pass__qr { display: none; } .pass__sellos { gap: .3rem; margin-top: .6rem; } .pass__premio { margin-top: .6rem; padding: .5rem .7rem; } .pass__premio small { display: none; } }
+  @media (max-width: 359px) { .epica__kicker { display: none; } }
 
   /* ── 7 · visita ── */
   .visita { display: grid; overflow: hidden; border-radius: 2.5rem; background: var(--color-brand-brown); }

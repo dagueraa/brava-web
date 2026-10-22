@@ -418,7 +418,7 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
 
     // en escritorio el vaso vive a la derecha (el texto, a la izquierda); en la vista cenital se centra
     rig.position.x = narrow ? 0 : lerp(1.75, 0, top);
-    rig.position.y = narrow ? lerp(1.2, 0.9, seg(p, 0.66, 0.9)) : 0;
+    rig.position.y = narrow ? lerp(1.45, 1.05, seg(p, 0.66, 0.9)) + Math.max(0, 0.52 - aspect) * 2 : 0;
     rig.scale.setScalar(narrow ? 1.05 : 1);
     cup.rotation.y = Math.sin(t * 0.4) * 0.22 + p * Math.PI * 2;
 
