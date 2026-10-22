@@ -13,6 +13,8 @@ import { img } from '../assets/images';
 import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
 import { categorias, type MenuItem } from '../data/menu';
 import { siteConfig, waLink } from '../../site.config';
+import photocall from '../assets/halloween/photocall.jpg';
+import promoRender from '../assets/halloween/promo-render.png';
 
 /* Todos los platos y precios salen de la carta oficial (src/data/menu.ts). */
 const todos: MenuItem[] = categorias.flatMap((c) => [
@@ -68,116 +70,166 @@ const clasicos = ['Espresso', 'Flat White', 'Cappuccino'].map(plato);
 const frase = ['café de especialidad', 'brunch', 'treats', 'para llevar', 'La Ñora'];
 const iconosFranja = ['croissant', 'cafe', 'cookie', 'smoothie', 'muffin'] as const;
 const objetivo = siteConfig.bravaPass.objetivo;
+
+/* ---------- Halloween ---------- */
+const hw = siteConfig.halloween;
+const promoPedido = { id: 'halloween-promo', nombre: hw.promo.nombre, precio: Math.round(parseFloat(hw.promo.precio.replace(',', '.')) * 100) };
+const igCampana = hw.instagramCampana.replace('@', '');
+// telaraña de la esquina (como la del photocall): radios desde la esquina y anillos combados
+const tela = (() => {
+  const C = [300, 0], radios = 7, anillos = 6;
+  const ang = Array.from({ length: radios }, (_, i) => Math.PI / 2 + (i / (radios - 1)) * (Math.PI / 2));
+  const pt = (a: number, r: number) => [C[0] + Math.cos(a) * r, C[1] + Math.sin(a) * r];
+  let d = ang.map((a) => { const [x, y] = pt(a, 290); return `M${C[0]} ${C[1]}L${x.toFixed(1)} ${y.toFixed(1)}`; }).join('');
+  for (let k = 1; k <= anillos; k++) {
+    const r = k * 44;
+    ang.forEach((a, i) => {
+      if (i === 0) { const [x, y] = pt(a, r); d += `M${x.toFixed(1)} ${y.toFixed(1)}`; return; }
+      const am = (a + ang[i - 1]) / 2;
+      const [cx, cy] = pt(am, r * 0.84);
+      const [x, y] = pt(a, r);
+      d += `Q${cx.toFixed(1)} ${cy.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)}`;
+    });
+  }
+  return d;
+})();
+const franjaHw = ['un café de miedo', 'halloween en brava', 'photocall', `latte + cookie ${hw.promo.precio} €`, 'La Ñora'];
+const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
+
 ---
-<Base title="Inicio" path="">
-  <!-- ═════════ 1 · LA TAZA 3D (scroll coreografiado) ═════════ -->
-  <section id="epica" class="epica relative bg-brand-brown text-brand-cream" aria-label="Brava coffee and brunch">
-    <div class="epica__stage">
-      <div class="epica__stripes" aria-hidden="true"></div>
-      <div class="epica__word" aria-hidden="true"><Logo class="text-brand-cream" /></div>
-      <canvas id="taza3d" class="epica__canvas" aria-hidden="true"></canvas>
-      <div class="epica__fallback" aria-hidden="true">
-        <Image src={img.hero} alt="" widths={[480, 800]} sizes="(max-width: 768px) 80vw, 420px" loading="eager" class="h-full w-full rounded-[2.5rem] object-cover" />
+<Base title="Halloween en Brava" description={`Halloween en Brava: ${hw.lema} Latte macchiato + cookie especial Halloween por ${hw.promo.precio} € y nuestro photocall de Halloween en La Ñora.`} path="">
+  <!-- ═════════ 1 · LA NOCHE (escena 3D coreografiada con el scroll) ═════════ -->
+  <section id="noche" class="noche" aria-label={`Halloween en Brava. ${hw.lema}`}>
+    <div class="noche__stage">
+      <div class="noche__cielo" aria-hidden="true"><i class="noche__luna"></i><i class="noche__estrellas"></i></div>
+      <div class="noche__word" aria-hidden="true">halloween</div>
+      <canvas id="noche3d" class="noche__canvas" aria-hidden="true"></canvas>
+      <div class="noche__niebla" aria-hidden="true"><i></i><i></i></div>
+      <svg class="noche__tela" viewBox="0 0 300 300" aria-hidden="true"><path d={tela} /></svg>
+      <div class="noche__arana" aria-hidden="true">
+        <i class="noche__hilo"></i>
+        <svg viewBox="-30 -26 60 52"><g class="patas" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M-6 -4 Q-18 -18 -26 -8M-6 0 Q-20 -6 -28 4M-6 3 Q-18 8 -25 18M-5 6 Q-12 16 -16 24M6 -4 Q18 -18 26 -8M6 0 Q20 -6 28 4M6 3 Q18 8 25 18M5 6 Q12 16 16 24"/></g><ellipse cx="0" cy="2" rx="9" ry="11" fill="currentColor"/><circle cx="0" cy="-9" r="6" fill="currentColor"/><circle cx="-2.4" cy="-10" r="1.6" fill="#fef9f5"/><circle cx="2.4" cy="-10" r="1.6" fill="#fef9f5"/></svg>
       </div>
 
       <!-- Paso 0 -->
-      <div class="epica__step epica__step--intro" data-from="0" data-to="0.16">
-        <p class="epica__kicker">Café de especialidad · Brunch · {siteConfig.ciudad}, {siteConfig.provincia}</p>
-        <h1 class="epica__h1">Café de especialidad y brunch, <span class="font-hand text-brand-fresh">hecho con calma.</span></h1>
-        <div class="epica__ctas">
-          <a href="/carta" class="btn-e btn-e--fresh">Ver la carta</a>
-          <a href="/brava-pass" class="btn-e btn-e--ghost">Brava Pass</a>
+      <div class="noche__step noche__step--intro" data-from="0" data-to="0.18">
+        <p class="noche__kicker"><Logo class="text-[1.1em]" /> <span>coffee and brunch · {siteConfig.ciudad}</span></p>
+        <h1 class="noche__h1">
+          <span class="noche__hw">Halloween</span>
+          <span class="noche__lema">{hw.lema}<svg viewBox="0 0 300 20" preserveAspectRatio="none" aria-hidden="true"><path d="M4 14 Q 80 4 150 10 T 296 8" /></svg></span>
+        </h1>
+        <div class="noche__ctas">
+          <a href="#promo" class="btn-e btn-e--fresh">La promo de miedo</a>
+          <a href="#photocall" class="btn-e btn-e--ghost">El photocall</a>
         </div>
       </div>
-      <!-- Paso 1 -->
-      <div class="epica__step epica__step--left" data-from="0.2" data-to="0.42">
-        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">el primero de la mañana</p>
-        <h2 class="epica__h2">Donde el café sabe a café.</h2>
-        <p class="epica__p">Y el pan a pan, y las cosas se hacen con intención.</p>
-        <ul class="epica__chips">
-          {clasicos.map((c) => <li><span>{c.nombre}</span><b>{c.precio} €</b></li>)}
-        </ul>
-      </div>
-      <!-- Paso 2 (vista cenital del latte art) -->
-      <div class="epica__step epica__step--bottom" data-from="0.46" data-to="0.64">
-        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">latte macchiato especiales</p>
-        <h2 class="epica__h2">Ponle tu sabor.</h2>
-        <ul class="epica__chips justify-center">
-          {lattes.map((c) => <li><span>{c.nombre}</span><b>{c.precio} €</b></li>)}
-        </ul>
-      </div>
-      <!-- Paso 3 -->
-      <div class="epica__step epica__step--left" data-from="0.7" data-to="1.01">
-        <Logo suffix="combos" class="text-4xl text-brand-cream sm:text-5xl" />
-        <h2 class="epica__h2 mt-4">Empieza bien el día.</h2>
-        <p class="epica__p">{combos.items![0].nombre}: {combos.items![0].desc!.toLowerCase()}, <b class="text-brand-fresh">{combos.items![0].precio} €</b>.</p>
-        <div class="epica__ctas !justify-start">
-          <a href="/carta" class="btn-e btn-e--fresh">Ver la carta</a>
-          <a href="/to-go" class="btn-e btn-e--ghost">Pedir para llevar</a>
+      <!-- Paso 1: vista cenital (telaraña + cookie) -->
+      <div class="noche__step noche__step--bottom" data-from="0.3" data-to="0.54">
+        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">latte de telaraña</p>
+        <h2 class="noche__h2">{hw.promo.nombre}</h2>
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-4">
+          <p class="noche__precio">{hw.promo.precio}<span>€</span></p>
+          <BotonPedido a={promoPedido} texto="Añadir al pedido" class="!bg-brand-fresh !text-brand-brown" />
         </div>
+      </div>
+      <!-- Paso 2: el fantasma sale a saludar -->
+      <div class="noche__step noche__step--left" data-from="0.74" data-to="1.01">
+        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">él ya está listo para la foto</p>
+        <h2 class="noche__h2">¿Y tú?</h2>
+        <p class="noche__p">Ven a hacerte la foto en nuestro photocall de Halloween. Y si lo tocas, a lo mejor se asusta.</p>
+        <div class="noche__ctas !justify-start"><a href="#photocall" class="btn-e btn-e--fresh">Ver el photocall</a></div>
       </div>
 
-      <div class="epica__hint" aria-hidden="true"><span>desliza</span><i></i></div>
-      <div class="epica__bar" aria-hidden="true"><i></i></div>
+      <!-- La linterna: la página empieza a oscuras -->
+      <div id="linterna" class="linterna" aria-hidden="true">
+        <p class="linterna__txt"><span class="font-hand">está muy oscuro…</span><b>Mueve la linterna</b></p>
+        <button type="button" class="linterna__btn" tabindex="-1">Encender las velas</button>
+      </div>
+      <div class="noche__bar" aria-hidden="true"><i></i></div>
     </div>
   </section>
 
-  <!-- ═════════ 2 · FRANJAS CRUZADAS ═════════ -->
-  <section class="franjas" aria-label="Café de especialidad, brunch, treats y para llevar en La Ñora">
+  <!-- ═════════ 2 · FRANJAS ═════════ -->
+  <section class="franjas franjas--hw" aria-label={`${hw.lema} Halloween en Brava, photocall y promo de latte y cookie`}>
     <div class="franja franja--fresh"><div class="franja__track" data-dir="-1">
       {Array.from({ length: 2 }).map(() => (
         <div class="franja__group" aria-hidden="true">
-          {Array.from({ length: 3 }).flatMap(() => frase).map((f, i) => (
-            <><span>{f}</span><BrandIcon name={iconosFranja[i % iconosFranja.length]} class="h-9 w-9 shrink-0 sm:h-11 sm:w-11" /></>
+          {Array.from({ length: 3 }).flatMap(() => franjaHw).map((f, i) => (
+            <><span>{f}</span><BrandIcon name={iconosHw[i % iconosHw.length]} class="h-9 w-9 shrink-0 sm:h-11 sm:w-11" /></>
           ))}
         </div>
       ))}
     </div></div>
-    <div class="franja franja--calm"><div class="franja__track" data-dir="1">
+    <div class="franja franja--caramelo"><div class="franja__track" data-dir="1">
       {Array.from({ length: 2 }).map(() => (
         <div class="franja__group" aria-hidden="true">
-          {Array.from({ length: 3 }).flatMap(() => ['hello brava!', 'coffee and brunch', 'por venir, te damos']).map((f) => (
-            <><span class="font-hand !font-semibold normal-case !tracking-normal">{f}</span><span class="opacity-60">✦</span></>
+          {Array.from({ length: 4 }).flatMap(() => ['¿truco o trato?', 'un café de miedo', '¡bu!']).map((f) => (
+            <><span class="font-hand !font-semibold normal-case !tracking-normal">{f}</span><svg class="h-6 w-9 shrink-0" viewBox="0 0 90 40" fill="currentColor"><path d="M45 14c-3-6-9-6-11-2-7-8-18-10-28-4 6 1 10 5 11 10 4-3 9-3 12 1 3-2 7-2 10 2 1 4 4 6 6 8 2-2 5-4 6-8 3-4 7-4 10-2 3-4 8-4 12-1 1-5 5-9 11-10-10-6-21-4-28 4-2-4-8-4-11 2z"/></svg></>
           ))}
         </div>
       ))}
     </div></div>
   </section>
 
-  <!-- ═════════ 3 · COMBOS (tarjetas que se apilan) ═════════ -->
-  <section class="mx-auto w-full max-w-6xl px-5 pb-10 pt-6 sm:px-6">
-    <div class="mb-10 flex flex-col items-center text-center">
-      <p class="font-hand text-3xl text-brand-calm-ink">nuestros favoritos</p>
-      <Logo as="h2" suffix="combos" class="mt-1 text-5xl text-brand-brown sm:text-6xl" />
-    </div>
-    <div class="stack">
-      {combos.items!.map((c, i) => (
-        <article class={`stack__card ${['bg-brand-cream-2', 'bg-brand-calm', 'bg-brand-fresh'][i]}`} style={`--i:${i}`}>
-          <div class="stack__fotos">
-            <Blob class="inset-0 h-full w-full scale-110 text-brand-cream/70" variant={((i % 3) + 1) as 1 | 2 | 3} />
-            <Plato foto={c.cafe as MenuFotoKey} alt="Café de especialidad de Brava" nombre={c.nombre} precio={c.precio} desc={c.desc} a={paraPedido(c)} widths={[260, 420, 560]} sizes="(max-width: 768px) 46vw, 300px" class="stack__cafe" />
-            <Plato foto={c.foto as MenuFotoKey} alt={c.nombre} nombre={c.nombre} precio={c.precio} desc={c.desc} a={paraPedido(c)} widths={[280, 460, 620]} sizes="(max-width: 768px) 50vw, 320px" class="stack__comida" />
-            <HandArrow class="absolute -right-2 bottom-6 hidden w-24 text-brand-brown md:block" />
-          </div>
-          <div class="stack__txt">
-            <p class="stack__n">0{i + 1}</p>
-            <h3 class="stack__nombre">{c.nombre}</h3>
-            <p class="stack__desc">{c.desc}</p>
-            <p class="stack__precio">{c.precio}<span>€</span></p>
-            <BotonPedido a={paraPedido(c)!} texto="Añadir al pedido" class="mt-6" />
-          </div>
-        </article>
+  <!-- ═════════ 3 · CUENTA ATRÁS ═════════ -->
+  <section id="cuenta" class="cuenta" data-noche={hw.noche} aria-label="Cuenta atrás para la noche de Halloween">
+    <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">la noche de Halloween llega en</p>
+    <div class="cuenta__digitos" role="timer" aria-live="off">
+      {[['d', 'días'], ['h', 'horas'], ['m', 'minutos'], ['s', 'segundos']].map(([k, t]) => (
+        <div class="cuenta__bloque"><span class="cuenta__num" data-k={k}>00</span><small>{t}</small></div>
       ))}
     </div>
-    {combos.nota && <p class="mt-8 text-center text-sm font-semibold text-brand-brown-80">{combos.nota}</p>}
+    <p class="cuenta__hoy" hidden>¡Hoy es Halloween! Te esperamos en Brava.</p>
   </section>
+
+  <!-- ═════════ 4 · LA PROMO ═════════ -->
+  <section id="promo" class="promo">
+    <div class="promo__ilus">
+      <div class="promo__halo" aria-hidden="true"></div>
+      <Image src={promoRender} alt={`${hw.promo.nombre}: vaso Brava con latte art de telaraña y cookie con cara de calabaza`} widths={[420, 640, 900]} sizes="(max-width: 768px) 88vw, 520px" class="promo__foto" loading="lazy" />
+      <span class="promo__sello" aria-hidden="true">{hw.promo.precio}<small>€</small></span>
+      {[0, 1, 2].map((i) => <svg class={`promo__bat promo__bat--${i}`} viewBox="0 0 90 40" fill="currentColor" aria-hidden="true"><path d="M45 14c-3-6-9-6-11-2-7-8-18-10-28-4 6 1 10 5 11 10 4-3 9-3 12 1 3-2 7-2 10 2 1 4 4 6 6 8 2-2 5-4 6-8 3-4 7-4 10-2 3-4 8-4 12-1 1-5 5-9 11-10-10-6-21-4-28 4-2-4-8-4-11 2z"/></svg>)}
+    </div>
+    <div class="promo__txt">
+      <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">la promo de Halloween</p>
+      <h2 class="promo__h2">{hw.promo.nombre}</h2>
+      <p class="promo__frase">«{hw.promo.frase}»</p>
+      <div class="mt-7 flex flex-wrap items-center gap-5">
+        <p class="noche__precio">{hw.promo.precio}<span>€</span></p>
+        <BotonPedido a={promoPedido} texto="Añadir al pedido" class="!bg-brand-fresh !text-brand-brown" />
+      </div>
+      <p class="mt-4 text-sm text-brand-cream/60">En barra o para llevar.</p>
+    </div>
+  </section>
+
+  <!-- ═════════ 5 · EL PHOTOCALL ═════════ -->
+  <section id="photocall" class="photocall">
+    <div class="photocall__foto" id="pc-foto">
+      <span class="photocall__cinta photocall__cinta--1" aria-hidden="true"></span>
+      <span class="photocall__cinta photocall__cinta--2" aria-hidden="true"></span>
+      <Image src={photocall} alt="El photocall de Halloween de Brava: fantasma, calabazas sonrientes, murciélagos y globos color caramelo" widths={[420, 640, 900]} sizes="(max-width: 768px) 82vw, 440px" class="block w-full rounded-[.4rem]" loading="lazy" />
+      <div class="photocall__oscuro" aria-hidden="true"></div>
+      <p class="photocall__pie font-hand">{hw.lema}</p>
+    </div>
+    <div class="photocall__txt">
+      <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">photocall de Halloween</p>
+      <h2 class="promo__h2">Hazte la foto más de miedo de La Ñora.</h2>
+      <ol class="photocall__pasos">
+        <li><b>1</b><span>Ven a Brava y hazte la foto con el fantasma y las calabazas.</span></li>
+        <li><b>2</b><span>Súbela a tus redes y etiqueta a <strong>{hw.instagramCampana}</strong>.</span></li>
+        {hw.concurso.activo && <li><b>3</b><span><strong>Entras en el sorteo de {hw.concurso.premio}.</strong> {hw.concurso.texto}</span></li>}
+      </ol>
+      <a href={`https://www.instagram.com/${igCampana}/`} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--fresh mt-8">Abrir Instagram</a>
+    </div>
+  </section>
+
 
   <!-- ═════════ 4 · LA CARTA EN HORIZONTAL ═════════ -->
   <section class="hcarta" aria-label="La carta de Brava">
     <div class="hcarta__stage">
       <div class="hcarta__head">
-        <p class="font-hand text-3xl text-brand-calm-ink">la carta, de un vistazo</p>
-        <h2 class="text-3xl font-bold text-brand-brown sm:text-5xl">Todo lo que te espera.</h2>
+        <p class="font-hand text-3xl text-brand-calm-ink">y para acompañar el susto</p>
+        <h2 class="text-3xl font-bold text-brand-brown sm:text-5xl">La carta de siempre.</h2>
       </div>
       <div class="hcarta__track">
         {panels.map((p, i) => (
@@ -215,63 +267,6 @@ const objetivo = siteConfig.bravaPass.objetivo;
     </div>
   </section>
 
-  <!-- ═════════ 5 · BRAVA PASS v2 ═════════ -->
-  <section class="pass relative bg-brand-brown text-brand-cream" aria-label="Brava Pass">
-    <div class="pass__stage">
-      <div class="pass__rejilla mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:px-6 md:grid-cols-[1.1fr_1fr]">
-        <div class="pass__txt">
-          <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">por venir, te damos</p>
-          <Logo as="h2" suffix="pass" class="mt-1 text-5xl text-brand-cream sm:text-6xl" />
-          <p class="pass__desc mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">Tu tarjeta de cafés, en el móvil y sin cartón. Pagas, escaneas el QR de la barra y el sello se pone solo.</p>
-          <ol class="pass__pasos">
-            <li data-at="0.05"><b>1</b><span><strong>Hazte el pass en 20 segundos.</strong> Solo tu nombre. Sin apps ni contraseñas.</span></li>
-            <li data-at="0.3"><b>2</b><span><strong>Pide y escanea.</strong> En la barra te enseñan un QR; lo apuntas con la cámara y tu café queda sellado.</span></li>
-            <li data-at="0.6"><b>3</b><span><strong>Al {objetivo}º, invita Brava.</strong> El café gratis aparece en tu pass y lo canjeas cuando quieras.</span></li>
-            <li data-at="0.85"><b><BrandIcon name="muffin" class="h-5 w-5" /></b><span><strong>Y en tu cumpleaños,</strong> el brunch corre de nuestra cuenta.</span></li>
-          </ol>
-          <a href="/brava-pass" class="pass__cta btn-e btn-e--fresh mt-8">Consigue tu Brava Pass</a>
-        </div>
-        <div class="pass__phone" aria-hidden="true">
-          <div class="phone">
-            <div class="phone__notch"></div>
-            <div class="phone__screen">
-              <div class="flex items-center justify-between">
-                <Logo suffix="pass" class="text-2xl text-brand-brown" />
-                <span class="rounded-full bg-brand-brown px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cream">K7Q4MZ</span>
-              </div>
-              <p class="mt-4 text-sm text-brand-brown-80">Hola, <b class="text-brand-brown">Lucía</b></p>
-              <p class="pass__cuenta"><span id="pass-n">0</span><small>/ {objetivo} cafés</small></p>
-              <div class="pass__sellos">
-                {Array.from({ length: objetivo }).map((_, i) => (
-                  <span class="sello" style={`--d:${i}`}><BrandIcon name="taza" class="h-6 w-6" /></span>
-                ))}
-              </div>
-              <div class="pass__premio"><BrandIcon name="cafe" class="h-7 w-7" /><span><b>¡Café gratis!</b><small>Enséñalo en barra</small></span></div>
-              <div class="pass__qr">
-                <svg viewBox="0 0 29 29" class="h-full w-full" shape-rendering="crispEdges"><path id="qr-demo" fill="currentColor" d="" /></svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═════════ 6 · EL ALMA ═════════ -->
-  <section class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-24 sm:px-6 md:grid-cols-2">
-    <div class="alma__foto relative">
-      <Blob class="-inset-6 -z-10 h-[115%] w-[115%] text-brand-fresh/60" variant={2} />
-      <Image src={img.founderSpace} alt="La dueña de Brava junto al rótulo de musgo brava coffee and brunch" widths={[360, 560, 760]} sizes="(max-width: 768px) 90vw, 520px" class="aspect-[4/5] w-full rounded-[2.5rem] object-cover shadow-2xl" loading="lazy" data-par="1" />
-    </div>
-    <div>
-      <p class="font-hand text-3xl text-brand-calm-ink">{siteConfig.historia.titulo}</p>
-      <h2 class="mt-2 text-4xl font-bold leading-[1.02] text-brand-brown sm:text-6xl">No es solo un café.</h2>
-      <p class="mt-5 text-xl leading-relaxed text-brand-brown-80">{siteConfig.historia.frase.replace('No es solo un café. ', '')} Un lugar pequeño, pero con alma, creado para disfrutar, desconectar y sentirse como en casa.</p>
-      <a href="/historia" class="btn-e btn-e--brown mt-8">Conoce nuestra historia</a>
-    </div>
-  </section>
-
-  <Resenas />
 
   <!-- ═════════ 7 · VEN A VERNOS ═════════ -->
   <section class="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6">
@@ -293,11 +288,14 @@ const objetivo = siteConfig.bravaPass.objetivo;
       </div>
     </div>
   </section>
+
+  <button id="ambiente" class="ambiente" type="button" aria-pressed="false" aria-label="Activar o quitar el sonido de ambiente">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" fill="currentColor"/><path class="ondas" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+    <span>Sonido de miedo</span>
+  </button>
 </Base>
 
 <script>
-  import qrcode from 'qrcode-generator';
-
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const clamp = (v: number) => Math.min(1, Math.max(0, v));
   /* Avance (0–1) de una sección alta mientras su escenario está fijo en pantalla.
@@ -315,37 +313,38 @@ const objetivo = siteConfig.bravaPass.objetivo;
     return recorrido > 0 ? clamp((arriba - r.top) / recorrido / FIN) : 0;
   };
 
-  /* ---------- 1 · taza 3D ---------- */
-  const epica = document.getElementById('epica')!;
-  const canvas = document.getElementById('taza3d') as HTMLCanvasElement;
-  const steps = [...epica.querySelectorAll<HTMLElement>('.epica__step')];
-  const bar = epica.querySelector<HTMLElement>('.epica__bar i')!;
-  const word = epica.querySelector<HTMLElement>('.epica__word')!;
-  let taza: { setProgress(p: number): void; setTilt(x: number, y: number): void } | null = null;
+
+  /* ---------- 1 · la noche ---------- */
+  const noche = document.getElementById('noche')!;
+  const canvas = document.getElementById('noche3d') as HTMLCanvasElement;
+  const steps = [...noche.querySelectorAll<HTMLElement>('.noche__step')];
+  const bar = noche.querySelector<HTMLElement>('.noche__bar i')!;
+  const word = noche.querySelector<HTMLElement>('.noche__word')!;
+  const arana = noche.querySelector<HTMLElement>('.noche__arana')!;
+  let escena: { setProgress(p: number): void; setTilt(x: number, y: number): void } | null = null;
 
   const webgl = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
   if (webgl && !reduce) {
-    // Se carga después de pintar el texto, para que la portada salga al instante.
-    const arrancar = () => import('../scripts/taza3d').then(({ crearTaza }) =>
-      crearTaza(canvas, { onReady: () => epica.classList.add('is-3d') }).then((t) => { taza = t; pintarEpica(); }),
-    ).catch(() => epica.classList.add('no-3d'));
+    const arrancar = () => import('../scripts/noche3d').then(({ crearNoche }) =>
+      crearNoche(canvas, { onReady: () => noche.classList.add('is-3d') }).then((e) => { escena = e; pintarNoche(); }),
+    ).catch(() => noche.classList.add('no-3d'));
     'requestIdleCallback' in window ? requestIdleCallback(arrancar, { timeout: 900 }) : setTimeout(arrancar, 300);
-    // En móvil, el giroscopio también inclina la escena.
     window.addEventListener('deviceorientation', (e) => {
       if (e.gamma == null || e.beta == null) return;
-      taza?.setTilt(clamp((e.gamma + 30) / 60) * 2 - 1, clamp((e.beta - 20) / 60) * 2 - 1);
+      escena?.setTilt(clamp((e.gamma + 30) / 60) * 2 - 1, clamp((e.beta - 20) / 60) * 2 - 1);
     }, { passive: true });
   } else {
-    epica.classList.add('no-3d');
+    noche.classList.add('no-3d');
   }
 
-  function pintarEpica() {
-    const p = avance(epica);
-    taza?.setProgress(p);
+  function pintarNoche() {
+    const p = avance(noche);
+    escena?.setProgress(p);
     bar.style.transform = `scaleX(${p})`;
-    word.style.transform = `translate(-50%, -50%) scale(${1 + p * 0.5})`;
-    word.style.opacity = String(0.06 * (1 - clamp((p - 0.25) / 0.2)) + 0.025);
-    epica.classList.toggle('is-moving', p > 0.02);
+    word.style.transform = `translate(-50%, -50%) scale(${1 + p * 0.35})`;
+    // la araña baja con el scroll (y sube del todo al final)
+    const bajada = clamp(p / 0.12) * (1 - clamp((p - 0.18) / 0.1)); // solo al principio: luego deja ver el latte y al fantasma
+    arana.style.setProperty('--hilo', `${Math.round(40 + bajada * (innerWidth < 768 ? 150 : 250))}px`);
     steps.forEach((s) => {
       const a = parseFloat(s.dataset.from!), b = parseFloat(s.dataset.to!);
       const fin = b > 1 ? 1 : clamp((b - p) / 0.04);
@@ -355,6 +354,92 @@ const objetivo = siteConfig.bravaPass.objetivo;
       s.style.visibility = k < 0.01 ? 'hidden' : 'visible';
     });
   }
+  // la araña: si la tocas, sube corriendo
+  arana.addEventListener('click', () => { arana.classList.add('huye'); setTimeout(() => arana.classList.remove('huye'), 2600); });
+
+  /* ---------- la linterna ---------- */
+  const lint = document.getElementById('linterna')!;
+  let encendida = false;
+  const encender = () => {
+    if (encendida) return;
+    encendida = true;
+    lint.classList.add('fuera');
+    setTimeout(() => lint.remove(), 1400);
+  };
+  if (reduce || sessionStorage.getItem('hw.luz')) { lint.remove(); encendida = true; }
+  else {
+    sessionStorage.setItem('hw.luz', '1');
+    const mover = (x: number, y: number) => { lint.style.setProperty('--lx', `${x}px`); lint.style.setProperty('--ly', `${y}px`); };
+    lint.addEventListener('pointermove', (e) => { const r = lint.getBoundingClientRect(); mover(e.clientX - r.left, e.clientY - r.top); lint.classList.add('movida'); });
+    // en el móvil (o si nadie la mueve) la linterna busca sola
+    const t0 = performance.now();
+    const vagar = () => {
+      if (encendida) return;
+      if (!lint.classList.contains('movida')) {
+        const t = (performance.now() - t0) / 1000, r = lint.getBoundingClientRect();
+        mover(r.width * (0.5 + 0.3 * Math.sin(t * 0.9)), r.height * (0.45 + 0.22 * Math.sin(t * 1.3 + 1)));
+      }
+      requestAnimationFrame(vagar);
+    };
+    vagar();
+    lint.querySelector('button')!.addEventListener('click', encender);
+    lint.addEventListener('click', (e) => { if ((e.target as HTMLElement).tagName !== 'BUTTON' && matchMedia('(pointer: coarse)').matches) encender(); });
+    window.addEventListener('scroll', () => { if (scrollY > 40) encender(); }, { passive: true });
+    setTimeout(encender, 9000);
+  }
+
+  /* ---------- 3 · cuenta atrás (hora de Madrid) ---------- */
+  (() => {
+    const sec = document.getElementById('cuenta')!;
+    const [Y, M, D] = sec.dataset.noche!.split('-').map(Number);
+    const objetivo = Date.UTC(Y, M - 1, D, 0, 0, 0) - 60 * 60 * 1000; // 00:00 en Madrid (horario de invierno, UTC+1)
+    const finDia = objetivo + 24 * 3600 * 1000;
+    const nums = Object.fromEntries([...sec.querySelectorAll<HTMLElement>('[data-k]')].map((n) => [n.dataset.k, n]));
+    const pon = (k: string, v: number) => { const t = String(v).padStart(2, '0'); if (nums[k].textContent !== t) { nums[k].textContent = t; nums[k].classList.remove('gira'); void nums[k].offsetWidth; nums[k].classList.add('gira'); } };
+    const tic = () => {
+      const ahora = Date.now();
+      if (ahora >= objetivo) {
+        sec.querySelector('.cuenta__digitos')!.toggleAttribute('hidden', true);
+        const hoy = sec.querySelector<HTMLElement>('.cuenta__hoy')!;
+        hoy.hidden = ahora >= finDia;
+        if (ahora >= finDia) sec.hidden = true;
+        return;
+      }
+      let s = Math.floor((objetivo - ahora) / 1000);
+      pon('d', Math.floor(s / 86400)); s %= 86400;
+      pon('h', Math.floor(s / 3600)); s %= 3600;
+      pon('m', Math.floor(s / 60));
+      pon('s', s % 60);
+      setTimeout(tic, 1000 - (ahora % 1000));
+    };
+    tic();
+  })();
+
+  /* ---------- 5 · photocall: la foto, a oscuras con linterna ---------- */
+  (() => {
+    const f = document.getElementById('pc-foto')!;
+    if (matchMedia('(pointer: coarse)').matches) return;
+    f.addEventListener('pointermove', (e) => {
+      const r = f.getBoundingClientRect();
+      f.style.setProperty('--fx', `${e.clientX - r.left}px`);
+      f.style.setProperty('--fy', `${e.clientY - r.top}px`);
+      f.classList.add('linternita');
+    });
+    f.addEventListener('pointerleave', () => f.classList.remove('linternita'));
+  })();
+
+  /* ---------- sonido (solo si se activa) ---------- */
+  (() => {
+    const b = document.getElementById('ambiente')!;
+    let amb: { encender(): Promise<void>; apagar(): void } | null = null, on = false;
+    b.addEventListener('click', async () => {
+      if (!amb) amb = (await import('../scripts/ambiente')).crearAmbiente();
+      on = !on;
+      b.setAttribute('aria-pressed', String(on));
+      b.querySelector('span')!.textContent = on ? 'Sonido: sí' : 'Sonido de miedo';
+      on ? amb.encender() : amb.apagar();
+    });
+  })();
 
   /* ---------- 2 · franjas ---------- */
   const franjas = [...document.querySelectorAll<HTMLElement>('.franja__track')];
@@ -372,6 +457,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
     });
   }
 
+
   /* ---------- 4 · carta horizontal ---------- */
   const hcarta = document.querySelector<HTMLElement>('.hcarta')!;
   const track = hcarta.querySelector<HTMLElement>('.hcarta__track')!;
@@ -387,41 +473,6 @@ const objetivo = siteConfig.bravaPass.objetivo;
     pars.forEach((el) => { el.style.translate = `0 ${(p - 0.5) * Number(el.dataset.par) * 40}px`; });
   }
 
-  /* ---------- 5 · pass: los sellos se llenan con el scroll ---------- */
-  const pass = document.querySelector<HTMLElement>('.pass')!;
-  const sellos = [...pass.querySelectorAll<HTMLElement>('.sello')];
-  const pasos = [...pass.querySelectorAll<HTMLElement>('.pass__pasos li')];
-  const passN = document.getElementById('pass-n')!;
-  const total = sellos.length;
-  function pintarPass() {
-    const p = avance(pass);
-    const n = Math.min(total, Math.floor(clamp((p - 0.1) / 0.65) * (total + 0.999)));
-    sellos.forEach((s, i) => s.classList.toggle('on', i < n));
-    passN.textContent = String(n);
-    pass.classList.toggle('premio', n >= total);
-    pasos.forEach((li) => li.classList.toggle('on', p >= parseFloat(li.dataset.at!)));
-    const ult = pasos.filter((li) => li.classList.contains('on')).pop() ?? pasos[0];
-    pasos.forEach((li) => li.classList.toggle('actual', li === ult));
-  }
-  // QR de muestra (el de verdad lo genera el pass de cada cliente)
-  const qr = qrcode(3, 'M');
-  qr.addData('BRAVA:K7Q4MZ');
-  qr.make();
-  const nq = qr.getModuleCount();
-  let d = '';
-  for (let r = 0; r < nq; r++) for (let c = 0; c < nq; c++) if (qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
-  const qrPath = document.getElementById('qr-demo')!;
-  qrPath.setAttribute('d', d);
-  qrPath.parentElement!.setAttribute('viewBox', `-1 -1 ${nq + 2} ${nq + 2}`);
-
-  /* ---------- parallax suave ---------- */
-  const alma = document.querySelector<HTMLElement>('.alma__foto img');
-  function pintarAlma() {
-    if (!alma) return;
-    const r = alma.getBoundingClientRect();
-    const k = (r.top + r.height / 2 - window.innerHeight / 2) / window.innerHeight;
-    alma.style.transform = `translateY(${k * -40}px) rotate(${k * -3}deg)`;
-  }
 
   /* ---------- 7 · abierto ahora (hora de Murcia) ---------- */
   (() => {
@@ -440,13 +491,13 @@ const objetivo = siteConfig.bravaPass.objetivo;
     el.querySelector('span')!.textContent = abierto ? 'Abierto ahora' : prox ? `Cerrado · abrimos a las ${prox}` : 'Cerrado ahora';
   })();
 
+
   /* ---------- bucle ---------- */
   // Cada sección solo se recalcula mientras está en pantalla.
   const enPantalla = new Map<Element, boolean>();
   const vigia = new IntersectionObserver((es) => es.forEach((e) => enPantalla.set(e.target, e.isIntersecting)), { rootMargin: '200px 0px' });
   const secFranjas = document.querySelector('.franjas')!;
-  const secAlma = document.querySelector('.alma__foto')!;
-  [epica, secFranjas, hcarta, pass, secAlma].forEach((el) => vigia.observe(el));
+  [noche, secFranjas, hcarta].forEach((el) => vigia.observe(el));
   const ve = (el: Element) => enPantalla.get(el) !== false;
 
   let last = performance.now(), yPrev = -1;
@@ -456,12 +507,10 @@ const objetivo = siteConfig.bravaPass.objetivo;
     last = now;
     const y = window.scrollY, movido = y !== yPrev;
     yPrev = y;
-    if (ve(secFranjas) && !reduce) pintarFranjas(dt); // la franja se mueve sola
-    if (!movido) return; // el resto solo depende del scroll
-    if (ve(epica)) pintarEpica();
+    if (ve(secFranjas) && !reduce) pintarFranjas(dt);
+    if (!movido) return;
+    if (ve(noche)) pintarNoche();
     if (ve(hcarta)) pintarCarta();
-    if (ve(pass)) pintarPass();
-    if (ve(secAlma) && !reduce) pintarAlma();
   }
   (function loop() { tick(); requestAnimationFrame(loop); })();
 </script>
@@ -477,50 +526,147 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .btn-e--brown { background: var(--color-brand-brown); color: var(--color-brand-cream); }
   .btn-e--brown:hover { transform: translateY(-2px) rotate(-1deg); }
 
-  /* ── 1 · taza ── */
-  .epica { height: 460vh; }
-  .epica__stage { position: sticky; top: 4rem; height: calc(100svh - 4rem); overflow: hidden; background: radial-gradient(ellipse 55% 70% at 70% 55%, #5f4c44 0%, #4a3a34 38%, #3a2d28 70%, #2b211e 100%); }
-  .epica__stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, transparent 55%, rgba(20,13,10,.35) 100%); }
-  .epica__stripes { position: absolute; inset: 0; background-image: repeating-linear-gradient(90deg, rgba(254,249,245,.045) 0 1px, transparent 1px 26px); }
-  .epica__word { position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%); font-size: min(44vw, 62vh); opacity: .09; white-space: nowrap; pointer-events: none; will-change: transform, opacity; }
-  .epica__canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s ease; }
-  .epica.is-3d .epica__canvas { opacity: 1; }
-  .epica__fallback { display: none; position: absolute; right: 6%; top: 50%; width: min(36vw, 420px); aspect-ratio: 4/5; transform: translateY(-50%) rotate(3deg); }
-  .epica.no-3d .epica__fallback { display: block; }
-  .epica__step { position: absolute; z-index: 2; will-change: opacity, transform; }
-  .epica__step--intro { left: max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); top: 50%; translate: 0 -50%; max-width: 36rem; }
-  .epica__step--intro .epica__h1 { margin-left: 0; }
-  .epica__step--intro .epica__ctas { justify-content: flex-start; }
-  .epica__step--left { left: max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); top: 50%; translate: 0 -50%; max-width: 30rem; }
-  .epica__step--bottom { left: 0; right: 0; bottom: 0; text-align: center; padding: 4rem 1.25rem 3.8rem; background: linear-gradient(to top, #2f2420 45%, transparent); }
-  .epica__kicker { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); }
-  .epica__h1 { margin: .6rem auto 0; max-width: 17ch; font-size: clamp(2.3rem, 5vw, 4.4rem); font-weight: 700; line-height: .98; letter-spacing: -.035em; }
-  .epica__h1 .font-hand { font-weight: 600; letter-spacing: 0; }
-  .epica__h2 { margin-top: .35rem; font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
-  .epica__p { margin-top: 1rem; font-size: 1.15rem; line-height: 1.55; color: color-mix(in srgb, var(--color-brand-cream) 80%, transparent); }
-  .epica__ctas { margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
-  .epica__chips { margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .epica__chips li { display: inline-flex; gap: .6rem; align-items: baseline; border-radius: 999px; padding: .55rem 1rem; background: color-mix(in srgb, var(--color-brand-cream) 10%, transparent); border: 1px solid color-mix(in srgb, var(--color-brand-cream) 18%, transparent); font-size: .92rem; }
-  .epica__chips b { color: var(--color-brand-fresh); }
-  .epica__hint { position: absolute; z-index: 3; left: 50%; bottom: 1.1rem; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .3rem; font: 600 1.35rem var(--font-hand); color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); transition: opacity .4s; }
-  .epica__hint i { width: 2px; height: 26px; background: currentColor; border-radius: 2px; animation: hint 1.6s ease-in-out infinite; transform-origin: top; }
-  .epica.is-moving .epica__hint { opacity: 0; }
-  @keyframes hint { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(0); transform-origin: bottom; } }
-  .epica__bar, .hcarta__bar { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 4px; background: color-mix(in srgb, var(--color-brand-cream) 12%, transparent); }
-  .epica__bar i, .hcarta__bar i { display: block; height: 100%; background: var(--color-brand-fresh); transform-origin: left; transform: scaleX(0); }
+
+  /* ── la página, de noche ── */
+  html:has(#noche), html:has(#noche) body { background: #1d1512; background-image: repeating-linear-gradient(90deg, rgba(254,249,245,.025) 0 1px, transparent 1px 26px); }
+  html:has(#noche) .hcarta__head h2 { color: var(--color-brand-cream); }
+  html:has(#noche) .hcarta__head .font-hand { color: var(--color-brand-fresh); }
+
+  /* ── 1 · la noche ── */
+  .noche { height: 460vh; position: relative; color: var(--color-brand-cream); }
+  .noche__stage { position: sticky; top: 4rem; height: calc(100svh - 4rem); overflow: hidden; background: radial-gradient(ellipse 60% 70% at 70% 55%, #3b2c27 0%, #271c19 45%, #170f0d 100%); }
+  .noche__cielo { position: absolute; inset: 0; pointer-events: none; }
+  .noche__luna { position: absolute; left: 44%; top: 7%; width: min(13vw, 10rem); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 38% 35%, #fffaf0 0%, #f2e8d5 45%, #d9cbb0 100%); box-shadow: 0 0 60px 18px rgba(255,244,220,.18), 0 0 220px 80px rgba(201,212,255,.08); opacity: .9; }
+  .noche__luna::after { content: ''; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 30% 60%, rgba(150,130,100,.18) 0 9%, transparent 10%), radial-gradient(circle at 62% 30%, rgba(150,130,100,.14) 0 7%, transparent 8%), radial-gradient(circle at 58% 70%, rgba(150,130,100,.12) 0 5%, transparent 6%); }
+  .noche__estrellas { position: absolute; inset: 0 0 40% 0; background-image: radial-gradient(1.5px 1.5px at 20% 30%, #fff8 50%, transparent 51%), radial-gradient(1px 1px at 70% 15%, #fff7 50%, transparent 51%), radial-gradient(1.2px 1.2px at 85% 40%, #fff6 50%, transparent 51%), radial-gradient(1px 1px at 40% 10%, #fff8 50%, transparent 51%), radial-gradient(1.4px 1.4px at 55% 35%, #fff5 50%, transparent 51%), radial-gradient(1px 1px at 92% 12%, #fff7 50%, transparent 51%); animation: titila 5s ease-in-out infinite alternate; }
+  @keyframes titila { to { opacity: .45; } }
+  .noche__word { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%); font-size: min(20vw, 30vh); font-weight: 800; letter-spacing: -.05em; text-transform: uppercase; color: transparent; -webkit-text-stroke: 1.5px rgba(254,249,245,.09); white-space: nowrap; pointer-events: none; will-change: transform; }
+  .noche__canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.4s ease; touch-action: pan-y; }
+  .noche.is-3d .noche__canvas { opacity: 1; }
+  .noche__niebla { position: absolute; left: 0; right: 0; bottom: 0; height: 45%; pointer-events: none; overflow: hidden; }
+  .noche__niebla i { position: absolute; bottom: -20%; left: -30%; width: 160%; height: 80%; background: radial-gradient(ellipse at 30% 70%, rgba(220,215,230,.16), transparent 60%), radial-gradient(ellipse at 75% 60%, rgba(220,215,230,.12), transparent 55%); filter: blur(10px); animation: niebla 26s linear infinite alternate; }
+  .noche__niebla i:nth-child(2) { bottom: -35%; animation-duration: 38s; animation-direction: alternate-reverse; opacity: .7; }
+  @keyframes niebla { to { transform: translateX(18%); } }
+  .noche__tela { position: absolute; top: 0; right: 0; width: min(34vw, 300px); fill: none; stroke: rgba(254,249,245,.42); stroke-width: 1.4; pointer-events: none; }
+  .noche__arana { position: absolute; top: 0; right: min(16vw, 150px); width: 44px; display: flex; flex-direction: column; align-items: center; color: #120c0a; z-index: 3; cursor: pointer; filter: drop-shadow(0 0 6px rgba(254,249,245,.25)); }
+  .noche__hilo { display: block; width: 1.5px; height: var(--hilo, 40px); background: rgba(254,249,245,.5); transition: height .5s cubic-bezier(.3,1.3,.5,1); }
+  .noche__arana svg { width: 44px; height: auto; color: #241815; animation: balanceo 3.2s ease-in-out infinite; transform-origin: 50% -200%; }
+  .noche__arana .patas { animation: patas .5s ease-in-out infinite alternate; transform-origin: center; }
+  .noche__arana.huye .noche__hilo { height: 8px !important; transition-duration: .6s; }
+  @keyframes balanceo { 50% { transform: rotate(6deg); } }
+  @keyframes patas { to { transform: scaleY(.9) scaleX(1.06); } }
+  .noche__step { position: absolute; z-index: 2; will-change: opacity, transform; }
+  .noche__step--intro { left: max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); top: 52%; translate: 0 -50%; max-width: 38rem; }
+  .noche__step--left { left: max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); top: 50%; translate: 0 -50%; max-width: 30rem; }
+  .noche__step--bottom { left: 0; right: 0; bottom: 0; text-align: center; padding: 4rem 1.25rem 3.6rem; background: linear-gradient(to top, #170f0d 45%, transparent); }
+  .noche__kicker { display: inline-flex; align-items: center; gap: .6rem; font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(254,249,245,.7); }
+  .noche__kicker .brava-logo { color: var(--color-brand-cream); }
+  .noche__h1 { margin-top: .5rem; display: flex; flex-direction: column; }
+  .noche__hw { display: inline-block; width: max-content; white-space: nowrap; padding-right: .06em; font-size: clamp(3rem, 6.6vw, 6.2rem); font-weight: 800; line-height: .9; letter-spacing: -.045em; text-transform: uppercase; background: linear-gradient(180deg, #fffaf0 30%, #d9c7aa 100%); -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: 0 0 60px rgba(255,236,200,.12); }
+  .noche__lema { position: relative; align-self: flex-start; margin-top: .3rem; font: 600 clamp(2.2rem, 5vw, 4rem) var(--font-hand); line-height: 1.05; color: var(--color-brand-cream); }
+  .noche__lema svg { position: absolute; left: 34%; right: 2%; bottom: -.25em; width: 64%; height: .4em; fill: none; stroke: var(--color-brand-fresh); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 320; stroke-dashoffset: 320; animation: subraya 1.4s .6s cubic-bezier(.6,.1,.2,1) forwards; }
+  @keyframes subraya { to { stroke-dashoffset: 0; } }
+  .noche__h2 { margin: .35rem auto 0; max-width: 18ch; font-size: clamp(2rem, 4.6vw, 3.8rem); font-weight: 700; line-height: 1.02; letter-spacing: -.03em; }
+  .noche__step--left .noche__h2 { margin-left: 0; }
+  .noche__p { margin-top: 1rem; font-size: 1.15rem; line-height: 1.55; color: rgba(254,249,245,.8); }
+  .noche__ctas { margin-top: 1.8rem; display: flex; flex-wrap: wrap; gap: .75rem; }
+  .noche__precio { font-size: clamp(3.4rem, 7vw, 5.4rem); font-weight: 800; letter-spacing: -.05em; line-height: .9; color: var(--color-brand-cream); }
+  .noche__precio span { font-size: .45em; margin-left: .08em; vertical-align: .9em; }
+  .noche__bar { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(254,249,245,.1); }
+  .noche__bar i { display: block; height: 100%; background: var(--color-brand-fresh); transform-origin: left; transform: scaleX(0); }
+  .noche.no-3d .noche__stage { background: radial-gradient(ellipse at 70% 55%, #3b2c27, #170f0d); }
+
+  /* la linterna */
+  .linterna { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; align-content: center; gap: 1.2rem; background: radial-gradient(circle at var(--lx, 50%) var(--ly, 45%), rgba(10,6,5,0) 0, rgba(10,6,5,0) 90px, rgba(10,6,5,.72) 150px, rgba(8,5,4,.96) 260px); cursor: none; transition: opacity 1.2s ease; }
+  .linterna__txt { display: grid; text-align: center; color: var(--color-brand-cream); pointer-events: none; text-shadow: 0 2px 20px #000; }
+  .linterna__txt .font-hand { font-size: 2rem; color: var(--color-brand-fresh); }
+  .linterna__txt b { font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; opacity: .75; }
+  .linterna__btn { cursor: pointer; border-radius: 999px; border: 2px solid rgba(254,249,245,.5); color: var(--color-brand-cream); padding: .8rem 1.4rem; font-weight: 700; background: rgba(0,0,0,.3); }
+  .linterna.fuera { animation: velas 1.2s steps(1) forwards; pointer-events: none; }
+  @keyframes velas { 0% { opacity: .6; } 12% { opacity: .95; } 22% { opacity: .3; } 30% { opacity: .8; } 45% { opacity: .15; } 60%, 100% { opacity: 0; } }
+  @media (pointer: coarse) { .linterna { cursor: auto; } .linterna__txt b::after { content: ' · toca para encender'; } .linterna__txt b { font-size: 0; } .linterna__txt b::after { font-size: .8rem; } }
+
+  /* ── 2 · franjas ── */
+  .franjas--hw { background: transparent; }
+  .franja--caramelo { top: 7.2rem; background: #b5733f; color: var(--color-brand-cream); transform: rotate(3deg); }
+  .franja--caramelo .franja__group { color: #fef9f5; }
+
+  /* ── 3 · cuenta atrás ── */
+  .cuenta { padding: 4rem 1.25rem 3rem; text-align: center; color: var(--color-brand-cream); }
+  .cuenta__digitos { margin-top: 1.2rem; display: flex; justify-content: center; gap: clamp(.5rem, 2vw, 1.2rem); }
+  .cuenta__bloque { display: grid; gap: .4rem; }
+  .cuenta__num { display: block; min-width: 2.2ch; border-radius: 1.2rem; padding: .2em .25em; background: linear-gradient(180deg, #34261f 50%, #2b1f1a 50%); box-shadow: inset 0 0 0 1px rgba(254,249,245,.08), 0 20px 30px -18px #000; font-size: clamp(2.6rem, 9vw, 5.5rem); font-weight: 800; letter-spacing: -.04em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .cuenta__num.gira { animation: gira .5s cubic-bezier(.3,1.4,.5,1); }
+  @keyframes gira { from { transform: rotateX(-80deg); opacity: .3; } }
+  .cuenta__bloque small { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(254,249,245,.55); }
+  .cuenta__hoy { margin-top: 1rem; font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 800; }
+
+  /* ── 4 · promo ── */
+  .promo { max-width: 72rem; margin: 0 auto; padding: 4rem 1.25rem 5rem; display: grid; gap: 2.5rem; align-items: center; color: var(--color-brand-cream); }
+  .promo__ilus { position: relative; aspect-ratio: 1; max-width: 30rem; width: 100%; margin: 0 auto; }
+  .promo__halo { position: absolute; inset: 6%; border-radius: 50%; background: radial-gradient(circle, rgba(181,115,63,.45), rgba(181,115,63,0) 68%); filter: blur(6px); animation: halo 4s ease-in-out infinite alternate; }
+  @keyframes halo { to { transform: scale(1.06); opacity: .8; } }
+  .promo__foto { position: relative; width: 100%; height: auto; filter: drop-shadow(0 40px 50px rgba(0,0,0,.45)); animation: flota 7s ease-in-out infinite; }
+  @keyframes flota { 50% { transform: translateY(-12px); } }
+  .promo__sello { position: absolute; z-index: 2; right: 2%; top: 6%; display: grid; place-items: center; width: 7.2rem; aspect-ratio: 1; border-radius: 50%; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-size: 2.2rem; font-weight: 800; letter-spacing: -.04em; transform: rotate(12deg); box-shadow: 0 20px 30px -14px #000; line-height: 1; }
+  .promo__sello small { font-size: .9rem; margin-top: -.5rem; }
+  .promo__bat { position: absolute; width: 4.5rem; color: #0f0a09; animation: vuela 7s ease-in-out infinite; }
+  .promo__bat--0 { left: 0; top: 0; }
+  .promo__bat--1 { left: 58%; top: 52%; width: 3rem; animation-delay: -2s; }
+  .promo__bat--2 { left: 4%; bottom: 8%; width: 3.6rem; animation-delay: -4s; }
+  @keyframes vuela { 25% { transform: translate(14px, -10px) scaleY(.6); } 50% { transform: translate(24px, 4px) scaleY(1); } 75% { transform: translate(8px, 10px) scaleY(.6); } }
+  .promo__h2 { margin-top: .4rem; font-size: clamp(2.1rem, 4.4vw, 3.6rem); font-weight: 700; line-height: 1.02; letter-spacing: -.03em; max-width: 16ch; }
+  .promo__frase { margin-top: 1rem; font: 600 1.7rem var(--font-hand); color: rgba(254,249,245,.8); }
+  @media (min-width: 768px) { .promo { grid-template-columns: 1fr 1fr; } }
+
+  /* ── 5 · photocall ── */
+  .photocall { max-width: 72rem; margin: 0 auto; padding: 3rem 1.25rem 6rem; display: grid; gap: 3rem; align-items: center; color: var(--color-brand-cream); }
+  .photocall__foto { position: relative; width: min(82vw, 27rem); margin: 0 auto; padding: .9rem .9rem 3.6rem; background: #fbf6ee; border-radius: .5rem; box-shadow: 0 40px 70px -30px #000, 0 0 0 1px rgba(0,0,0,.05); transform: rotate(-3deg); transition: transform .5s cubic-bezier(.3,1.3,.5,1); }
+  .photocall__foto:hover { transform: rotate(-1deg) scale(1.02); }
+  .photocall__oscuro { position: absolute; inset: .9rem .9rem 3.6rem; border-radius: .4rem; pointer-events: none; background: radial-gradient(circle at var(--fx, 50%) var(--fy, 40%), rgba(12,8,6,0) 0, rgba(12,8,6,0) 80px, rgba(12,8,6,.85) 170px); opacity: 0; transition: opacity .5s; }
+  .photocall__foto.linternita .photocall__oscuro { opacity: 1; }
+  .photocall__pie { position: absolute; left: 0; right: 0; bottom: .9rem; text-align: center; font-size: 1.8rem; color: var(--color-brand-brown); }
+  .photocall__cinta { position: absolute; width: 6.5rem; height: 1.8rem; background: rgba(231,226,81,.75); box-shadow: 0 2px 6px rgba(0,0,0,.15); }
+  .photocall__cinta--1 { top: -.8rem; left: -1.4rem; transform: rotate(-30deg); }
+  .photocall__cinta--2 { top: -.8rem; right: -1.4rem; transform: rotate(28deg); }
+  .photocall__pasos { margin-top: 1.6rem; display: grid; gap: 1rem; }
+  .photocall__pasos li { display: grid; grid-template-columns: 2.4rem 1fr; gap: .9rem; align-items: start; color: rgba(254,249,245,.8); line-height: 1.5; }
+  .photocall__pasos b { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-weight: 800; }
+  .photocall__pasos strong { color: var(--color-brand-cream); }
+  @media (min-width: 768px) { .photocall { grid-template-columns: 1fr 1.1fr; } }
+
+  /* ── sonido ── */
+  .ambiente { position: fixed; z-index: 60; left: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); display: inline-flex; align-items: center; gap: .5rem; border-radius: 999px; padding: .6rem .9rem; background: rgba(23,15,13,.85); color: var(--color-brand-cream); border: 1px solid rgba(254,249,245,.18); font-size: .82rem; font-weight: 700; backdrop-filter: blur(4px); }
+  .ambiente svg { width: 1.1rem; height: 1.1rem; }
+  .ambiente .ondas { opacity: .25; }
+  .ambiente[aria-pressed="true"] .ondas { opacity: 1; animation: ondas 1.2s ease-in-out infinite alternate; }
+  @keyframes ondas { to { opacity: .4; } }
+  html.con-pedido .ambiente { bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.4rem); }
+
   @media (max-width: 767px) {
-    .epica { height: 420vh; }
-    .epica__step--left { left: 0; right: 0; top: auto; bottom: 3.2rem; translate: none; max-width: none; padding: 2.5rem 1.25rem 0; background: linear-gradient(to top, #3a2d28 60%, transparent); }
-    .epica__step--intro { left: 0; right: 0; top: auto; bottom: 0; translate: none; max-width: none; padding: 2.5rem 1.25rem 2.4rem; text-align: center; background: linear-gradient(to top, #3a2d28 55%, transparent); }
-    .epica__step--intro .epica__h1 { margin-left: auto; }
-    .epica__step--intro .epica__ctas { justify-content: center; }
-    .epica__stage { background: radial-gradient(ellipse 90% 55% at 50% 38%, #5f4c44 0%, #4a3a34 40%, #3a2d28 75%, #2b211e 100%); }
-    .epica__hint { display: none; }
-    .epica__p { font-size: 1rem; }
-    .epica__h1 { font-size: clamp(1.75rem, 8.4vw, 2.6rem); }
-    .epica__h2 { font-size: clamp(1.7rem, 8vw, 2.4rem); }
-    .epica__fallback { right: 50%; top: 30%; width: 62vw; transform: translate(50%, -50%) rotate(3deg); }
+    .noche { height: 420vh; }
+    .noche__step--intro { left: 0; right: 0; top: auto; bottom: 0; translate: none; max-width: none; padding: 3rem 1.25rem 2.4rem; text-align: center; background: linear-gradient(to top, #170f0d 55%, transparent); }
+    .noche__h1 { align-items: center; }
+    .noche__hw { font-size: clamp(2.6rem, 15vw, 4.2rem); }
+    .noche__lema { align-self: center; font-size: clamp(1.9rem, 9vw, 2.6rem); }
+    .noche__ctas { justify-content: center; }
+    .noche__kicker { justify-content: center; font-size: .68rem; }
+    .noche__step--left { left: 0; right: 0; top: auto; bottom: 0; translate: none; max-width: none; padding: 3rem 1.25rem 2.6rem; background: linear-gradient(to top, #170f0d 60%, transparent); }
+    .noche__p { font-size: 1rem; }
+    .noche__h2 { font-size: clamp(1.7rem, 7.6vw, 2.4rem); }
+    .noche__luna { left: 10%; top: 4%; width: 22vw; }
+    .noche__tela { width: 42vw; }
+    .noche__arana { right: 22vw; }
+    /* los textos de la escena quedan por encima de los botones flotantes (sonido, WhatsApp) */
+    .noche__step--intro { padding-bottom: 5rem; }
+    .noche__step--left { padding-bottom: 5rem; }
+    .noche__step--bottom { padding: 3rem 1rem 5rem; }
+    .noche__step--bottom .font-hand { font-size: 1.5rem; }
+    .noche__step--bottom .noche__h2 { font-size: 1.55rem; }
+    .noche__step--bottom .noche__precio { font-size: 2.6rem; }
+    .noche__step--bottom > div { margin-top: .6rem; gap: .8rem; }
   }
+  @media (max-width: 359px) { .noche__kicker span { display: none; } }
 
   /* ── 2 · franjas ── */
   .franjas { position: relative; height: 15rem; margin-top: -1px; overflow: hidden; background: var(--color-brand-cream); }
@@ -531,22 +677,6 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .franja__group { display: flex; align-items: center; gap: 1.6rem; padding-right: 1.6rem; color: var(--color-brand-brown); }
   .franja__group span { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -.02em; white-space: nowrap; text-transform: lowercase; }
 
-  /* ── 3 · combos apilados ── */
-  .stack { display: grid; gap: 2rem; }
-  .stack__card { position: sticky; top: calc(5.5rem + var(--i) * 1.4rem); display: grid; align-items: center; gap: 1rem; border-radius: 2.5rem; padding: 2rem 1.5rem; min-height: min(78svh, 34rem); box-shadow: 0 -12px 40px -18px rgba(68,54,49,.35); overflow: hidden; color: var(--color-brand-brown); }
-  .stack__fotos { position: relative; height: 15rem; }
-  .stack__cafe { position: absolute !important; left: 4%; top: 0; width: 52%; rotate: -8deg; }
-  .stack__comida { position: absolute !important; right: 4%; bottom: 0; width: 56%; rotate: 6deg; z-index: 1; }
-  .stack__n { font: 600 2rem var(--font-hand); opacity: .7; }
-  .stack__nombre { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700; letter-spacing: -.035em; line-height: 1; }
-  .stack__desc { margin-top: .8rem; font-size: 1.1rem; line-height: 1.5; opacity: .85; max-width: 26ch; }
-  .stack__precio { margin-top: 1rem; font-size: clamp(3.6rem, 9vw, 6.5rem); font-weight: 800; letter-spacing: -.05em; line-height: .9; }
-  .stack__precio span { font-size: .45em; margin-left: .1em; vertical-align: .9em; }
-  @media (min-width: 768px) {
-    .stack__card { grid-template-columns: 1.1fr 1fr; padding: 3rem 3.5rem; }
-    .stack__card:nth-child(even) .stack__fotos { order: 2; }
-    .stack__fotos { height: 26rem; }
-  }
 
   /* ── 4 · carta horizontal ── */
   .hcarta { height: 340vh; }
@@ -592,49 +722,6 @@ const objetivo = siteConfig.bravaPass.objetivo;
     .hpanel__foto--2 { width: 46%; top: -2%; right: -4%; }
   }
 
-  /* ── 5 · pass ── */
-  .pass { height: 260vh; border-radius: 3rem 3rem 0 0; margin-top: 3rem; z-index: 2; } /* encima de la foto que viene detrás */
-  .pass__stage { position: sticky; top: 4rem; min-height: calc(100svh - 4rem); display: flex; align-items: center; padding: 3rem 0; overflow: hidden; }
-  .pass__pasos { margin-top: 2rem; display: grid; gap: 1rem; }
-  .pass__pasos li { display: grid; grid-template-columns: 2.4rem 1fr; gap: .9rem; align-items: start; opacity: .35; transform: translateX(-8px); transition: opacity .5s, transform .5s; }
-  .pass__pasos li.on { opacity: 1; transform: none; }
-  .pass__pasos b { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-weight: 800; }
-  .pass__pasos span { color: color-mix(in srgb, var(--color-brand-cream) 80%, transparent); line-height: 1.5; }
-  .pass__pasos strong { color: var(--color-brand-cream); }
-  .pass__phone { display: flex; justify-content: center; }
-  .phone { position: relative; width: min(78vw, 19rem); aspect-ratio: 9/18.5; border-radius: 2.8rem; background: #2a201d; padding: .7rem; box-shadow: 0 40px 80px -30px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.08); transform: rotate(4deg); }
-  .phone__notch { position: absolute; z-index: 2; top: 1.1rem; left: 50%; transform: translateX(-50%); width: 30%; height: 1.2rem; border-radius: 999px; background: #2a201d; }
-  .phone__screen { height: 100%; border-radius: 2.2rem; background: var(--color-brand-cream); background-image: repeating-linear-gradient(90deg, #f3e6da 0 1px, transparent 1px 26px); padding: 2.6rem 1.1rem 1.1rem; color: var(--color-brand-brown); display: flex; flex-direction: column; }
-  .pass__cuenta { margin-top: .2rem; font-size: 3.4rem; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
-  .pass__cuenta small { font-size: .9rem; font-weight: 600; letter-spacing: 0; margin-left: .3rem; color: var(--color-brand-brown-80); }
-  .pass__sellos { margin-top: .9rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .45rem; }
-  .sello { aspect-ratio: 1; display: grid; place-items: center; border-radius: 999px; border: 2px dashed color-mix(in srgb, var(--color-brand-brown) 30%, transparent); color: color-mix(in srgb, var(--color-brand-brown) 25%, transparent); transition: all .35s cubic-bezier(.3,1.6,.5,1); }
-  .sello.on { border: 2px solid var(--color-brand-brown); background: var(--color-brand-fresh); color: var(--color-brand-brown); transform: rotate(-12deg) scale(1.08); }
-  .pass__premio { margin-top: .9rem; display: flex; align-items: center; gap: .6rem; border-radius: 1.1rem; padding: .7rem .9rem; background: var(--color-brand-calm); opacity: 0; transform: scale(.85); transition: all .45s cubic-bezier(.3,1.6,.5,1); }
-  .pass__premio small { display: block; font-size: .72rem; }
-  .pass.premio .pass__premio { opacity: 1; transform: none; }
-  .pass__qr { margin-top: auto; align-self: center; width: 7.5rem; aspect-ratio: 1; padding: .35rem; border-radius: .8rem; background: #fff; color: var(--color-brand-brown); }
-  @media (max-width: 767px) {
-    .pass { height: 320vh; border-radius: 2rem 2rem 0 0; }
-    .pass__stage { height: calc(100svh - 4rem); min-height: 0; padding: 1rem 0 1.2rem; align-items: stretch; }
-    .pass__rejilla { display: flex; flex-direction: column; gap: .7rem; height: 100%; }
-    .pass__txt { display: contents; }
-    .pass__txt > p:first-child { order: 1; font-size: 1.6rem; line-height: 1; }
-    .pass__txt > h2 { order: 2; font-size: 2.4rem !important; margin-top: 0 !important; }
-    .pass__desc { display: none; }
-    .pass__phone { order: 3; flex: 1 1 auto; min-height: 0; }
-    .phone { height: 100%; width: auto; max-width: 74vw; transform: rotate(2deg); }
-    .phone__screen { padding: 2.2rem .9rem .9rem; overflow: hidden; }
-    .pass__cuenta { font-size: 2.6rem; }
-    .pass__qr { width: 5rem; }
-    .pass__pasos { order: 4; margin-top: 0; min-height: 4.4rem; }
-    .pass__pasos li { display: none; transform: none; }
-    .pass__pasos li.actual { display: grid; opacity: 1; animation: paso-entra .45s ease; font-size: .9rem; }
-    @keyframes paso-entra { from { opacity: 0; transform: translateY(10px); } }
-    .pass__cta { order: 5; margin-top: 0 !important; align-self: center; }
-  }
-  @media (max-width: 767px) and (max-height: 700px) { .pass__qr { display: none; } .pass__sellos { gap: .3rem; margin-top: .6rem; } .pass__premio { margin-top: .6rem; padding: .5rem .7rem; } .pass__premio small { display: none; } }
-  @media (max-width: 359px) { .epica__kicker { display: none; } }
 
   /* ── 7 · visita ── */
   .visita { display: grid; overflow: hidden; border-radius: 2.5rem; background: var(--color-brand-brown); }
@@ -655,9 +742,9 @@ const objetivo = siteConfig.bravaPass.objetivo;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .epica, .hcarta { height: auto; }
-    .epica__stage { position: relative; top: 0; height: calc(100svh - 4rem); }
-    .epica__step:not(.epica__step--intro) { display: none; }
+    .noche, .hcarta { height: auto; }
+    .noche__stage { position: relative; top: 0; height: calc(100svh - 4rem); }
+    .noche__step:not(.noche__step--intro) { display: none; }
     .hcarta__stage { position: relative; top: 0; height: auto; padding: 3rem 0; }
     .hcarta__track { overflow-x: auto; scroll-snap-type: x mandatory; }
     .hpanel { scroll-snap-align: center; }

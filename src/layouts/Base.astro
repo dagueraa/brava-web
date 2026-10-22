@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import AnalyticsConsent from '../components/AnalyticsConsent.astro';
 import Pedido from '../components/Pedido.astro';
+import { siteConfig } from '../../site.config';
 import Seo from '../components/Seo.astro';
 // Preload de la fuente principal (evita el reflow del wordmark → CLS ≈ 0)
 import dmSansWoff2 from '@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url';
@@ -18,6 +19,7 @@ interface Props {
   showWhatsApp?: boolean;
 }
 const { title, description, path, ogImage, noindex = false, showWhatsApp = true } = Astro.props;
+const hw = siteConfig.halloween;
 ---
 <!doctype html>
 <html lang="es" class="bg-stripes">
@@ -37,6 +39,13 @@ const { title, description, path, ogImage, noindex = false, showWhatsApp = true 
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-brand-brown focus:px-4 focus:py-2 focus:text-brand-cream">
       Saltar al contenido
     </a>
+    {hw.activo && path !== '' && path !== '/barra' && (
+      <a href="/#promo" class="hw-aviso">
+        <svg viewBox="0 0 90 40" fill="currentColor" aria-hidden="true"><path d="M45 14c-3-6-9-6-11-2-7-8-18-10-28-4 6 1 10 5 11 10 4-3 9-3 12 1 3-2 7-2 10 2 1 4 4 6 6 8 2-2 5-4 6-8 3-4 7-4 10-2 3-4 8-4 12-1 1-5 5-9 11-10-10-6-21-4-28 4-2-4-8-4-11 2z"/></svg>
+        <span><b>Halloween en Brava</b> · {hw.promo.nombre} {hw.promo.precio} €</span>
+        <span class="hw-aviso__ver">Ver</span>
+      </a>
+    )}
     <Header />
     <main id="main" class="flex-1">
       <slot />
@@ -60,5 +69,11 @@ const { title, description, path, ogImage, noindex = false, showWhatsApp = true 
         els.forEach((el) => el.classList.add('is-visible'));
       }
     </script>
+    <style is:global>
+      .hw-aviso { display: flex; align-items: center; justify-content: center; gap: .6rem; padding: .55rem 1rem; background: #1d1512; color: #fef9f5; font-size: .85rem; text-align: center; }
+      .hw-aviso svg { width: 1.6rem; flex-shrink: 0; color: var(--color-brand-fresh); }
+      .hw-aviso b { color: var(--color-brand-fresh); }
+      .hw-aviso__ver { flex-shrink: 0; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .2rem .7rem; font-weight: 700; font-size: .78rem; }
+    </style>
   </body>
 </html>
