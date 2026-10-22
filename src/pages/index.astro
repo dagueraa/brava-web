@@ -1,267 +1,581 @@
 ---
 import Base from '../layouts/Base.astro';
-import Section from '../components/Section.astro';
-import Hero from '../components/Hero.astro';
-import ComboCard from '../components/ComboCard.astro';
-import ToGoBlock from '../components/ToGoBlock.astro';
 import Resenas from '../components/Resenas.astro';
-import Button from '../components/Button.astro';
-import Blob from '../components/Blob.astro';
 import Logo from '../components/Logo.astro';
+import BrandIcon from '../components/BrandIcon.astro';
+import Blob from '../components/Blob.astro';
+import HandArrow from '../components/HandArrow.astro';
 import { Image } from 'astro:assets';
 import { img } from '../assets/images';
-import { menuFotos } from '../assets/menuImages';
-import { categorias } from '../data/menu';
-import { siteConfig } from '../../site.config';
+import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
+import { categorias, type MenuItem } from '../data/menu';
+import { siteConfig, waLink } from '../../site.config';
 
-const combos = categorias.find((c) => c.id === 'combos');
+/* Todos los platos y precios salen de la carta oficial (src/data/menu.ts). */
+const todos: MenuItem[] = categorias.flatMap((c) => [
+  ...(c.items ?? []),
+  ...(c.subsecciones?.flatMap((s) => s.items) ?? []),
+  ...(c.especiales?.items ?? []),
+]);
+const plato = (nombre: string) => {
+  const it = todos.find((i) => i.nombre === nombre);
+  if (!it) throw new Error(`No está en la carta: ${nombre}`);
+  return it;
+};
+const combos = categorias.find((c) => c.id === 'combos')!;
 
-// Frases de la franja de marca (marquesina giratoria)
-const brandClaims = ['Café de especialidad', 'Brunch & repostería', 'Hecho con calma en La Ñora'];
-// Repetimos las frases lo suficiente para que un bloque cubra de sobra cualquier
-// ancho de pantalla (evita el hueco al hacer el bucle). El bloque se duplica en el
-// markup, así el desplazamiento del 50% encaja perfecto y el giro es continuo.
-const marqueeClaims = Array.from({ length: 6 }, () => brandClaims).flat();
-const comboAlts = [
-  'Café de especialidad con croissant recién horneado',
-  'Café de especialidad con cookie gourmet de chocolate',
-  'Brunch con Fit Bagel de atún y aguacate',
+const panels = [
+  {
+    suffix: 'drinks', fondo: 'bg-brand-calm', tinta: 'text-brand-brown', kicker: 'Para beber despacio',
+    fotos: ['iced-brava', 'blue-matcha', 'cafe-amarillo'] as MenuFotoKey[],
+    platos: ['Iced Brava', 'Blue Matcha', 'Brava Coffee', 'Matcha Latte Pistacho', 'Pink Latte'].map(plato),
+    href: '/carta#drinks',
+  },
+  {
+    suffix: 'brunch', fondo: 'bg-brand-cream-2', tinta: 'text-brand-brown', kicker: 'Al momento',
+    fotos: ['esp-salmone-brioche', 'esp-mortadella-bagel', 'focaccia-pompeyana'] as MenuFotoKey[],
+    platos: ['Salmone Brioche', 'Mortadella Bagel', 'Focaccia Pompeyana', 'Brava Brioche'].map(plato),
+    href: '/carta#brunch',
+  },
+  {
+    suffix: 'treats', fondo: 'bg-brand-fresh', tinta: 'text-brand-brown', kicker: 'El capricho',
+    fotos: ['brava-pop', 'esp-pistachio', 'focaccia-lotus'] as MenuFotoKey[],
+    platos: ['Brava Pop', 'Pistachio Brioche', 'Focaccia Lotus', 'Nutella Brioche'].map(plato),
+    href: '/carta#treats',
+  },
 ];
 
-// Vitrina de categorías con foto real representativa (estilo carta Brava)
-const showcase = [
-  { id: 'combos', suffix: 'combos', foto: 'croissant', cafe: 'cafe-teal', desc: 'Café + dulce o brunch para empezar bien' },
-  { id: 'drinks', suffix: 'drinks', foto: 'cafe-amarillo', desc: 'Espresso, lattes especiales, matcha y batidos' },
-  { id: 'brunch', suffix: 'brunch', foto: 'bagel', desc: 'Tostadas, bagels, brioches y focaccias' },
-  { id: 'treats', suffix: 'treats', foto: 'cookie', desc: 'Repostería recién horneada cada día' },
-] as const;
+const lattes = ['Caramelo Salado', 'Vainilla', 'Avellana Tostada', 'Pistacho'].map(plato);
+const clasicos = ['Espresso', 'Flat White', 'Cappuccino'].map(plato);
+const frase = ['café de especialidad', 'brunch', 'treats', 'para llevar', 'La Ñora'];
+const iconosFranja = ['croissant', 'cafe', 'cookie', 'smoothie', 'muffin'] as const;
+const objetivo = siteConfig.bravaPass.objetivo;
 ---
 <Base title="Inicio" path="">
-  <Hero />
+  <!-- ═════════ 1 · LA TAZA 3D (scroll coreografiado) ═════════ -->
+  <section id="epica" class="epica relative bg-brand-brown text-brand-cream" aria-label="Brava coffee and brunch">
+    <div class="epica__stage">
+      <div class="epica__stripes" aria-hidden="true"></div>
+      <div class="epica__word" aria-hidden="true"><Logo class="text-brand-cream" /></div>
+      <canvas id="taza3d" class="epica__canvas" aria-hidden="true"></canvas>
+      <div class="epica__fallback" aria-hidden="true">
+        <Image src={img.hero} alt="" widths={[480, 800]} sizes="(max-width: 768px) 80vw, 420px" loading="eager" class="h-full w-full rounded-[2.5rem] object-cover" />
+      </div>
 
-  <!-- Franja de marca (voz del brandbook) — marquesina giratoria -->
-  <div class="brand-marquee border-y border-brand-line bg-brand-cream-2/40 py-4" role="img" aria-label="Café de especialidad · Brunch & repostería · Hecho con calma en La Ñora">
-    <div class="brand-marquee__track">
+      <!-- Paso 0 -->
+      <div class="epica__step epica__step--intro" data-from="0" data-to="0.16">
+        <p class="epica__kicker">Café de especialidad · Brunch · {siteConfig.ciudad}, {siteConfig.provincia}</p>
+        <h1 class="epica__h1">Café de especialidad y brunch, <span class="font-hand text-brand-fresh">hecho con calma.</span></h1>
+        <div class="epica__ctas">
+          <a href="/carta" class="btn-e btn-e--fresh">Ver la carta</a>
+          <a href="/brava-pass" class="btn-e btn-e--ghost">Brava Pass</a>
+        </div>
+      </div>
+      <!-- Paso 1 -->
+      <div class="epica__step epica__step--left" data-from="0.2" data-to="0.42">
+        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">el primero de la mañana</p>
+        <h2 class="epica__h2">Donde el café sabe a café.</h2>
+        <p class="epica__p">Y el pan a pan, y las cosas se hacen con intención.</p>
+        <ul class="epica__chips">
+          {clasicos.map((c) => <li><span>{c.nombre}</span><b>{c.precio} €</b></li>)}
+        </ul>
+      </div>
+      <!-- Paso 2 (vista cenital del latte art) -->
+      <div class="epica__step epica__step--bottom" data-from="0.46" data-to="0.64">
+        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">latte macchiato especiales</p>
+        <h2 class="epica__h2">Ponle tu sabor.</h2>
+        <ul class="epica__chips justify-center">
+          {lattes.map((c) => <li><span>{c.nombre}</span><b>{c.precio} €</b></li>)}
+        </ul>
+      </div>
+      <!-- Paso 3 -->
+      <div class="epica__step epica__step--left" data-from="0.7" data-to="1.01">
+        <Logo suffix="combos" class="text-4xl text-brand-cream sm:text-5xl" />
+        <h2 class="epica__h2 mt-4">Empieza bien el día.</h2>
+        <p class="epica__p">{combos.items![0].nombre}: {combos.items![0].desc!.toLowerCase()}, <b class="text-brand-fresh">{combos.items![0].precio} €</b>.</p>
+        <div class="epica__ctas !justify-start">
+          <a href="/carta" class="btn-e btn-e--fresh">Ver la carta</a>
+          <a href="/to-go" class="btn-e btn-e--ghost">Pedir para llevar</a>
+        </div>
+      </div>
+
+      <div class="epica__hint" aria-hidden="true"><span>desliza</span><i></i></div>
+      <div class="epica__bar" aria-hidden="true"><i></i></div>
+    </div>
+  </section>
+
+  <!-- ═════════ 2 · FRANJAS CRUZADAS ═════════ -->
+  <section class="franjas" aria-label="Café de especialidad, brunch, treats y para llevar en La Ñora">
+    <div class="franja franja--fresh"><div class="franja__track" data-dir="-1">
       {Array.from({ length: 2 }).map(() => (
-        <div class="brand-marquee__group" aria-hidden="true">
-          {marqueeClaims.map((claim) => (
-            <>
-              <span class="text-sm font-semibold text-brand-brown">{claim}</span>
-              <span class="text-brand-brown-60">·</span>
-            </>
+        <div class="franja__group" aria-hidden="true">
+          {Array.from({ length: 3 }).flatMap(() => frase).map((f, i) => (
+            <><span>{f}</span><BrandIcon name={iconosFranja[i % iconosFranja.length]} class="h-9 w-9 shrink-0 sm:h-11 sm:w-11" /></>
           ))}
         </div>
       ))}
-    </div>
-  </div>
-
-  <!-- Accesos rápidos -->
-  <Section width="wide" class="py-8">
-    <div class="grid gap-4 sm:grid-cols-3">
-      {[
-        { href: '/carta', t: 'Ver la carta', d: 'Combos, drinks, brunch y treats' },
-        { href: '/to-go', t: 'Pedir para llevar', d: 'Por WhatsApp o teléfono' },
-        { href: '/local', t: 'Cómo llegar', d: `${siteConfig.ciudad}, ${siteConfig.provincia}` },
-      ].map((c) => (
-        <a href={c.href} class="group flex items-center gap-4 rounded-2xl border border-brand-line bg-brand-cream-2/40 p-5 transition hover:-translate-y-0.5 hover:bg-brand-cream-2/80">
-          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-brown text-brand-cream transition group-hover:bg-brand-calm-ink">
-            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </span>
-          <span>
-            <span class="block font-bold text-brand-brown">{c.t}</span>
-            <span class="block text-sm text-brand-brown-80">{c.d}</span>
-          </span>
-        </a>
-      ))}
-    </div>
-  </Section>
-
-  <!-- Combos destacados (foto real + blob + flecha, como la carta) -->
-  <Section class="py-14">
-    <div class="mb-10 text-center">
-      <p class="font-hand text-3xl text-brand-brown-60">Nuestros favoritos</p>
-      <Logo as="h2" suffix="combos" class="mt-1 text-4xl text-brand-brown sm:text-5xl" />
-    </div>
-    <div class="space-y-10">
-      {combos?.items?.map((item, i) => (
-        <ComboCard
-          nombre={item.nombre}
-          precio={item.precio!}
-          desc={item.desc}
-          image={menuFotos[item.foto as keyof typeof menuFotos]}
-          alt={comboAlts[i]}
-          coffee={item.cafe ? menuFotos[item.cafe as keyof typeof menuFotos] : undefined}
-          coffeeAlt="Café de especialidad"
-          reverse={i % 2 === 1}
-          index={i}
-        />
-      ))}
-    </div>
-    {combos?.nota && (
-      <p class="mt-10 text-center text-sm font-semibold text-brand-brown-80">{combos.nota}</p>
-    )}
-  </Section>
-
-  <!-- Vitrina de la carta: 4 categorías con foto real -->
-  <Section class="py-10">
-    <div class="mb-8 text-center">
-      <h2 class="text-3xl font-bold text-brand-brown sm:text-4xl">Toda la carta, categoría a categoría</h2>
-      <p class="mt-2 text-brand-brown-80">Producto de verdad, presentado con cariño.</p>
-    </div>
-    <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {showcase.map((s, i) => {
-        const cafeKey = 'cafe' in s ? (s.cafe as keyof typeof menuFotos) : undefined;
-        return (
-        <a href={`/carta#${s.id}`} class="group relative flex flex-col items-center overflow-hidden rounded-3xl border border-brand-line bg-brand-cream-2/40 px-5 pb-6 pt-8 text-center transition hover:-translate-y-1 hover:shadow-lg">
-          <Blob class="absolute -top-6 left-1/2 h-40 w-40 -translate-x-1/2 text-brand-cream-2" variant={((i % 3) + 1) as 1 | 2 | 3} />
-          {cafeKey ? (
-            <div class="relative h-32 w-40 transition group-hover:scale-105">
-              <Image
-                src={menuFotos[cafeKey]}
-                alt="Café de especialidad"
-                widths={[140, 200]}
-                sizes="140px"
-                class="absolute left-0 top-0 z-10 w-[56%] object-contain drop-shadow-[0_2px_4px_rgba(68,54,49,0.08)]"
-                loading="lazy"
-              />
-              <Image
-                src={menuFotos[s.foto]}
-                alt={`Brava ${s.suffix}`}
-                widths={[160, 240]}
-                sizes="160px"
-                class="absolute bottom-0 right-0 z-20 w-[62%] object-contain drop-shadow-[0_3px_5px_rgba(68,54,49,0.1)]"
-                loading="lazy"
-              />
-            </div>
-          ) : (
-            <Image
-              src={menuFotos[s.foto]}
-              alt={`Brava ${s.suffix}`}
-              widths={[160, 240]}
-              sizes="160px"
-              class="relative h-32 w-32 object-contain drop-shadow-[0_8px_14px_rgba(68,54,49,0.18)] transition group-hover:scale-105"
-              loading="lazy"
-            />
-          )}
-          <Logo as="h3" suffix={s.suffix} class="relative mt-4 text-2xl text-brand-brown" />
-          <p class="relative mt-2 text-sm leading-relaxed text-brand-brown-80">{s.desc}</p>
-        </a>
-        );
-      })}
-    </div>
-    <div class="mt-8 text-center">
-      <Button href="/carta" variant="primary" size="lg">Ver la carta completa</Button>
-    </div>
-  </Section>
-
-  <!-- Brava To Go (teaser) -->
-  <Section width="wide" class="py-8">
-    <ToGoBlock variant="compact" />
-  </Section>
-
-  <!-- El Alma de Brava (teaser, foto real de la fundadora) -->
-  <Section class="py-16">
-    <div class="grid items-center gap-10 md:grid-cols-2">
-      <div class="relative order-2 md:order-1">
-        <Blob class="absolute -inset-4 -z-10 h-[112%] w-[112%] text-brand-cream-2" variant={2} />
-        <Image
-          src={img.founderSpace}
-          alt="La dueña de Brava junto al rótulo de musgo brava coffee and brunch"
-          widths={[320, 480, 640]}
-          sizes="(max-width: 768px) 85vw, 420px"
-          class="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-lg"
-          loading="lazy"
-        />
-      </div>
-      <div class="order-1 md:order-2">
-        <p class="font-hand text-3xl text-brand-brown-60">El Alma de Brava</p>
-        <h2 class="mt-1 text-3xl font-bold text-brand-brown sm:text-4xl">No es una cafetería más.</h2>
-        <p class="mt-4 leading-relaxed text-brand-brown-80">
-          Un lugar pequeño, pero con alma, creado para disfrutar, desconectar y sentirse como en casa.
-          Donde el café sabe a café, el pan a pan y las cosas se hacen con intención.
-        </p>
-        <div class="mt-6">
-          <Button href="/historia" variant="outline" size="lg">Conoce nuestra historia</Button>
+    </div></div>
+    <div class="franja franja--calm"><div class="franja__track" data-dir="1">
+      {Array.from({ length: 2 }).map(() => (
+        <div class="franja__group" aria-hidden="true">
+          {Array.from({ length: 3 }).flatMap(() => ['hello brava!', 'coffee and brunch', 'por venir, te damos']).map((f) => (
+            <><span class="font-hand !font-semibold normal-case !tracking-normal">{f}</span><span class="opacity-60">✦</span></>
+          ))}
         </div>
-      </div>
-    </div>
-  </Section>
+      ))}
+    </div></div>
+  </section>
 
-  <!-- Brava Pass (teaser) -->
-  <Section width="wide" class="py-8">
-    <div class="relative overflow-hidden rounded-[2.5rem] border border-brand-line bg-brand-brown p-7 text-brand-cream sm:p-10">
-      <Blob class="-right-16 -top-20 h-64 w-64 text-brand-fresh/20" variant={1} />
-      <div class="relative grid items-center gap-8 md:grid-cols-[1.3fr_1fr]">
+  <!-- ═════════ 3 · COMBOS (tarjetas que se apilan) ═════════ -->
+  <section class="mx-auto w-full max-w-6xl px-5 pb-10 pt-6 sm:px-6">
+    <div class="mb-10 flex flex-col items-center text-center">
+      <p class="font-hand text-3xl text-brand-calm-ink">nuestros favoritos</p>
+      <Logo as="h2" suffix="combos" class="mt-1 text-5xl text-brand-brown sm:text-6xl" />
+    </div>
+    <div class="stack">
+      {combos.items!.map((c, i) => (
+        <article class={`stack__card ${['bg-brand-cream-2', 'bg-brand-calm', 'bg-brand-fresh'][i]}`} style={`--i:${i}`}>
+          <div class="stack__fotos">
+            <Blob class="inset-0 h-full w-full scale-110 text-brand-cream/70" variant={((i % 3) + 1) as 1 | 2 | 3} />
+            <Image src={menuFotos[c.cafe as MenuFotoKey]} alt="Café de especialidad de Brava" widths={[260, 420]} sizes="(max-width: 768px) 46vw, 260px" class="stack__cafe" loading="lazy" />
+            <Image src={menuFotos[c.foto as MenuFotoKey]} alt={c.nombre} widths={[280, 460]} sizes="(max-width: 768px) 50vw, 300px" class="stack__comida" loading="lazy" />
+            <HandArrow class="absolute -right-2 bottom-6 hidden w-24 text-brand-brown md:block" />
+          </div>
+          <div class="stack__txt">
+            <p class="stack__n">0{i + 1}</p>
+            <h3 class="stack__nombre">{c.nombre}</h3>
+            <p class="stack__desc">{c.desc}</p>
+            <p class="stack__precio">{c.precio}<span>€</span></p>
+            <a href={waLink(`¡Hola Brava! Para llevar quiero un ${c.nombre} (${c.precio} €).`)} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--brown mt-6">Pedirlo para llevar</a>
+          </div>
+        </article>
+      ))}
+    </div>
+    {combos.nota && <p class="mt-8 text-center text-sm font-semibold text-brand-brown-80">{combos.nota}</p>}
+  </section>
+
+  <!-- ═════════ 4 · LA CARTA EN HORIZONTAL ═════════ -->
+  <section class="hcarta" aria-label="La carta de Brava">
+    <div class="hcarta__stage">
+      <div class="hcarta__head">
+        <p class="font-hand text-3xl text-brand-calm-ink">la carta, de un vistazo</p>
+        <h2 class="text-3xl font-bold text-brand-brown sm:text-5xl">Todo lo que te espera.</h2>
+      </div>
+      <div class="hcarta__track">
+        {panels.map((p, i) => (
+          <article class={`hpanel ${p.fondo} ${p.tinta}`}>
+            <div class="hpanel__fotos">
+              {p.fotos.map((f, k) => (
+                <Image src={menuFotos[f]} alt="" widths={[240, 400]} sizes="(max-width: 768px) 38vw, 240px" class={`hpanel__foto hpanel__foto--${k}`} loading="lazy" data-par={(k + 1) * (i % 2 ? -1 : 1)} />
+              ))}
+            </div>
+            <div class="hpanel__txt">
+              <p class="font-hand text-2xl opacity-80 sm:text-3xl">{p.kicker}</p>
+              <Logo as="h3" suffix={p.suffix} class="text-4xl sm:text-5xl" />
+              <ul class="hpanel__lista">
+                {p.platos.map((pl) => (
+                  <li><span><b>{pl.nombre}</b>{pl.desc && <small>{pl.desc}</small>}</span><em>{pl.precio} €</em></li>
+                ))}
+              </ul>
+              <a href={p.href} class="btn-e btn-e--brown mt-5">Ver {p.suffix}</a>
+            </div>
+          </article>
+        ))}
+        <article class="hpanel hpanel--fin bg-brand-brown text-brand-cream">
+          <BrandIcon name="bolsa" class="h-24 w-24 text-brand-fresh" />
+          <Logo as="h3" suffix="to go" class="mt-5 text-4xl text-brand-cream sm:text-5xl" />
+          <p class="mt-3 max-w-xs text-brand-cream/80">Pídelo por WhatsApp y pásate a recogerlo en {siteConfig.toGo.tiempoPreparacionMin} minutos.</p>
+          <div class="mt-6 flex flex-wrap justify-center gap-3">
+            <a href="/carta" class="btn-e btn-e--fresh">Carta completa</a>
+            <a href="/to-go" class="btn-e btn-e--ghost">Para llevar</a>
+          </div>
+        </article>
+      </div>
+      <div class="hcarta__bar" aria-hidden="true"><i></i></div>
+    </div>
+  </section>
+
+  <!-- ═════════ 5 · BRAVA PASS v2 ═════════ -->
+  <section class="pass relative bg-brand-brown text-brand-cream" aria-label="Brava Pass">
+    <div class="pass__stage">
+      <div class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:px-6 md:grid-cols-[1.1fr_1fr]">
         <div>
-          <p class="font-hand text-3xl text-brand-cream/70">Por venir, te damos</p>
-          <Logo as="h2" suffix="pass" class="mt-1 text-3xl text-brand-cream sm:text-4xl" />
-          <p class="mt-3 max-w-md leading-relaxed text-brand-cream/80">
-            Tu tarjeta de fidelidad digital. Ven a desayunar, suma cafés y el décimo te lo regalamos.
-            Sin apps complicadas: solo tu nombre y muchos cafés por delante.
-          </p>
-          <div class="mt-6">
-            <Button href="/brava-pass" variant="accent" size="lg">Quiero mi Brava Pass</Button>
+          <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">por venir, te damos</p>
+          <Logo as="h2" suffix="pass" class="mt-1 text-5xl text-brand-cream sm:text-6xl" />
+          <p class="mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">Tu tarjeta de cafés, en el móvil y sin cartón. Pagas, escaneas el QR de la barra y el sello se pone solo.</p>
+          <ol class="pass__pasos">
+            <li data-at="0.05"><b>1</b><span><strong>Hazte el pass en 20 segundos.</strong> Solo tu nombre. Sin apps ni contraseñas.</span></li>
+            <li data-at="0.3"><b>2</b><span><strong>Pide y escanea.</strong> En la barra te enseñan un QR; lo apuntas con la cámara y tu café queda sellado.</span></li>
+            <li data-at="0.6"><b>3</b><span><strong>Al {objetivo}º, invita Brava.</strong> El café gratis aparece en tu pass y lo canjeas cuando quieras.</span></li>
+            <li data-at="0.85"><b><BrandIcon name="muffin" class="h-5 w-5" /></b><span><strong>Y en tu cumpleaños,</strong> el brunch corre de nuestra cuenta.</span></li>
+          </ol>
+          <a href="/brava-pass" class="btn-e btn-e--fresh mt-8">Consigue tu Brava Pass</a>
+        </div>
+        <div class="pass__phone" aria-hidden="true">
+          <div class="phone">
+            <div class="phone__notch"></div>
+            <div class="phone__screen">
+              <div class="flex items-center justify-between">
+                <Logo suffix="pass" class="text-2xl text-brand-brown" />
+                <span class="rounded-full bg-brand-brown px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cream">K7Q4MZ</span>
+              </div>
+              <p class="mt-4 text-sm text-brand-brown-80">Hola, <b class="text-brand-brown">Lucía</b></p>
+              <p class="pass__cuenta"><span id="pass-n">0</span><small>/ {objetivo} cafés</small></p>
+              <div class="pass__sellos">
+                {Array.from({ length: objetivo }).map((_, i) => (
+                  <span class="sello" style={`--d:${i}`}><BrandIcon name="taza" class="h-6 w-6" /></span>
+                ))}
+              </div>
+              <div class="pass__premio"><BrandIcon name="cafe" class="h-7 w-7" /><span><b>¡Café gratis!</b><small>Enséñalo en barra</small></span></div>
+              <div class="pass__qr">
+                <svg viewBox="0 0 29 29" class="h-full w-full" shape-rendering="crispEdges"><path id="qr-demo" fill="currentColor" d="" /></svg>
+              </div>
+            </div>
           </div>
         </div>
-        <ul class="grid gap-3 text-sm">
-          <li class="flex items-center gap-3 rounded-2xl bg-brand-cream/10 px-4 py-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-fresh text-sm font-bold text-brand-brown">10</span><span class="font-semibold">10 cafés = 1 completamente gratis</span></li>
-          <li class="flex items-center gap-3 rounded-2xl bg-brand-cream/10 px-4 py-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-fresh text-brand-brown">🎂</span><span class="font-semibold">Brunch gratis en tu cumpleaños</span></li>
-          <li class="flex items-center gap-3 rounded-2xl bg-brand-cream/10 px-4 py-3"><span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-fresh text-brand-brown">★</span><span class="font-semibold">Acceso anticipado a eventos y nueva carta</span></li>
-        </ul>
       </div>
     </div>
-  </Section>
+  </section>
 
-  <!-- Reseñas -->
+  <!-- ═════════ 6 · EL ALMA ═════════ -->
+  <section class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-24 sm:px-6 md:grid-cols-2">
+    <div class="alma__foto relative">
+      <Blob class="-inset-6 -z-10 h-[115%] w-[115%] text-brand-fresh/60" variant={2} />
+      <Image src={img.founderSpace} alt="La dueña de Brava junto al rótulo de musgo brava coffee and brunch" widths={[360, 560, 760]} sizes="(max-width: 768px) 90vw, 520px" class="aspect-[4/5] w-full rounded-[2.5rem] object-cover shadow-2xl" loading="lazy" data-par="1" />
+    </div>
+    <div>
+      <p class="font-hand text-3xl text-brand-calm-ink">{siteConfig.historia.titulo}</p>
+      <h2 class="mt-2 text-4xl font-bold leading-[1.02] text-brand-brown sm:text-6xl">No es solo un café.</h2>
+      <p class="mt-5 text-xl leading-relaxed text-brand-brown-80">{siteConfig.historia.frase.replace('No es solo un café. ', '')} Un lugar pequeño, pero con alma, creado para disfrutar, desconectar y sentirse como en casa.</p>
+      <a href="/historia" class="btn-e btn-e--brown mt-8">Conoce nuestra historia</a>
+    </div>
+  </section>
+
   <Resenas />
 
-  <!-- Ubicación resumida -->
-  <Section width="wide" class="py-10">
-    <div class="flex flex-col items-center gap-4 rounded-3xl border border-brand-line bg-brand-cream-2/50 px-6 py-10 text-center">
-      <Logo variant="monogram" class="text-5xl text-brand-brown" />
-      <h2 class="text-2xl font-bold text-brand-brown sm:text-3xl">Te esperamos en La Ñora</h2>
-      <p class="text-brand-brown-80">{siteConfig.direccion} · {siteConfig.horarioResumen}</p>
-      <div class="mt-2 flex flex-wrap justify-center gap-3">
-        <Button href="/local" variant="primary" size="lg">Cómo llegar</Button>
-        <Button href="/to-go" variant="outline" size="lg">Pedir para llevar</Button>
+  <!-- ═════════ 7 · VEN A VERNOS ═════════ -->
+  <section class="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6">
+    <div class="visita">
+      <Image src={img.entrada} alt="Entrada de Brava: rótulo brava sobre la pared vegetal" widths={[480, 800, 1100]} sizes="(max-width: 768px) 100vw, 560px" class="visita__foto" loading="lazy" />
+      <div class="visita__txt">
+        <p id="abierto" class="visita__estado"><i></i><span>Horario</span></p>
+        <h2 class="mt-4 text-4xl font-bold text-brand-cream sm:text-5xl">Te esperamos en La Ñora.</h2>
+        <p class="mt-3 text-lg text-brand-cream/80">{siteConfig.direccion}</p>
+        <dl class="visita__horario">
+          {Object.entries(siteConfig.horario).map(([d, h]) => (
+            <div data-dia={d}><dt>{d === 'miercoles' ? 'miércoles' : d === 'sabado' ? 'sábado' : d}</dt><dd>{h}</dd></div>
+          ))}
+        </dl>
+        <div class="mt-7 flex flex-wrap gap-3">
+          <a href={siteConfig.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--fresh">Cómo llegar</a>
+          <a href={waLink('¡Hola Brava!')} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--ghost">WhatsApp</a>
+        </div>
       </div>
     </div>
-  </Section>
+  </section>
 </Base>
 
-<style>
-  /* Marquesina giratoria de la franja de marca */
-  .brand-marquee {
-    overflow: hidden;
+<script>
+  import qrcode from 'qrcode-generator';
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v: number) => Math.min(1, Math.max(0, v));
+  /* Avance (0–1) de una sección alta mientras su escenario está fijo en pantalla. */
+  const avance = (el: HTMLElement) => {
+    const r = el.getBoundingClientRect();
+    const recorrido = el.offsetHeight - window.innerHeight;
+    return recorrido > 0 ? clamp(-r.top / recorrido) : 0;
+  };
+
+  /* ---------- 1 · taza 3D ---------- */
+  const epica = document.getElementById('epica')!;
+  const canvas = document.getElementById('taza3d') as HTMLCanvasElement;
+  const steps = [...epica.querySelectorAll<HTMLElement>('.epica__step')];
+  const bar = epica.querySelector<HTMLElement>('.epica__bar i')!;
+  const word = epica.querySelector<HTMLElement>('.epica__word')!;
+  let taza: { setProgress(p: number): void; setTilt(x: number, y: number): void } | null = null;
+
+  const webgl = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
+  if (webgl && !reduce) {
+    // Se carga después de pintar el texto, para que la portada salga al instante.
+    const arrancar = () => import('../scripts/taza3d').then(({ crearTaza }) =>
+      crearTaza(canvas, { onReady: () => epica.classList.add('is-3d') }).then((t) => { taza = t; tick(); }),
+    ).catch(() => epica.classList.add('no-3d'));
+    'requestIdleCallback' in window ? requestIdleCallback(arrancar, { timeout: 900 }) : setTimeout(arrancar, 300);
+    // En móvil, el giroscopio también inclina la escena.
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma == null || e.beta == null) return;
+      taza?.setTilt(clamp((e.gamma + 30) / 60) * 2 - 1, clamp((e.beta - 20) / 60) * 2 - 1);
+    }, { passive: true });
+  } else {
+    epica.classList.add('no-3d');
   }
-  .brand-marquee__track {
-    display: flex;
-    width: max-content;
-    animation: brand-marquee-scroll 50s linear infinite;
+
+  function pintarEpica() {
+    const p = avance(epica);
+    taza?.setProgress(p);
+    bar.style.transform = `scaleX(${p})`;
+    word.style.transform = `translate(-50%, -50%) scale(${1 + p * 0.5})`;
+    word.style.opacity = String(0.09 * (1 - clamp((p - 0.25) / 0.2)) + 0.03);
+    epica.classList.toggle('is-moving', p > 0.02);
+    steps.forEach((s) => {
+      const a = parseFloat(s.dataset.from!), b = parseFloat(s.dataset.to!);
+      const fin = b > 1 ? 1 : clamp((b - p) / 0.04);
+      const k = Math.min(a === 0 ? 1 : clamp((p - a) / 0.04), fin);
+      s.style.opacity = String(k);
+      s.style.transform = `translateY(${(1 - k) * 24}px)`;
+      s.style.visibility = k < 0.01 ? 'hidden' : 'visible';
+    });
   }
-  .brand-marquee__group {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+
+  /* ---------- 2 · franjas ---------- */
+  const franjas = [...document.querySelectorAll<HTMLElement>('.franja__track')];
+  let fx = 0;
+  function pintarFranjas(dt: number) {
+    fx += dt * 0.04;
+    franjas.forEach((t) => {
+      const w = t.scrollWidth / 2;
+      const dir = Number(t.dataset.dir);
+      const x = ((fx + window.scrollY * 0.35) % w + w) % w;
+      t.style.transform = `translate3d(${dir < 0 ? -x : x - w}px,0,0)`;
+    });
   }
-  /* Separación uniforme entre frases y puntos (· incluido) */
-  .brand-marquee__group > span {
-    padding-inline: 1rem;
-    white-space: nowrap;
+
+  /* ---------- 4 · carta horizontal ---------- */
+  const hcarta = document.querySelector<HTMLElement>('.hcarta')!;
+  const track = hcarta.querySelector<HTMLElement>('.hcarta__track')!;
+  const hbar = hcarta.querySelector<HTMLElement>('.hcarta__bar i')!;
+  const pars = [...hcarta.querySelectorAll<HTMLElement>('[data-par]')];
+  function pintarCarta() {
+    const p = avance(hcarta);
+    const max = track.scrollWidth - track.clientWidth;
+    track.style.transform = `translate3d(${-p * max}px,0,0)`;
+    hbar.style.transform = `scaleX(${p})`;
+    pars.forEach((el) => { el.style.translate = `0 ${(p - 0.5) * Number(el.dataset.par) * 40}px`; });
   }
-  @keyframes brand-marquee-scroll {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
+
+  /* ---------- 5 · pass: los sellos se llenan con el scroll ---------- */
+  const pass = document.querySelector<HTMLElement>('.pass')!;
+  const sellos = [...pass.querySelectorAll<HTMLElement>('.sello')];
+  const pasos = [...pass.querySelectorAll<HTMLElement>('.pass__pasos li')];
+  const passN = document.getElementById('pass-n')!;
+  const total = sellos.length;
+  function pintarPass() {
+    const p = avance(pass);
+    const n = Math.min(total, Math.floor(clamp((p - 0.1) / 0.65) * (total + 0.999)));
+    sellos.forEach((s, i) => s.classList.toggle('on', i < n));
+    passN.textContent = String(n);
+    pass.classList.toggle('premio', n >= total);
+    pasos.forEach((li) => li.classList.toggle('on', p >= parseFloat(li.dataset.at!)));
   }
-  /* Respeta a quien desactiva animaciones: queda estática y centrada */
+  // QR de muestra (el de verdad lo genera el pass de cada cliente)
+  const qr = qrcode(3, 'M');
+  qr.addData('BRAVA:K7Q4MZ');
+  qr.make();
+  const nq = qr.getModuleCount();
+  let d = '';
+  for (let r = 0; r < nq; r++) for (let c = 0; c < nq; c++) if (qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  const qrPath = document.getElementById('qr-demo')!;
+  qrPath.setAttribute('d', d);
+  qrPath.parentElement!.setAttribute('viewBox', `-1 -1 ${nq + 2} ${nq + 2}`);
+
+  /* ---------- parallax suave ---------- */
+  const alma = document.querySelector<HTMLElement>('.alma__foto img');
+  function pintarAlma() {
+    if (!alma) return;
+    const r = alma.getBoundingClientRect();
+    const k = (r.top + r.height / 2 - window.innerHeight / 2) / window.innerHeight;
+    alma.style.transform = `translateY(${k * -40}px) rotate(${k * -3}deg)`;
+  }
+
+  /* ---------- 7 · abierto ahora (hora de Murcia) ---------- */
+  (() => {
+    const el = document.getElementById('abierto')!;
+    const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const f = new Intl.DateTimeFormat('es-ES', { timeZone: 'Europe/Madrid', weekday: 'long', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date());
+    const wd = f.find((x) => x.type === 'weekday')!.value.normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const mins = Number(f.find((x) => x.type === 'hour')!.value) * 60 + Number(f.find((x) => x.type === 'minute')!.value);
+    const fila = document.querySelector<HTMLElement>(`[data-dia="${dias.includes(wd) ? wd : ''}"]`);
+    fila?.classList.add('hoy');
+    const tramos = (fila?.querySelector('dd')?.textContent ?? '').match(/\d{1,2}:\d{2}–\d{1,2}:\d{2}/g) ?? [];
+    const toMin = (s: string) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; };
+    const abierto = tramos.some((t) => { const [a, b] = t.split('–'); return mins >= toMin(a) && mins < toMin(b); });
+    const prox = tramos.map((t) => t.split('–')[0]).find((a) => toMin(a) > mins);
+    el.classList.toggle('on', abierto);
+    el.querySelector('span')!.textContent = abierto ? 'Abierto ahora' : prox ? `Cerrado · abrimos a las ${prox}` : 'Cerrado ahora';
+  })();
+
+  /* ---------- bucle ---------- */
+  let last = performance.now();
+  function tick() {
+    const now = performance.now();
+    const dt = Math.min(64, now - last);
+    last = now;
+    pintarEpica();
+    if (!reduce) pintarFranjas(dt);
+    pintarCarta();
+    pintarPass();
+    if (!reduce) pintarAlma();
+  }
+  (function loop() { tick(); requestAnimationFrame(loop); })();
+</script>
+
+<style is:global>
+  /* ── botones de la portada ── */
+  .btn-e { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 999px; padding: .95rem 1.6rem; font-weight: 700; font-size: 1rem; line-height: 1; transition: transform .2s ease, background-color .2s ease, color .2s ease; }
+  .btn-e:active { transform: scale(.97); }
+  .btn-e--fresh { background: var(--color-brand-fresh); color: var(--color-brand-brown); }
+  .btn-e--fresh:hover { transform: translateY(-2px) rotate(-1deg); }
+  .btn-e--ghost { border: 2px solid color-mix(in srgb, var(--color-brand-cream) 55%, transparent); color: var(--color-brand-cream); }
+  .btn-e--ghost:hover { background: var(--color-brand-cream); color: var(--color-brand-brown); }
+  .btn-e--brown { background: var(--color-brand-brown); color: var(--color-brand-cream); }
+  .btn-e--brown:hover { transform: translateY(-2px) rotate(-1deg); }
+
+  /* ── 1 · taza ── */
+  .epica { height: 460vh; }
+  .epica__stage { position: sticky; top: 4rem; height: calc(100svh - 4rem); overflow: hidden; }
+  .epica__stripes { position: absolute; inset: 0; background-image: repeating-linear-gradient(90deg, rgba(254,249,245,.045) 0 1px, transparent 1px 26px); }
+  .epica__word { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%); font-size: min(44vw, 62vh); opacity: .09; white-space: nowrap; pointer-events: none; will-change: transform, opacity; }
+  .epica__canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 1.2s ease; }
+  .epica.is-3d .epica__canvas { opacity: 1; }
+  .epica__fallback { display: none; position: absolute; right: 6%; top: 50%; width: min(36vw, 420px); aspect-ratio: 4/5; transform: translateY(-50%) rotate(3deg); }
+  .epica.no-3d .epica__fallback { display: block; }
+  .epica__step { position: absolute; z-index: 2; will-change: opacity, transform; }
+  .epica__step--intro { left: 0; right: 0; bottom: 0; padding: 0 1.25rem 4.2rem; text-align: center; background: linear-gradient(to top, var(--color-brand-brown) 35%, transparent); }
+  .epica__step--left { left: max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); top: 50%; translate: 0 -50%; max-width: 30rem; }
+  .epica__step--bottom { left: 0; right: 0; bottom: 3.8rem; text-align: center; padding: 0 1.25rem; }
+  .epica__kicker { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); }
+  .epica__h1 { margin: .6rem auto 0; max-width: 17ch; font-size: clamp(2.3rem, 6.4vw, 5.2rem); font-weight: 700; line-height: .98; letter-spacing: -.035em; }
+  .epica__h1 .font-hand { font-weight: 600; letter-spacing: 0; }
+  .epica__h2 { margin-top: .35rem; font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 700; line-height: 1; letter-spacing: -.03em; }
+  .epica__p { margin-top: 1rem; font-size: 1.15rem; line-height: 1.55; color: color-mix(in srgb, var(--color-brand-cream) 80%, transparent); }
+  .epica__ctas { margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
+  .epica__chips { margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+  .epica__chips li { display: inline-flex; gap: .6rem; align-items: baseline; border-radius: 999px; padding: .55rem 1rem; background: color-mix(in srgb, var(--color-brand-cream) 10%, transparent); border: 1px solid color-mix(in srgb, var(--color-brand-cream) 18%, transparent); font-size: .92rem; backdrop-filter: blur(6px); }
+  .epica__chips b { color: var(--color-brand-fresh); }
+  .epica__hint { position: absolute; z-index: 3; left: 50%; bottom: 1.1rem; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .3rem; font: 600 1.35rem var(--font-hand); color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); transition: opacity .4s; }
+  .epica__hint i { width: 2px; height: 26px; background: currentColor; border-radius: 2px; animation: hint 1.6s ease-in-out infinite; transform-origin: top; }
+  .epica.is-moving .epica__hint { opacity: 0; }
+  @keyframes hint { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(0); transform-origin: bottom; } }
+  .epica__bar, .hcarta__bar { position: absolute; z-index: 3; left: 0; right: 0; bottom: 0; height: 4px; background: color-mix(in srgb, var(--color-brand-cream) 12%, transparent); }
+  .epica__bar i, .hcarta__bar i { display: block; height: 100%; background: var(--color-brand-fresh); transform-origin: left; transform: scaleX(0); }
+  @media (max-width: 767px) {
+    .epica { height: 420vh; }
+    .epica__step--left { left: 0; right: 0; top: auto; bottom: 3.2rem; translate: none; max-width: none; padding: 2.5rem 1.25rem 0; background: linear-gradient(to top, var(--color-brand-brown) 60%, transparent); }
+    .epica__step--intro { padding-bottom: 2.4rem; }
+    .epica__hint { display: none; }
+    .epica__p { font-size: 1rem; }
+    .epica__fallback { right: 50%; top: 30%; width: 62vw; transform: translate(50%, -50%) rotate(3deg); }
+  }
+
+  /* ── 2 · franjas ── */
+  .franjas { position: relative; height: 15rem; margin-top: -1px; overflow: hidden; background: var(--color-brand-cream); }
+  .franja { position: absolute; left: -5%; width: 110%; padding: .9rem 0; overflow: hidden; box-shadow: 0 10px 30px -12px rgba(68,54,49,.35); }
+  .franja--fresh { top: 3.2rem; background: var(--color-brand-fresh); transform: rotate(-4deg); z-index: 2; }
+  .franja--calm { top: 7.2rem; background: var(--color-brand-calm); transform: rotate(3deg); }
+  .franja__track { display: flex; width: max-content; will-change: transform; }
+  .franja__group { display: flex; align-items: center; gap: 1.6rem; padding-right: 1.6rem; color: var(--color-brand-brown); }
+  .franja__group span { font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 700; letter-spacing: -.02em; white-space: nowrap; text-transform: lowercase; }
+
+  /* ── 3 · combos apilados ── */
+  .stack { display: grid; gap: 2rem; }
+  .stack__card { position: sticky; top: calc(5.5rem + var(--i) * 1.4rem); display: grid; align-items: center; gap: 1rem; border-radius: 2.5rem; padding: 2rem 1.5rem; min-height: min(78svh, 34rem); box-shadow: 0 -12px 40px -18px rgba(68,54,49,.35); overflow: hidden; color: var(--color-brand-brown); }
+  .stack__fotos { position: relative; height: 15rem; }
+  .stack__cafe { position: absolute; left: 4%; top: 0; width: 52%; transform: rotate(-8deg); filter: drop-shadow(0 18px 22px rgba(68,54,49,.25)); }
+  .stack__comida { position: absolute; right: 4%; bottom: 0; width: 56%; transform: rotate(6deg); filter: drop-shadow(0 22px 26px rgba(68,54,49,.3)); }
+  .stack__n { font: 600 2rem var(--font-hand); opacity: .7; }
+  .stack__nombre { font-size: clamp(2.2rem, 5vw, 3.8rem); font-weight: 700; letter-spacing: -.035em; line-height: 1; }
+  .stack__desc { margin-top: .8rem; font-size: 1.1rem; line-height: 1.5; opacity: .85; max-width: 26ch; }
+  .stack__precio { margin-top: 1rem; font-size: clamp(3.6rem, 9vw, 6.5rem); font-weight: 800; letter-spacing: -.05em; line-height: .9; }
+  .stack__precio span { font-size: .45em; margin-left: .1em; vertical-align: .9em; }
+  @media (min-width: 768px) {
+    .stack__card { grid-template-columns: 1.1fr 1fr; padding: 3rem 3.5rem; }
+    .stack__card:nth-child(even) .stack__fotos { order: 2; }
+    .stack__fotos { height: 26rem; }
+  }
+
+  /* ── 4 · carta horizontal ── */
+  .hcarta { height: 340vh; }
+  .hcarta__stage { position: sticky; top: 4rem; height: calc(100svh - 4rem); overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 1.5rem; }
+  .hcarta__head { padding: 0 max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); }
+  .hcarta__track { display: flex; gap: 1.25rem; padding: 0 max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); will-change: transform; }
+  .hpanel { flex: 0 0 min(86vw, 58rem); display: grid; border-radius: 2.5rem; padding: 1.5rem; height: min(66svh, 34rem); overflow: hidden; }
+  .hpanel__fotos { position: relative; min-height: 8rem; }
+  .hpanel__foto { position: absolute; filter: drop-shadow(0 16px 20px rgba(68,54,49,.28)); }
+  .hpanel__foto--0 { width: 42%; left: 0; top: 0; transform: rotate(-7deg); }
+  .hpanel__foto--1 { width: 38%; left: 34%; top: 14%; transform: rotate(5deg); z-index: 1; }
+  .hpanel__foto--2 { width: 34%; right: 0; top: -4%; transform: rotate(-3deg); }
+  .hpanel__lista { margin-top: 1rem; display: grid; gap: .55rem; }
+  .hpanel__lista li { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; border-bottom: 1.5px dashed color-mix(in srgb, currentColor 28%, transparent); padding-bottom: .45rem; }
+  .hpanel__lista b { font-weight: 700; }
+  .hpanel__lista small { display: none; }
+  .hpanel__lista em { font-style: normal; font-weight: 800; white-space: nowrap; }
+  .hpanel--fin { place-content: center; justify-items: center; text-align: center; }
+  @media (max-width: 767px) {
+    .hpanel { grid-template-rows: 9.5rem 1fr; }
+    .hpanel__txt .btn-e { padding: .8rem 1.3rem; }
+  }
+  @media (min-width: 768px) {
+    .hpanel { grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2.5rem; }
+    .hpanel__lista small { display: block; font-size: .8rem; opacity: .75; margin-top: .1rem; max-width: 34ch; }
+    .hpanel__foto--0 { width: 62%; top: 4%; }
+    .hpanel__foto--1 { width: 54%; left: 30%; top: 40%; }
+    .hpanel__foto--2 { width: 46%; top: -2%; right: -4%; }
+  }
+
+  /* ── 5 · pass ── */
+  .pass { height: 260vh; border-radius: 3rem 3rem 0 0; margin-top: 3rem; }
+  .pass__stage { position: sticky; top: 4rem; min-height: calc(100svh - 4rem); display: flex; align-items: center; padding: 3rem 0; overflow: hidden; }
+  .pass__pasos { margin-top: 2rem; display: grid; gap: 1rem; }
+  .pass__pasos li { display: grid; grid-template-columns: 2.4rem 1fr; gap: .9rem; align-items: start; opacity: .35; transform: translateX(-8px); transition: opacity .5s, transform .5s; }
+  .pass__pasos li.on { opacity: 1; transform: none; }
+  .pass__pasos b { display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-weight: 800; }
+  .pass__pasos span { color: color-mix(in srgb, var(--color-brand-cream) 80%, transparent); line-height: 1.5; }
+  .pass__pasos strong { color: var(--color-brand-cream); }
+  .pass__phone { display: flex; justify-content: center; }
+  .phone { position: relative; width: min(78vw, 19rem); aspect-ratio: 9/18.5; border-radius: 2.8rem; background: #2a201d; padding: .7rem; box-shadow: 0 40px 80px -30px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,255,255,.08); transform: rotate(4deg); }
+  .phone__notch { position: absolute; z-index: 2; top: 1.1rem; left: 50%; transform: translateX(-50%); width: 30%; height: 1.2rem; border-radius: 999px; background: #2a201d; }
+  .phone__screen { height: 100%; border-radius: 2.2rem; background: var(--color-brand-cream); background-image: repeating-linear-gradient(90deg, #f3e6da 0 1px, transparent 1px 26px); padding: 2.6rem 1.1rem 1.1rem; color: var(--color-brand-brown); display: flex; flex-direction: column; }
+  .pass__cuenta { margin-top: .2rem; font-size: 3.4rem; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+  .pass__cuenta small { font-size: .9rem; font-weight: 600; letter-spacing: 0; margin-left: .3rem; color: var(--color-brand-brown-80); }
+  .pass__sellos { margin-top: .9rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .45rem; }
+  .sello { aspect-ratio: 1; display: grid; place-items: center; border-radius: 999px; border: 2px dashed color-mix(in srgb, var(--color-brand-brown) 30%, transparent); color: color-mix(in srgb, var(--color-brand-brown) 25%, transparent); transition: all .35s cubic-bezier(.3,1.6,.5,1); }
+  .sello.on { border: 2px solid var(--color-brand-brown); background: var(--color-brand-fresh); color: var(--color-brand-brown); transform: rotate(-12deg) scale(1.08); }
+  .pass__premio { margin-top: .9rem; display: flex; align-items: center; gap: .6rem; border-radius: 1.1rem; padding: .7rem .9rem; background: var(--color-brand-calm); opacity: 0; transform: scale(.85); transition: all .45s cubic-bezier(.3,1.6,.5,1); }
+  .pass__premio small { display: block; font-size: .72rem; }
+  .pass.premio .pass__premio { opacity: 1; transform: none; }
+  .pass__qr { margin-top: auto; align-self: center; width: 7.5rem; aspect-ratio: 1; padding: .35rem; border-radius: .8rem; background: #fff; color: var(--color-brand-brown); }
+  @media (max-width: 767px) {
+    .pass { height: auto; }
+    .pass__stage { position: relative; top: 0; }
+    .pass__phone { order: -1; }
+    .phone { width: min(70vw, 16rem); }
+  }
+
+  /* ── 7 · visita ── */
+  .visita { display: grid; overflow: hidden; border-radius: 2.5rem; background: var(--color-brand-brown); }
+  .visita__foto { width: 100%; height: 18rem; object-fit: cover; }
+  .visita__txt { padding: 2rem 1.5rem 2.2rem; }
+  .visita__estado { display: inline-flex; align-items: center; gap: .55rem; border-radius: 999px; padding: .45rem .9rem; background: color-mix(in srgb, var(--color-brand-cream) 12%, transparent); color: var(--color-brand-cream); font-size: .85rem; font-weight: 700; }
+  .visita__estado i { width: .6rem; height: .6rem; border-radius: 999px; background: #e07a5f; }
+  .visita__estado.on i { background: #8fd18a; box-shadow: 0 0 0 0 rgba(143,209,138,.7); animation: latido 1.8s infinite; }
+  @keyframes latido { 70% { box-shadow: 0 0 0 10px rgba(143,209,138,0); } 100% { box-shadow: 0 0 0 0 rgba(143,209,138,0); } }
+  .visita__horario { margin-top: 1.4rem; display: grid; gap: .35rem; max-width: 24rem; }
+  .visita__horario div { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem .6rem; border-radius: .6rem; color: color-mix(in srgb, var(--color-brand-cream) 72%, transparent); font-size: .95rem; }
+  .visita__horario dt { text-transform: capitalize; }
+  .visita__horario .hoy { background: var(--color-brand-fresh); color: var(--color-brand-brown); font-weight: 700; }
+  @media (min-width: 768px) {
+    .visita { grid-template-columns: 1fr 1.1fr; }
+    .visita__foto { height: 100%; min-height: 34rem; }
+    .visita__txt { padding: 3.5rem; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .brand-marquee__track {
-      animation: none;
-      width: 100%;
-      justify-content: center;
-    }
-    .brand-marquee__group + .brand-marquee__group {
-      display: none;
-    }
+    .epica, .hcarta { height: auto; }
+    .epica__stage { position: relative; top: 0; height: calc(100svh - 4rem); }
+    .epica__step:not(.epica__step--intro) { display: none; }
+    .hcarta__stage { position: relative; top: 0; height: auto; padding: 3rem 0; }
+    .hcarta__track { overflow-x: auto; scroll-snap-type: x mandatory; }
+    .hpanel { scroll-snap-align: center; }
   }
 </style>

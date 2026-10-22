@@ -1,0 +1,10 @@
+{
+  "name": "Brava Pass",
+  "short_name": "Brava Pass",
+  "start_url": "/brava-pass/",
+  "scope": "/brava-pass/",
+  "display": "standalone",
+  "background_color": "#443631",
+  "theme_color": "#443631",
+  "icons": [{ "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }]
+}

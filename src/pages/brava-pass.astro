@@ -1,69 +1,317 @@
 ---
 import Base from '../layouts/Base.astro';
-import Section from '../components/Section.astro';
-import Blob from '../components/Blob.astro';
 import Logo from '../components/Logo.astro';
-import BravaPass from '../components/BravaPass.astro';
-import { siteConfig } from '../../site.config';
+import BrandIcon from '../components/BrandIcon.astro';
+import Blob from '../components/Blob.astro';
+import { siteConfig, reviewLink } from '../../site.config';
 
-const privilegios = siteConfig.bravaPass.privilegios;
+const { objetivo, privilegios } = siteConfig.bravaPass;
 ---
 <Base
   title="Brava Pass"
-  description="Brava Pass: tu tarjeta de fidelidad digital. 10 cafés = 1 gratis, brunch en tu cumpleaños y acceso anticipado. Sin apps, sin complicaciones."
+  description="Brava Pass: tu tarjeta de cafés en el móvil. Pagas, escaneas el QR de la barra y el sello se pone solo. 10 cafés = 1 gratis y brunch en tu cumpleaños."
   path="/brava-pass"
 >
-  <!-- Apertura -->
-  <Section width="wide" class="relative overflow-hidden pt-14 pb-6 text-center">
-    <Blob class="-top-16 left-1/2 h-64 w-64 -translate-x-1/2 text-brand-fresh/30" variant={2} />
-    <Logo class="relative text-2xl text-brand-brown-60" />
-    <h1 class="relative mt-1 text-5xl font-bold text-brand-brown sm:text-6xl">
-      Brava <span class="font-hand text-brand-calm-ink">Pass</span>
-    </h1>
-    <p class="relative mx-auto mt-5 max-w-xl text-lg leading-relaxed text-brand-brown-80">
-      Por venir, te damos. Sin apps complicadas: una tarjeta, tu nombre y muchos cafés gratis por delante.
-    </p>
-  </Section>
+  <link rel="manifest" href="/brava-pass.webmanifest" slot="head" />
+  <section class="relative overflow-hidden bg-brand-brown pb-16 pt-12 text-brand-cream">
+    <div class="pointer-events-none absolute inset-0" style="background-image:repeating-linear-gradient(90deg,rgba(254,249,245,.045) 0 1px,transparent 1px 26px)"></div>
+    <Blob class="-right-24 -top-24 h-80 w-80 text-brand-fresh/15" variant={1} />
+    <div class="relative mx-auto max-w-md px-5 text-center">
+      <p class="font-hand text-3xl text-brand-fresh">por venir, te damos</p>
+      <Logo as="h1" suffix="pass" class="mt-1 text-5xl text-brand-cream sm:text-6xl" />
+    </div>
 
-  <!-- Privilegios -->
-  <Section width="wide" class="py-8">
+    <div id="bp" class="relative mx-auto mt-8 max-w-md px-5" data-objetivo={objetivo}>
+      <!-- Cargando -->
+      <div data-v="cargando" class="bp-card grid place-items-center py-20 text-brand-brown-80">Cargando tu pass…</div>
+
+      <!-- Alta -->
+      <div data-v="alta" class="bp-card hidden">
+        <p id="bp-aviso-qr" class="mb-4 hidden rounded-2xl bg-brand-fresh px-4 py-3 text-sm font-semibold text-brand-brown">Tienes un café esperando: crea tu pass y se sella solo.</p>
+        <h2 class="text-2xl font-bold text-brand-brown">Hazte tu pass</h2>
+        <p class="mt-1 text-brand-brown-80">20 segundos. Sin apps, sin contraseñas, sin cartón.</p>
+        <form id="bp-form" class="mt-6 grid gap-4">
+          <label class="grid gap-1.5">
+            <span class="text-sm font-semibold text-brand-brown">Tu nombre</span>
+            <input name="nombre" required maxlength="40" autocomplete="given-name" placeholder="Ej. Lucía" class="bp-input" />
+          </label>
+          <label class="grid gap-1.5">
+            <span class="text-sm font-semibold text-brand-brown">Tu cumpleaños <span class="font-normal text-brand-brown-60">(opcional, para invitarte al brunch)</span></span>
+            <input name="cumple" type="date" class="bp-input" />
+          </label>
+          <label class="flex items-start gap-3 text-sm text-brand-brown-80">
+            <input type="checkbox" required class="mt-1 h-4 w-4 accent-[#443631]" />
+            <span>Acepto que Brava guarde mi nombre, mi cumpleaños y mis cafés solo para este pass. <a href="/privacidad" class="underline">Privacidad</a>.</span>
+          </label>
+          <button class="bp-btn bp-btn--brown" type="submit">Crear mi Brava Pass</button>
+          <p id="bp-error-alta" class="hidden text-sm font-semibold text-red-700" role="alert"></p>
+        </form>
+        <a href={reviewLink} target="_blank" rel="noopener noreferrer" class="mt-6 flex items-center gap-3 rounded-2xl border border-brand-brown/15 p-4 text-sm text-brand-brown-80 hover:bg-brand-cream-2">
+          <svg class="h-6 w-6 shrink-0 text-brand-calm-ink" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
+          <span><b class="text-brand-brown">¿Te gusta Brava?</b> Déjanos una reseña en Google: nos ayuda muchísimo.</span>
+        </a>
+      </div>
+
+      <!-- El pass -->
+      <div data-v="pass" class="hidden">
+        <div class="bp-card bp-pass">
+          <div class="flex items-center justify-between">
+            <Logo suffix="pass" class="text-2xl text-brand-brown" />
+            <span id="bp-codigo" class="rounded-full bg-brand-brown px-3 py-1 text-xs font-bold tracking-[.18em] text-brand-cream"></span>
+          </div>
+          <p class="mt-5 text-brand-brown-80">Hola, <b id="bp-nombre" class="text-brand-brown"></b></p>
+          <p class="bp-cuenta"><span id="bp-n">0</span><small>/ {objetivo} cafés</small></p>
+          <div id="bp-sellos" class="bp-sellos">
+            {Array.from({ length: objetivo }).map(() => <span class="bp-sello"><BrandIcon name="taza" class="h-[55%] w-[55%]" /></span>)}
+          </div>
+          <div id="bp-gratis" class="bp-banner hidden bg-brand-calm"><BrandIcon name="cafe" class="h-9 w-9 shrink-0" /><span><b>¡Tienes <span id="bp-gratis-n">un</span> café gratis!</b><small>Enséñale este pass a quien te atienda.</small></span></div>
+          <div id="bp-cumple" class="bp-banner hidden bg-brand-fresh"><BrandIcon name="muffin" class="h-9 w-9 shrink-0" /><span><b>¡Feliz cumpleaños!</b><small>Hoy el brunch corre de nuestra cuenta.</small></span></div>
+
+          <button id="bp-escanear" class="bp-btn bp-btn--brown mt-6 w-full" type="button">
+            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>
+            Escanear el QR de la barra
+          </button>
+          <div class="mt-5 grid grid-cols-[7.5rem_1fr] items-center gap-4 rounded-2xl bg-brand-cream-2 p-3">
+            <div id="bp-qr" class="aspect-square overflow-hidden rounded-xl"></div>
+            <p class="text-sm leading-snug text-brand-brown-80">¿Sin cobertura? Enséñale este QR a quien te atienda y te sella desde la barra.</p>
+          </div>
+        </div>
+
+        <div class="bp-card mt-4">
+          <h3 class="font-bold text-brand-brown">Tus últimos cafés</h3>
+          <ul id="bp-historial" class="mt-3 grid gap-2 text-sm text-brand-brown-80"></ul>
+        </div>
+        <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+          <button id="bp-guardar" class="bp-btn bp-btn--ghost" type="button">Guardar mi pass</button>
+          <a href="/carta" class="bp-btn bp-btn--ghost">Ver la carta</a>
+        </div>
+        <p class="mt-3 text-center text-xs text-brand-cream/60">Tu pass vive en este móvil. «Guardar mi pass» te da un enlace privado para recuperarlo en otro.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Escáner -->
+  <dialog id="bp-scan" class="bp-scan">
+    <div class="relative h-full w-full bg-black">
+      <video class="h-full w-full object-cover" muted playsinline></video>
+      <div class="bp-scan__marco" aria-hidden="true"></div>
+      <p class="absolute inset-x-0 top-6 text-center font-semibold text-white">Apunta al QR de la barra</p>
+      <button class="bp-btn bp-btn--fresh absolute bottom-8 left-1/2 -translate-x-1/2" data-cerrar type="button">Cancelar</button>
+    </div>
+  </dialog>
+
+  <!-- Celebración -->
+  <div id="bp-toast" class="bp-toast" role="status" aria-live="polite"></div>
+
+  <section class="mx-auto max-w-5xl px-5 py-16">
     <div class="grid gap-5 sm:grid-cols-3">
       {privilegios.map((p) => (
-        <div class="flex flex-col items-center rounded-3xl border rule-soft bg-brand-cream-2/40 p-7 text-center">
-          <div class="grid h-16 w-16 place-items-center rounded-full bg-brand-brown text-brand-cream">
+        <div class="rounded-3xl border border-brand-brown/10 bg-brand-cream-2/50 p-7 text-center">
+          <div class="mx-auto grid h-16 w-16 place-items-center rounded-full bg-brand-brown text-brand-cream">
             {p.icono === '10' && <span class="text-2xl font-extrabold">10</span>}
-            {p.icono === 'cake' && (
-              <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v3M9 6.5 12 4l3 2.5M4 21v-7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7M4 21h16M3 14c1.5 1.2 3 1.2 4.5 0S10.5 12.8 12 14s3 1.2 4.5 0S19.5 12.8 21 14"/></svg>
-            )}
-            {p.icono === 'star' && (
-              <svg class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
-            )}
+            {p.icono === 'cake' && <BrandIcon name="muffin" class="h-8 w-8" />}
+            {p.icono === 'star' && <svg class="h-8 w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>}
           </div>
           <h2 class="mt-4 text-lg font-bold text-brand-brown">{p.titulo}</h2>
           <p class="mt-1 text-sm leading-relaxed text-brand-brown-80">{p.desc}</p>
         </div>
       ))}
     </div>
-  </Section>
-
-  <!-- La tarjeta interactiva -->
-  <Section width="default" class="py-10">
-    <BravaPass />
-  </Section>
-
-  <!-- Cómo funciona -->
-  <Section width="narrow" class="pb-16">
-    <div class="rounded-3xl bg-brand-cream-2/50 p-7">
+    <div class="mx-auto mt-10 max-w-2xl rounded-3xl bg-brand-cream-2/60 p-7">
       <h2 class="text-lg font-bold text-brand-brown">¿Cómo funciona?</h2>
-      <ol class="mt-3 space-y-2 text-sm leading-relaxed text-brand-brown-80">
-        <li><span class="font-semibold text-brand-brown">1.</span> Déjanos una reseña y activa tu pass con tu nombre.</li>
-        <li><span class="font-semibold text-brand-brown">2.</span> Cada vez que pidas un café, el personal te suma un sello.</li>
-        <li><span class="font-semibold text-brand-brown">3.</span> Al llegar a {siteConfig.bravaPass.objetivo}, el siguiente café es <span class="font-semibold text-brand-brown">gratis</span>. Lo canjeas y la tarjeta vuelve a empezar.</li>
-        <li><span class="font-semibold text-brand-brown">4.</span> ¿Es tu cumpleaños? Enséñanos tu pass y el brunch corre de nuestra cuenta.</li>
+      <ol class="mt-3 grid gap-2 text-brand-brown-80">
+        <li><b class="text-brand-brown">1.</b> Te haces el pass aquí con tu nombre.</li>
+        <li><b class="text-brand-brown">2.</b> Pides tu café y, al pagar, en la barra te enseñan un QR. Lo escaneas con la cámara del móvil y el sello se pone solo.</li>
+        <li><b class="text-brand-brown">3.</b> Al llegar a {objetivo}, el café gratis aparece en tu pass. Lo canjeas cuando quieras.</li>
+        <li><b class="text-brand-brown">4.</b> En tu cumpleaños, enséñalo y te invitamos al brunch.</li>
       </ol>
-      <p class="mt-4 text-xs text-brand-brown-60">
-        Tu Brava Pass se guarda en este dispositivo, sin instalar nada ni dar tu correo. Si cambias de móvil, vuelve a activarlo.
-      </p>
     </div>
-  </Section>
+  </section>
 </Base>
+
+<script>
+  import { api, qrSvg, escanear } from '../scripts/qr';
+
+  type Pass = { codigo: string; nombre: string; sellos: number; gratis: number; total: number; objetivo: number; cumpleHoy: boolean; historial?: { tipo: string; n: number; via: string; ts: number }[] };
+  const CLAVE = 'bravaPass.v2';
+  const root = document.getElementById('bp')!;
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+  const vista = (v: string) => root.querySelectorAll<HTMLElement>('[data-v]').forEach((el) => el.classList.toggle('hidden', el.dataset.v !== v));
+  const leer = () => { try { return localStorage.getItem(CLAVE) || ''; } catch { return ''; } };
+  const guardar = (t: string) => { try { localStorage.setItem(CLAVE, t); } catch { /* modo privado */ } };
+
+  let token = leer();
+  let anterior: Pass | null = null;
+  const url = new URL(location.href);
+  // ?t= recupera un pass guardado · ?s= es el QR de la barra (sello automático)
+  const tUrl = url.searchParams.get('t');
+  if (tUrl && /^[a-f0-9]{40}$/.test(tUrl)) { token = tUrl; guardar(tUrl); }
+  let pendiente = url.searchParams.get('s') || sessionStorage.getItem('bp.s') || '';
+  if (tUrl || url.searchParams.has('s')) history.replaceState(null, '', '/brava-pass/');
+
+  function toast(html: string, fiesta = false) {
+    const t = $('bp-toast');
+    t.innerHTML = html;
+    t.classList.add('on');
+    if (fiesta) confeti();
+    setTimeout(() => t.classList.remove('on'), 4200);
+  }
+
+  function pintar(p: Pass) {
+    $('bp-codigo').textContent = p.codigo;
+    $('bp-nombre').textContent = p.nombre;
+    $('bp-n').textContent = String(p.sellos);
+    const nuevos = anterior ? (p.total - anterior.total) : 0;
+    $('bp-sellos').querySelectorAll('.bp-sello').forEach((s, i) => {
+      const on = i < p.sellos;
+      s.classList.toggle('on', on);
+      if (on && nuevos > 0 && i >= p.sellos - nuevos) {
+        s.classList.add('nuevo');
+        setTimeout(() => s.classList.remove('nuevo'), 900);
+      }
+    });
+    $('bp-gratis').classList.toggle('hidden', p.gratis < 1);
+    $('bp-gratis-n').textContent = p.gratis === 1 ? 'un' : String(p.gratis);
+    $('bp-cumple').classList.toggle('hidden', !p.cumpleHoy);
+    $('bp-qr').innerHTML = qrSvg(`BRAVA:${p.codigo}`);
+    const nombres: Record<string, string> = { sello: 'café', gratis: 'Café gratis canjeado', cumple: 'Brunch de cumpleaños' };
+    const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    $('bp-historial').innerHTML = (p.historial ?? []).length
+      ? p.historial!.map((h) => `<li class="flex justify-between gap-3 border-b border-brand-brown/10 pb-2"><span>${h.tipo === 'sello' ? `+${h.n} ${h.n > 1 ? 'cafés' : 'café'}` : nombres[h.tipo]}<small class="ml-2 opacity-60">${h.via === 'qr' ? 'con QR' : 'en barra'}</small></span><span class="opacity-70">${fmt.format(h.ts * 1000)}</span></li>`).join('')
+      : '<li>Aún nada. ¡Tu primer café te espera!</li>';
+    if (anterior && p.gratis > anterior.gratis) toast('<b>¡Café gratis desbloqueado!</b> Invita Brava ☕', true);
+    else if (anterior && nuevos > 0) toast(`<b>+${nuevos} ${nuevos > 1 ? 'cafés' : 'café'}</b> en tu pass`);
+    anterior = p;
+  }
+
+  async function reclamar(s: string) {
+    sessionStorage.removeItem('bp.s');
+    pendiente = '';
+    try {
+      const r = await api('reclamar', { t: token, s });
+      pintar(r.pass);
+    } catch (e) {
+      toast(`<b>${(e as Error).message}</b>`);
+    }
+  }
+
+  async function cargar() {
+    if (!token) {
+      vista('alta');
+      if (pendiente) { sessionStorage.setItem('bp.s', pendiente); $('bp-aviso-qr').classList.remove('hidden'); }
+      return;
+    }
+    try {
+      const r = await api('estado', { t: token });
+      vista('pass');
+      pintar(r.pass);
+      if (pendiente) await reclamar(pendiente);
+    } catch (e) {
+      if ((e as any).status === 404) { token = ''; try { localStorage.removeItem(CLAVE); } catch {} vista('alta'); }
+      else { vista('cargando'); root.querySelector('[data-v="cargando"]')!.textContent = (e as Error).message; }
+    }
+  }
+
+  $('bp-form').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const f = ev.target as HTMLFormElement;
+    const btn = f.querySelector('button')!;
+    const err = $('bp-error-alta');
+    btn.disabled = true;
+    err.classList.add('hidden');
+    try {
+      const d = new FormData(f);
+      const r = await api('alta', { nombre: d.get('nombre'), cumple: d.get('cumple') });
+      token = r.token;
+      guardar(token);
+      vista('pass');
+      pintar(r.pass);
+      toast(`<b>¡Bienvenida/o, ${r.pass.nombre}!</b> Tu pass ya está listo`, true);
+      if (pendiente) await reclamar(pendiente);
+    } catch (e) {
+      err.textContent = (e as Error).message;
+      err.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Escanear el QR de la barra desde la propia web
+  const dlg = $<HTMLDialogElement>('bp-scan');
+  let parar: (() => void) | null = null;
+  const cerrar = () => { parar?.(); parar = null; dlg.close(); };
+  dlg.querySelector('[data-cerrar]')!.addEventListener('click', cerrar);
+  dlg.addEventListener('cancel', cerrar);
+  $('bp-escanear').addEventListener('click', async () => {
+    dlg.showModal();
+    try {
+      parar = await escanear(dlg.querySelector('video')!, (texto) => {
+        cerrar();
+        let s = '';
+        try { s = new URL(texto).searchParams.get('s') || ''; } catch { /* no es una URL */ }
+        if (s) reclamar(s);
+        else toast('<b>Ese QR no es el de la barra de Brava.</b>');
+      });
+    } catch {
+      cerrar();
+      toast('<b>No podemos usar la cámara.</b> Escanéalo con la cámara del móvil.');
+    }
+  });
+
+  $('bp-guardar').addEventListener('click', async () => {
+    const enlace = `${location.origin}/brava-pass/?t=${token}`;
+    try {
+      if (navigator.share) await navigator.share({ title: 'Mi Brava Pass', text: 'Mi Brava Pass (enlace privado, no lo compartas)', url: enlace });
+      else { await navigator.clipboard.writeText(enlace); toast('<b>Enlace copiado.</b> Guárdalo en tus notas: es solo tuyo.'); }
+    } catch { /* cancelado */ }
+  });
+
+  // Mientras la página está abierta, el pass se actualiza solo (p. ej. cuando te sellan en barra)
+  setInterval(async () => {
+    if (!token || document.hidden || root.querySelector('[data-v="pass"]')!.classList.contains('hidden')) return;
+    try { pintar((await api('estado', { t: token })).pass); } catch { /* reintento en la siguiente */ }
+  }, 4000);
+
+  function confeti() {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const colores = ['#e7e251', '#6cb3e3', '#fef9f5', '#f7ede3'];
+    for (let i = 0; i < 70; i++) {
+      const c = document.createElement('i');
+      c.className = 'bp-confeti';
+      c.style.cssText = `left:${Math.random() * 100}vw;background:${colores[i % 4]};animation-delay:${Math.random() * 0.4}s;--x:${(Math.random() - 0.5) * 200}px;--r:${Math.random() * 720}deg`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2600);
+    }
+  }
+
+  cargar();
+</script>
+
+<style is:global>
+  .bp-card { border-radius: 2rem; background: var(--color-brand-cream); background-image: repeating-linear-gradient(90deg, #f3e6da 0 1px, transparent 1px 26px); padding: 1.6rem; color: var(--color-brand-brown); box-shadow: 0 30px 60px -30px rgba(0,0,0,.55); }
+  .bp-input { width: 100%; border-radius: 1rem; border: 2px solid color-mix(in srgb, var(--color-brand-brown) 18%, transparent); background: #fff; padding: .8rem 1rem; font-size: 1rem; color: var(--color-brand-brown); }
+  .bp-input:focus { outline: none; border-color: var(--color-brand-calm); }
+  .bp-btn { display: inline-flex; align-items: center; justify-content: center; gap: .55rem; border-radius: 999px; padding: .95rem 1.4rem; font-weight: 700; transition: transform .2s; }
+  .bp-btn:active { transform: scale(.97); }
+  .bp-btn:disabled { opacity: .6; }
+  .bp-btn--brown { background: var(--color-brand-brown); color: var(--color-brand-cream); }
+  .bp-btn--fresh { background: var(--color-brand-fresh); color: var(--color-brand-brown); }
+  .bp-btn--ghost { border: 2px solid color-mix(in srgb, var(--color-brand-cream) 45%, transparent); color: var(--color-brand-cream); }
+  .bp-cuenta { margin-top: .1rem; font-size: 4.2rem; font-weight: 800; letter-spacing: -.05em; line-height: 1; }
+  .bp-cuenta small { margin-left: .35rem; font-size: 1rem; font-weight: 600; letter-spacing: 0; color: var(--color-brand-brown-80); }
+  .bp-sellos { margin-top: 1rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .55rem; }
+  .bp-sello { aspect-ratio: 1; display: grid; place-items: center; border-radius: 999px; border: 2px dashed color-mix(in srgb, var(--color-brand-brown) 28%, transparent); color: color-mix(in srgb, var(--color-brand-brown) 22%, transparent); transition: all .4s cubic-bezier(.3,1.6,.5,1); }
+  .bp-sello.on { border: 2px solid var(--color-brand-brown); background: var(--color-brand-fresh); color: var(--color-brand-brown); transform: rotate(-12deg); }
+  .bp-sello.nuevo { animation: sellazo .7s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes sellazo { 0% { transform: scale(2.2) rotate(-40deg); opacity: 0; } 100% { transform: rotate(-12deg); opacity: 1; } }
+  .bp-banner { margin-top: 1rem; display: flex; align-items: center; gap: .8rem; border-radius: 1.2rem; padding: .9rem 1rem; color: var(--color-brand-brown); }
+  .bp-banner small { display: block; font-size: .8rem; }
+  .bp-banner.hidden { display: none; }
+  .bp-scan { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: #000; }
+  .bp-scan::backdrop { background: #000; }
+  .bp-scan__marco { position: absolute; left: 50%; top: 45%; width: min(70vw, 18rem); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 1.6rem; box-shadow: 0 0 0 100vmax rgba(0,0,0,.55); outline: 4px solid var(--color-brand-fresh); }
+  .bp-toast { position: fixed; z-index: 80; left: 50%; bottom: 1.5rem; transform: translate(-50%, 150%); max-width: calc(100vw - 2rem); border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .9rem 1.4rem; box-shadow: 0 20px 40px -15px rgba(0,0,0,.5); transition: transform .5s cubic-bezier(.3,1.5,.5,1); text-align: center; }
+  .bp-toast.on { transform: translate(-50%, 0); }
+  .bp-confeti { position: fixed; z-index: 90; top: -12px; width: 9px; height: 14px; border-radius: 2px; pointer-events: none; animation: caer 2.4s ease-in forwards; }
+  @keyframes caer { to { transform: translate(var(--x), 105vh) rotate(var(--r)); } }
+</style>

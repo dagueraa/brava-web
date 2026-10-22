@@ -1,0 +1,272 @@
+---
+/* Panel del personal de Brava (tablet o móvil de la barra). No sale en buscadores. */
+import Base from '../layouts/Base.astro';
+import Logo from '../components/Logo.astro';
+import { siteConfig } from '../../site.config';
+---
+<Base title="Barra" path="/barra" noindex showWhatsApp={false}>
+  <section class="min-h-[calc(100svh-4rem)] bg-brand-brown px-4 py-8 text-brand-cream">
+    <div id="barra" class="mx-auto max-w-lg">
+      <div class="mb-6 flex items-center justify-between">
+        <Logo suffix="barra" class="text-3xl text-brand-cream" />
+        <button id="b-salir" class="hidden text-sm text-brand-cream/70 underline" type="button">Salir</button>
+      </div>
+
+      <!-- PIN -->
+      <div data-v="login" class="b-card text-center">
+        <h1 class="text-2xl font-bold">PIN del personal</h1>
+        <div id="b-puntos" class="mt-5 flex justify-center gap-3" aria-live="polite"></div>
+        <div class="b-teclado mt-6">
+          {['1','2','3','4','5','6','7','8','9','⌫','0','OK'].map((k) => <button type="button" data-k={k}>{k}</button>)}
+        </div>
+        <p id="b-error-login" class="mt-4 min-h-[1.5rem] font-semibold text-red-700" role="alert"></p>
+      </div>
+
+      <!-- Panel -->
+      <div data-v="panel" class="hidden">
+        <nav class="b-tabs" aria-label="Secciones">
+          <button data-tab="mostrador" class="on" type="button">Mostrador</button>
+          <button data-tab="cliente" type="button">Cliente</button>
+          <button data-tab="hoy" type="button">Hoy</button>
+        </nav>
+
+        <!-- Mostrador: QR de un solo uso que escanea el cliente -->
+        <div data-t="mostrador" class="b-card mt-4 text-center">
+          <div id="m-elegir">
+            <h2 class="text-xl font-bold">¿Cuántos cafés ha pagado?</h2>
+            <p class="mt-1 text-sm text-brand-brown-80">Sale un QR. El cliente lo escanea con su móvil y el sello se pone solo.</p>
+            <div class="mt-5 grid grid-cols-3 gap-3">
+              {[1, 2, 3].map((n) => <button class="b-grande" data-n={n} type="button">+{n}<small>{n > 1 ? 'cafés' : 'café'}</small></button>)}
+            </div>
+          </div>
+          <div id="m-qr" class="hidden">
+            <p class="text-sm font-semibold text-brand-brown-80"><span id="m-n"></span> · escanea con la cámara</p>
+            <div id="m-codigo" class="mx-auto mt-3 w-full max-w-[19rem]"></div>
+            <div class="mx-auto mt-3 h-2 max-w-[19rem] overflow-hidden rounded-full bg-brand-brown/10"><i id="m-tiempo" class="block h-full origin-left bg-brand-calm"></i></div>
+            <button id="m-cancelar" class="mt-5 text-sm font-semibold underline" type="button">Cancelar</button>
+          </div>
+          <div id="m-ok" class="hidden py-8">
+            <div class="mx-auto grid h-24 w-24 place-items-center rounded-full bg-brand-fresh text-5xl">✓</div>
+            <p class="mt-4 text-2xl font-bold">¡Sellado!</p>
+            <p id="m-quien" class="text-brand-brown-80"></p>
+          </div>
+        </div>
+
+        <!-- Cliente: escanear su pass o escribir su código -->
+        <div data-t="cliente" class="mt-4 hidden">
+          <div class="b-card">
+            <button id="c-escanear" class="b-btn w-full" type="button">Escanear el pass del cliente</button>
+            <form id="c-form" class="mt-3 flex gap-2">
+              <input id="c-codigo" class="b-input flex-1 uppercase tracking-[.2em]" maxlength="6" placeholder="CÓDIGO" autocomplete="off" aria-label="Código del pass" />
+              <button class="b-btn" type="submit">Buscar</button>
+            </form>
+            <video id="c-video" class="mt-3 hidden aspect-square w-full rounded-2xl bg-black object-cover" muted playsinline></video>
+          </div>
+          <div id="c-ficha" class="b-card mt-4 hidden">
+            <div class="flex items-start justify-between gap-3">
+              <div><p class="text-sm text-brand-brown-80">Cliente</p><p id="c-nombre" class="text-2xl font-bold"></p></div>
+              <span id="c-cod" class="rounded-full bg-brand-brown px-3 py-1 text-xs font-bold tracking-[.18em] text-brand-cream"></span>
+            </div>
+            <p class="mt-3 text-5xl font-extrabold tracking-tight"><span id="c-sellos"></span><small class="ml-1 text-base font-semibold text-brand-brown-80">/ {siteConfig.bravaPass.objetivo}</small></p>
+            <p id="c-info" class="mt-1 text-sm text-brand-brown-80"></p>
+            <div class="mt-4 grid grid-cols-3 gap-2">
+              {[1, 2, 3].map((n) => <button class="b-btn" data-sellar={n} type="button">+{n}</button>)}
+            </div>
+            <button id="c-gratis" class="b-btn b-btn--calm mt-3 hidden w-full" type="button">Canjear café gratis</button>
+            <button id="c-cumple" class="b-btn b-btn--fresh mt-3 hidden w-full" type="button">🎂 Canjear brunch de cumpleaños</button>
+            <p id="c-msg" class="mt-3 min-h-[1.25rem] text-sm font-semibold" role="status"></p>
+          </div>
+        </div>
+
+        <!-- Hoy -->
+        <div data-t="hoy" class="mt-4 hidden">
+          <div class="grid grid-cols-2 gap-3" id="h-datos"></div>
+          <div class="b-card mt-4">
+            <h2 class="font-bold">Últimos movimientos</h2>
+            <ul id="h-act" class="mt-3 grid gap-2 text-sm"></ul>
+          </div>
+          <details class="b-card mt-4">
+            <summary class="cursor-pointer font-bold">Cambiar el PIN</summary>
+            <form id="h-pin" class="mt-3 grid gap-2">
+              <input name="actual" class="b-input" inputmode="numeric" placeholder="PIN actual" type="password" required />
+              <input name="nuevo" class="b-input" inputmode="numeric" placeholder="PIN nuevo (4–8 números)" type="password" required pattern="\d{4,8}" />
+              <button class="b-btn" type="submit">Guardar</button>
+              <p id="h-pin-msg" class="text-sm font-semibold"></p>
+            </form>
+          </details>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { api, qrSvg, escanear } from '../scripts/qr';
+
+  const CLAVE = 'bravaBarra.v1';
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+  const root = $('barra');
+  const vista = (v: string) => root.querySelectorAll<HTMLElement>('[data-v]').forEach((el) => el.classList.toggle('hidden', el.dataset.v !== v));
+  let staff = '';
+  try { staff = localStorage.getItem(CLAVE) || ''; } catch {}
+
+  /* Cualquier 401 devuelve al PIN */
+  async function llamar(accion: string, datos?: Record<string, unknown>) {
+    try {
+      return await api(accion, datos, staff);
+    } catch (e) {
+      if ((e as any).status === 401) salir();
+      throw e;
+    }
+  }
+  function entrar(t: string) {
+    staff = t;
+    try { localStorage.setItem(CLAVE, t); } catch {}
+    vista('panel');
+    $('b-salir').classList.remove('hidden');
+  }
+  function salir() {
+    staff = '';
+    try { localStorage.removeItem(CLAVE); } catch {}
+    vista('login');
+    $('b-salir').classList.add('hidden');
+  }
+  $('b-salir').addEventListener('click', salir);
+
+  /* ---- PIN ---- */
+  let pin = '';
+  const puntos = () => { $('b-puntos').innerHTML = Array.from({ length: Math.max(4, pin.length) }, (_, i) => `<i class="b-punto ${i < pin.length ? 'on' : ''}"></i>`).join(''); };
+  puntos();
+  root.querySelectorAll<HTMLButtonElement>('[data-k]').forEach((b) => b.addEventListener('click', async () => {
+    const k = b.dataset.k!;
+    $('b-error-login').textContent = '';
+    if (k === '⌫') pin = pin.slice(0, -1);
+    else if (k === 'OK') {
+      try { entrar((await api('login', { pin })).staff); } catch (e) { $('b-error-login').textContent = (e as Error).message; }
+      pin = '';
+    } else if (pin.length < 8) pin += k;
+    puntos();
+  }));
+
+  /* ---- pestañas ---- */
+  root.querySelectorAll<HTMLButtonElement>('[data-tab]').forEach((b) => b.addEventListener('click', () => {
+    root.querySelectorAll('[data-tab]').forEach((x) => x.classList.toggle('on', x === b));
+    root.querySelectorAll<HTMLElement>('[data-t]').forEach((p) => p.classList.toggle('hidden', p.dataset.t !== b.dataset.tab));
+    if (b.dataset.tab === 'hoy') cargarHoy();
+  }));
+
+  /* ---- mostrador ---- */
+  let vigilando = 0, caduca = 0;
+  const mPaso = (id: string) => ['m-elegir', 'm-qr', 'm-ok'].forEach((x) => $(x).classList.toggle('hidden', x !== id));
+  function pararMostrador() { clearInterval(vigilando); vigilando = 0; mPaso('m-elegir'); }
+  $('m-cancelar').addEventListener('click', pararMostrador);
+  root.querySelectorAll<HTMLButtonElement>('[data-n]').forEach((b) => b.addEventListener('click', async () => {
+    try {
+      const r = await llamar('mostrador', { n: Number(b.dataset.n) });
+      $('m-n').textContent = `+${r.n} ${r.n > 1 ? 'cafés' : 'café'}`;
+      $('m-codigo').innerHTML = qrSvg(`${location.origin}/brava-pass/?s=${r.s}`);
+      mPaso('m-qr');
+      caduca = Date.now() + r.segundos * 1000;
+      const total = r.segundos * 1000;
+      clearInterval(vigilando);
+      vigilando = window.setInterval(async () => {
+        const queda = caduca - Date.now();
+        $('m-tiempo').style.transform = `scaleX(${Math.max(0, queda / total)})`;
+        if (queda <= 0) return pararMostrador();
+        try {
+          const q = await llamar('qr', { s: r.s });
+          if (q.usado) {
+            clearInterval(vigilando);
+            $('m-quien').textContent = q.nombre ? `en el pass de ${q.nombre}` : '';
+            mPaso('m-ok');
+            setTimeout(pararMostrador, 3000);
+          }
+        } catch { /* seguimos */ }
+      }, 1500);
+    } catch (e) { alert((e as Error).message); }
+  }));
+
+  /* ---- cliente ---- */
+  let actual = '';
+  function ficha(p: any) {
+    actual = p.codigo;
+    $('c-ficha').classList.remove('hidden');
+    $('c-nombre').textContent = p.nombre;
+    $('c-cod').textContent = p.codigo;
+    $('c-sellos').textContent = p.sellos;
+    $('c-info').textContent = `${p.total} cafés en total · ${p.gratis} gratis pendiente${p.gratis === 1 ? '' : 's'}`;
+    $('c-gratis').classList.toggle('hidden', p.gratis < 1);
+    $('c-cumple').classList.toggle('hidden', !p.cumpleHoy);
+  }
+  const msg = (t: string, ok = true) => { const m = $('c-msg'); m.textContent = t; m.style.color = ok ? '#2b6f96' : '#b91c1c'; };
+  async function buscar(codigo: string) {
+    msg('');
+    try { ficha((await llamar('buscar', { codigo })).pass); } catch (e) { $('c-ficha').classList.remove('hidden'); msg((e as Error).message, false); }
+  }
+  $('c-form').addEventListener('submit', (e) => { e.preventDefault(); buscar($<HTMLInputElement>('c-codigo').value); });
+  let pararCam: (() => void) | null = null;
+  $('c-escanear').addEventListener('click', async () => {
+    const v = $<HTMLVideoElement>('c-video');
+    if (pararCam) { pararCam(); pararCam = null; v.classList.add('hidden'); return; }
+    v.classList.remove('hidden');
+    try {
+      pararCam = await escanear(v, (texto) => { pararCam = null; v.classList.add('hidden'); buscar(texto); });
+    } catch { v.classList.add('hidden'); msg('No se puede abrir la cámara: escribe el código.', false); }
+  });
+  root.querySelectorAll<HTMLButtonElement>('[data-sellar]').forEach((b) => b.addEventListener('click', async () => {
+    try {
+      const r = await llamar('sellar', { codigo: actual, n: Number(b.dataset.sellar) });
+      ficha(r.pass);
+      msg(r.nuevosGratis ? `+${r.sumados} · ¡Ha conseguido un café gratis!` : `+${r.sumados} ${r.sumados > 1 ? 'cafés' : 'café'} sellado${r.sumados > 1 ? 's' : ''}`);
+    } catch (e) { msg((e as Error).message, false); }
+  }));
+  $('c-gratis').addEventListener('click', async () => {
+    try { ficha((await llamar('canjear', { codigo: actual, tipo: 'cafe' })).pass); msg('Café gratis canjeado ☕'); } catch (e) { msg((e as Error).message, false); }
+  });
+  $('c-cumple').addEventListener('click', async () => {
+    try { ficha((await llamar('canjear', { codigo: actual, tipo: 'cumple' })).pass); msg('Brunch de cumpleaños canjeado 🎂'); } catch (e) { msg((e as Error).message, false); }
+  });
+
+  /* ---- hoy ---- */
+  async function cargarHoy() {
+    try {
+      const r = await llamar('hoy');
+      const datos: [string, number][] = [['Cafés sellados hoy', r.sellosHoy], ['Pases nuevos hoy', r.nuevosHoy], ['Gratis canjeados hoy', r.gratisHoy], ['Clientes con pass', r.clientes], ['Cafés gratis pendientes', r.pendientes], ['Cumpleaños hoy', r.cumplesHoy]];
+      $('h-datos').innerHTML = datos.map(([t, n]) => `<div class="b-card !p-4"><p class="text-3xl font-extrabold">${n}</p><p class="text-xs text-brand-brown-80">${t}</p></div>`).join('');
+      const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+      const que: Record<string, string> = { sello: 'café', gratis: 'canjea café gratis', cumple: 'canjea brunch de cumple' };
+      const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+      $('h-act').innerHTML = r.actividad.length ? r.actividad.map((a: any) => `<li class="flex justify-between gap-3 border-b border-brand-brown/10 pb-2"><span><b>${esc(a.nombre)}</b> · ${a.tipo === 'sello' ? `+${a.n} ${a.n > 1 ? 'cafés' : 'café'}` : que[a.tipo]} <small class="opacity-60">${a.via === 'qr' ? 'QR' : 'barra'}</small></span><span class="opacity-60">${fmt.format(a.ts * 1000)}</span></li>`).join('') : '<li>Todavía no hay movimientos.</li>';
+    } catch { /* sesión caducada: ya vuelve al PIN */ }
+  }
+  $('h-pin').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const f = e.target as HTMLFormElement;
+    const d = new FormData(f);
+    const m = $('h-pin-msg');
+    try { await llamar('pin', { actual: d.get('actual'), nuevo: d.get('nuevo') }); m.textContent = 'PIN cambiado.'; f.reset(); } catch (er) { m.textContent = (er as Error).message; }
+  });
+
+  if (staff) entrar(staff); else vista('login');
+</script>
+
+<style is:global>
+  .b-card { border-radius: 1.6rem; background: var(--color-brand-cream); color: var(--color-brand-brown); padding: 1.4rem; }
+  .b-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; max-width: 18rem; margin-inline: auto; }
+  .b-teclado button { height: 4.2rem; border-radius: 1.2rem; background: var(--color-brand-cream-2); font-size: 1.6rem; font-weight: 700; }
+  .b-teclado button:active { background: var(--color-brand-fresh); }
+  .b-teclado button[data-k="OK"] { background: var(--color-brand-brown); color: var(--color-brand-cream); font-size: 1.2rem; }
+  .b-punto { width: .9rem; height: .9rem; border-radius: 999px; border: 2px solid var(--color-brand-brown); }
+  .b-punto.on { background: var(--color-brand-brown); }
+  .b-tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: .4rem; border-radius: 999px; background: color-mix(in srgb, var(--color-brand-cream) 12%, transparent); padding: .35rem; }
+  .b-tabs button { border-radius: 999px; padding: .7rem; font-weight: 700; color: var(--color-brand-cream); }
+  .b-tabs button.on { background: var(--color-brand-fresh); color: var(--color-brand-brown); }
+  .b-grande { display: grid; place-items: center; aspect-ratio: 1; border-radius: 1.4rem; background: var(--color-brand-fresh); font-size: 2.4rem; font-weight: 800; line-height: 1; }
+  .b-grande small { font-size: .85rem; font-weight: 600; }
+  .b-grande:active { transform: scale(.96); }
+  .b-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); padding: .85rem 1.2rem; font-weight: 700; }
+  .b-btn--calm { background: var(--color-brand-calm); color: var(--color-brand-brown); }
+  .b-btn--fresh { background: var(--color-brand-fresh); color: var(--color-brand-brown); }
+  .b-input { border-radius: 999px; border: 2px solid color-mix(in srgb, var(--color-brand-brown) 18%, transparent); background: #fff; padding: .8rem 1.1rem; font-weight: 700; color: var(--color-brand-brown); min-width: 0; }
+  #m-tiempo { transition: transform 1.5s linear; }
+</style>

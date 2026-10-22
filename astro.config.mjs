@@ -13,7 +13,8 @@ export default defineConfig({
   trailingSlash: 'ignore',
   build: { inlineStylesheets: 'auto' },
   // La campaña /instagram se descubre desde el QR del local, no desde buscadores.
-  integrations: [sitemap({ filter: (page) => !page.replace(/\/$/, '').endsWith('/instagram') })],
+  // El panel /barra es solo para el personal.
+  integrations: [sitemap({ filter: (page) => !/\/(instagram|barra)\/?$/.test(page) })],
   vite: {
     plugins: [tailwindcss()],
   },
