@@ -6,6 +6,9 @@ import ComboCard from './ComboCard.astro';
 import Plato from './Plato.astro';
 import type { MenuFotoKey } from '../assets/menuImages';
 import TostadasTable from './TostadasTable.astro';
+import MontaTostada from './MontaTostada.astro';
+import BotonPedido from './BotonPedido.astro';
+import { anadible, extraDeNota } from '../data/pedido';
 import MenuIcon from './MenuIcon.astro';
 import { menuFotos } from '../assets/menuImages';
 import starBrava from '../assets/menu/star-brava.png';
@@ -19,6 +22,7 @@ const espFoto = cat.especiales?.items.filter((i) => foto(i.foto)) ?? [];
 const espTexto = cat.especiales?.items.filter((i) => !foto(i.foto)) ?? [];
 const hornFoto = cat.horneado?.items.filter((i) => foto(i.foto)) ?? [];
 const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
+const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
 ---
 <section id={cat.id} class="scroll-mt-28">
   <SectionHeading suffix={cat.titulo.toLowerCase()} class="mb-8" />
@@ -38,6 +42,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
             coffeeAlt="Café de especialidad"
             reverse={i % 2 === 1}
             index={i}
+            a={anadible(item, '', zumo)}
           />
         ))}
       </div>
@@ -52,7 +57,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
   <!-- Items simples (otras categorías con lista) -->
   {cat.items && cat.id !== 'combos' && (
     <ul class="divide-y divide-dotted rule-soft">
-      {cat.items.map((item) => <MenuItemRow item={item} />)}
+      {cat.items.map((item) => <MenuItemRow item={item} a={anadible(item)} />)}
     </ul>
   )}
 
@@ -70,7 +75,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
               {foto(sub.foto) && (
                 <Image src={foto(sub.foto)!} alt={`${sub.titulo} de Brava`} widths={[400, 640, 960]} sizes="(max-width: 768px) 90vw, 460px" class="mx-auto mb-4 block h-auto w-full max-w-md object-contain" loading="lazy" />
               )}
-              <ul>{sub.items.map((item) => <MenuItemRow item={item} />)}</ul>
+              <ul>{sub.items.map((item) => <MenuItemRow item={item} a={anadible(item, sub.titulo)} />)}</ul>
               {sub.nota && <p class="mt-3 rounded-xl bg-brand-cream-2/60 px-4 py-3 text-xs leading-relaxed text-brand-brown-80">{sub.nota}</p>}
             </div>
           ))}
@@ -90,6 +95,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
         <Image src={foto(cat.tostadas.foto)!} alt="Panes para tostadas: blanco, de semillas e integral" widths={[640, 960, 1200]} sizes="(max-width: 768px) 90vw, 720px" class="mx-auto mb-6 block h-auto w-full max-w-xl object-contain" loading="lazy" />
       )}
       <TostadasTable columnas={cat.tostadas.columnas} bases={cat.tostadas.bases} toppings={cat.tostadas.toppings} />
+      <MontaTostada bases={cat.tostadas.bases} toppings={cat.tostadas.toppings} />
     </div>
   )}
 
@@ -116,6 +122,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
                 <div class="flex items-baseline gap-2 border-b rule-soft pb-1">
                   <span class="font-bold text-brand-brown">{item.nombre}</span>
                   {item.precio && <span class="ml-auto shrink-0 font-bold text-brand-brown">{item.precio} €</span>}
+                  <BotonPedido a={anadible(item, cat.especiales!.titulo)} class="self-center" />
                 </div>
                 {item.desc && <p class="mt-1.5 text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
               </div>
@@ -129,9 +136,10 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
         <ul class="mt-8 divide-y divide-dotted rule-soft">
           {espTexto.map((item) => (
             <li class="py-4 first:pt-0">
-              <div class="flex items-baseline gap-3">
+              <div class="flex items-center gap-3">
                 <span class="font-bold text-brand-brown">{item.nombre}</span>
                 {item.precio && <span class="ml-auto shrink-0 font-bold text-brand-brown">{item.precio} €</span>}
+                <BotonPedido a={anadible(item, cat.especiales!.titulo)} />
               </div>
               {item.desc && <p class="mt-1 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
             </li>
@@ -158,8 +166,9 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
             <div class="grid aspect-square place-items-center overflow-hidden bg-brand-cream">
               <Plato foto={item.foto as MenuFotoKey} alt={item.nombre} nombre={item.nombre} desc={item.desc} widths={[200, 320, 480]} sizes="(max-width: 640px) 45vw, 300px" class="w-[74%]" />
             </div>
-            <div class="px-3 pb-3 pt-2.5 text-center">
+            <div class="flex items-center justify-center gap-2 px-3 pb-3 pt-2.5 text-center">
               <span class="font-bold text-brand-brown">{item.nombre}</span>
+              <BotonPedido a={anadible(item, 'Horneado')} />
               {item.desc && <p class="mt-1 text-xs leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
             </div>
           </li>
@@ -168,7 +177,7 @@ const hornTexto = cat.horneado?.items.filter((i) => !foto(i.foto)) ?? [];
       <ul class="mt-5 grid gap-5 sm:grid-cols-2">
         {hornTexto.map((item) => (
           <li class="border-b rule-soft pb-3">
-            <span class="font-bold text-brand-brown">{item.nombre}</span>
+            <div class="flex items-center justify-between gap-3"><span class="font-bold text-brand-brown">{item.nombre}</span><BotonPedido a={anadible(item, 'Horneado')} /></div>
             {item.desc && <p class="mt-1 text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
           </li>
         ))}

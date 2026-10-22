@@ -7,6 +7,7 @@
 import { Image, getImage } from 'astro:assets';
 import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
 import { siteConfig } from '../../site.config';
+import type { Anadible } from '../data/pedido';
 
 interface Props {
   foto: MenuFotoKey;
@@ -20,8 +21,9 @@ interface Props {
   widths?: number[];
   loading?: 'lazy' | 'eager';
   zoom?: boolean;
+  a?: Anadible; // si se puede añadir al pedido desde la vista de cerca
 }
-const { foto, alt, nombre, precio, desc, class: cls = '', imgClass = '', sizes = '(max-width: 768px) 50vw, 320px', widths = [240, 360, 520], loading = 'lazy', zoom = true } = Astro.props;
+const { foto, alt, nombre, precio, desc, class: cls = '', imgClass = '', sizes = '(max-width: 768px) 50vw, 320px', widths = [240, 360, 520], loading = 'lazy', zoom = true, a } = Astro.props;
 const src = menuFotos[foto];
 const GIRAN = ['cafe-teal', 'cafe-amarillo', 'cafe-art', 'cookie', 'bagel', 'iced-brava', 'blue-matcha', 'horn-cookies', 'esp-salmone-baguel'];
 const HUMO = ['cafe-teal', 'cafe-amarillo', 'cafe-art'];
@@ -35,6 +37,7 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
   data-precio={precio}
   data-desc={desc}
   data-wa={siteConfig.whatsapp}
+  data-anadir={a ? JSON.stringify(a) : undefined}
   tabindex={zoom ? 0 : undefined}
   role={zoom ? 'button' : undefined}
   aria-label={zoom ? `Ver ${nombre ?? alt} de cerca` : undefined}
@@ -109,7 +112,7 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
     dlg.innerHTML = `
       <button class="pz__cerrar" type="button" aria-label="Cerrar">✕</button>
       <div class="pz__escena"><figure class="plato plato--grande vivo"><span class="plato__sombra"></span><span class="plato__cuerpo"><span class="plato__giro"><img class="plato__img" alt="" draggable="false"><span class="plato__brillo"><i></i></span></span></span></figure></div>
-      <div class="pz__info"><p class="pz__pista"></p><h3></h3><p class="pz__desc"></p><div class="pz__pie"><b></b><a class="pz__pedir" target="_blank" rel="noopener noreferrer">Pedir para llevar</a></div></div>`;
+      <div class="pz__info"><p class="pz__pista"></p><h3></h3><p class="pz__desc"></p><div class="pz__pie"><b></b><button type="button" class="pz__pedir">Añadir al pedido</button></div></div>`;
     document.body.appendChild(dlg);
     dlg.querySelector('.pz__cerrar')!.addEventListener('click', cerrar);
     dlg.addEventListener('click', (e) => { if (e.target === dlg) cerrar(); });
@@ -151,9 +154,9 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
     dlg!.querySelector('.pz__pista')!.textContent = 'gira' in d ? 'arrastra para girarlo' : 'muévelo para verlo';
     const precio = dlg!.querySelector<HTMLElement>('.pz__pie b')!;
     precio.textContent = d.precio ? `${d.precio} €` : '';
-    const pedir = dlg!.querySelector<HTMLAnchorElement>('.pz__pedir')!;
-    pedir.hidden = !d.nombre;
-    pedir.href = `https://wa.me/${d.wa}?text=${encodeURIComponent(`¡Hola Brava! Para llevar quiero: ${d.nombre}${d.precio ? ` (${d.precio} €)` : ''}`)}`;
+    const pedir = dlg!.querySelector<HTMLButtonElement>('.pz__pedir')!;
+    pedir.hidden = !d.anadir;
+    if (d.anadir) pedir.dataset.add = d.anadir;
     dlg!.showModal();
     document.documentElement.classList.add('pz-abierto');
     // vuelo desde la foto pequeña hasta el centro

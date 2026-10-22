@@ -1,11 +1,13 @@
 ---
 import type { MenuItem } from '../data/menu';
+import type { Anadible } from '../data/pedido';
+import BotonPedido from './BotonPedido.astro';
 /* Fila de carta: nombre, precio y descripción como en el menú impreso. */
-interface Props { item: MenuItem }
-const { item } = Astro.props;
+interface Props { item: MenuItem; a?: Anadible }
+const { item, a } = Astro.props;
 ---
 <li class="py-2.5">
-  <div class="flex items-baseline gap-3">
+  <div class="flex items-center gap-3">
     <span class="font-semibold text-brand-brown">{item.nombre}</span>
     {item.precio && (
       <>
@@ -15,6 +17,7 @@ const { item } = Astro.props;
         </span>
       </>
     )}
+    {a && <BotonPedido a={a} class={item.precio ? '' : 'ml-auto'} />}
   </div>
   {item.desc && <p class="mt-0.5 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
 </li>

@@ -1,0 +1,12 @@
+---
+/* Botón «+» para añadir cualquier cosa de la carta al pedido.
+   Cuando ya está en el pedido muestra cuántas lleva. La lógica vive en Pedido.astro. */
+import type { Anadible } from '../data/pedido';
+interface Props { a: Anadible; class?: string; texto?: string }
+const { a, class: cls = '', texto } = Astro.props;
+---
+<button type="button" class={`bpd ${texto ? 'bpd--texto' : ''} ${cls}`} data-add={JSON.stringify(a)} data-id={a.id} aria-label={`Añadir ${a.nombre} al pedido`}>
+  <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>
+  <span class="bpd__n" aria-hidden="true"></span>
+  {texto && <span class="bpd__t">{texto}</span>}
+</button>

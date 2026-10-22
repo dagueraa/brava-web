@@ -1,0 +1,326 @@
+---
+/* =====================================================================
+ *  Pedido para llevar (en toda la web).
+ *  - Cualquier botón [data-add] (ver BotonPedido) añade al pedido.
+ *  - Si la carta da a elegir (croissant o napolitana, sabor…) se abre un selector.
+ *  - Barra flotante con el total → hoja con el pedido, nombre, hora de recogida
+ *    (según el horario real) y notas → mensaje completo por WhatsApp.
+ *  El pedido se guarda en el móvil (localStorage) hasta que se envía.
+ * ===================================================================== */
+import { siteConfig } from '../../site.config';
+const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: siteConfig.toGo.tiempoPreparacionMin };
+---
+<div id="pd" data-cfg={JSON.stringify(datos)}>
+  <button id="pd-barra" class="pd-barra" type="button" hidden>
+    <span class="pd-barra__n" id="pd-barra-n">0</span>
+    <span class="pd-barra__t">Tu pedido</span>
+    <span class="pd-barra__total" id="pd-barra-total">0,00 €</span>
+    <span class="pd-barra__ver">Ver <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+  </button>
+
+  <!-- Selector de opciones -->
+  <dialog id="pd-elegir" class="pd-hoja pd-hoja--peq">
+    <form method="dialog" class="pd-hoja__in">
+      <div class="pd-hoja__cab"><h2 id="pd-e-nombre"></h2><button class="pd-x" value="cancel" aria-label="Cerrar">✕</button></div>
+      <p class="pd-e-precio" id="pd-e-precio"></p>
+      <fieldset id="pd-e-opc" class="pd-opc"><legend id="pd-e-opc-t"></legend><div id="pd-e-opc-v" class="pd-chips"></div></fieldset>
+      <fieldset id="pd-e-ext" class="pd-opc"><legend>Extras</legend><div id="pd-e-ext-v" class="pd-chips"></div></fieldset>
+      <label class="pd-campo"><span id="pd-e-nota-t">Nota (opcional)</span><input id="pd-e-nota" maxlength="80" placeholder="Ej. con leche de avena"></label>
+      <div class="pd-e-pie">
+        <div class="pd-cant"><button type="button" data-c="-1" aria-label="Uno menos">−</button><span id="pd-e-cant">1</span><button type="button" data-c="1" aria-label="Uno más">+</button></div>
+        <button id="pd-e-ok" class="pd-btn" value="ok">Añadir · <span id="pd-e-total"></span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- El pedido -->
+  <dialog id="pd-hoja" class="pd-hoja">
+    <div class="pd-hoja__in">
+      <div class="pd-hoja__cab"><h2>Tu pedido para llevar</h2><button class="pd-x" type="button" data-cerrar aria-label="Cerrar">✕</button></div>
+      <ul id="pd-lineas" class="pd-lineas"></ul>
+      <p id="pd-vacio" class="pd-vacio" hidden>Aún no has añadido nada. Toca el <b>+</b> de cualquier cosa de la carta.</p>
+      <div id="pd-datos">
+        <div class="pd-total"><span>Total</span><b id="pd-total">0,00 €</b></div>
+        <p id="pd-vitrina" class="pd-aviso" hidden>Los productos de vitrina se cobran en tienda según lo que haya ese día.</p>
+        <div class="pd-grid">
+          <label class="pd-campo"><span>Tu nombre</span><input id="pd-nombre" maxlength="40" autocomplete="given-name" placeholder="Para llamarte al recoger" required></label>
+          <label class="pd-campo"><span>¿Cuándo lo recoges?</span><select id="pd-hora"></select></label>
+        </div>
+        <label class="pd-campo"><span>Algo más (opcional)</span><textarea id="pd-notas" rows="2" maxlength="300" placeholder="Alergias, sin azúcar, para una persona mayor…"></textarea></label>
+        <p id="pd-error" class="pd-error" role="alert" hidden></p>
+        <button id="pd-enviar" class="pd-btn pd-btn--wa" type="button">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Z"/></svg>
+          Enviar pedido por WhatsApp
+        </button>
+        <p class="pd-pie">Se abre WhatsApp con el pedido escrito. Brava te confirma y lo pagas al recoger.</p>
+        <button id="pd-vaciar" class="pd-vaciar" type="button">Vaciar pedido</button>
+      </div>
+    </div>
+  </dialog>
+  <div id="pd-toast" class="pd-toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+  type Anadible = { id: string; nombre: string; precio: number | null; opciones?: { titulo: string; valores: string[] }; extras?: { nombre: string; precio: number }[]; pista?: string };
+  type Linea = { key: string; id: string; nombre: string; precio: number | null; cant: number; opcion?: string; extras: { nombre: string; precio: number }[]; nota?: string };
+  const CLAVE = 'brava.pedido.v1';
+  const root = document.getElementById('pd')!;
+  const cfg = JSON.parse(root.dataset.cfg!) as { wa: string; horario: Record<string, string>; prep: string };
+  const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+  const eur = (c: number) => (c / 100).toFixed(2).replace('.', ',') + ' €';
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  let lineas: Linea[] = [];
+  try { lineas = JSON.parse(localStorage.getItem(CLAVE) || '[]'); } catch { lineas = []; }
+  const guardar = () => { try { localStorage.setItem(CLAVE, JSON.stringify(lineas)); } catch { /* modo privado */ } };
+  const precioLinea = (l: Linea) => l.precio == null ? null : (l.precio + l.extras.reduce((a, e) => a + e.precio, 0)) * l.cant;
+  const total = () => lineas.reduce((a, l) => a + (precioLinea(l) ?? 0), 0);
+  const unidades = () => lineas.reduce((a, l) => a + l.cant, 0);
+
+  function anadir(a: Anadible, cant = 1, opcion?: string, extras: Linea['extras'] = [], nota?: string) {
+    const key = [a.id, opcion ?? '', extras.map((e) => e.nombre).join('+'), nota ?? ''].join('|');
+    const ya = lineas.find((l) => l.key === key);
+    if (ya) ya.cant += cant;
+    else lineas.push({ key, id: a.id, nombre: a.nombre, precio: a.precio, cant, opcion, extras, nota });
+    guardar();
+    pintar();
+    toast(`Añadido: <b>${esc(a.nombre)}${opcion ? ` (${esc(opcion)})` : ''}</b>`);
+  }
+
+  /* ---------- botones + de toda la web ---------- */
+  function pintarBotones() {
+    document.querySelectorAll<HTMLElement>('.bpd').forEach((b) => {
+      const n = lineas.filter((l) => l.id === b.dataset.id).reduce((a, l) => a + l.cant, 0);
+      b.classList.toggle('en', n > 0);
+      b.querySelector('.bpd__n')!.textContent = n ? String(n) : '';
+    });
+  }
+  document.addEventListener('click', (ev) => {
+    const b = (ev.target as HTMLElement).closest<HTMLElement>('[data-add]');
+    if (!b) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    const a = JSON.parse(b.dataset.add!) as Anadible;
+    b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop');
+    if (a.opciones || a.extras || a.pista) elegir(a);
+    else anadir(a);
+  }, true);
+
+  /* ---------- selector de opciones ---------- */
+  const dlgE = $<HTMLDialogElement>('pd-elegir');
+  let actual: Anadible | null = null, cantE = 1;
+  function totalE() {
+    if (!actual) return;
+    const ex = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input:checked')].reduce((a, i) => a + Number(i.value), 0);
+    $('pd-e-total').textContent = actual.precio == null ? 'precio en tienda' : eur((actual.precio + ex) * cantE);
+    $('pd-e-cant').textContent = String(cantE);
+  }
+  function elegir(a: Anadible) {
+    actual = a; cantE = 1;
+    $('pd-e-nombre').textContent = a.nombre;
+    $('pd-e-precio').textContent = a.precio == null ? 'Precio en tienda' : eur(a.precio);
+    $('pd-e-opc').hidden = !a.opciones;
+    if (a.opciones) {
+      $('pd-e-opc-t').textContent = a.opciones.titulo;
+      $('pd-e-opc-v').innerHTML = a.opciones.valores.map((v, i) => `<label class="pd-chip"><input type="radio" name="pd-opc" value="${esc(v)}" ${i === 0 ? 'checked' : ''}><span>${esc(v)}</span></label>`).join('');
+    }
+    $('pd-e-ext').hidden = !a.extras;
+    $('pd-e-opc-v').innerHTML = a.opciones ? $('pd-e-opc-v').innerHTML : ''; // nada de restos del plato anterior
+    $('pd-e-ext-v').innerHTML = '';
+    if (a.extras) $('pd-e-ext-v').innerHTML = a.extras.map((e) => `<label class="pd-chip"><input type="checkbox" value="${e.precio}" data-n="${esc(e.nombre)}"><span>${esc(e.nombre)} +${eur(e.precio)}</span></label>`).join('');
+    $('pd-e-nota-t').textContent = a.pista ? `${a.pista} (nota)` : 'Nota (opcional)';
+    const nota = $<HTMLInputElement>('pd-e-nota');
+    nota.value = '';
+    nota.placeholder = a.pista ? 'Escríbelo aquí' : 'Ej. bien caliente';
+    totalE();
+    dlgE.showModal();
+  }
+  dlgE.addEventListener('change', totalE);
+  dlgE.querySelectorAll<HTMLButtonElement>('[data-c]').forEach((b) => b.addEventListener('click', () => { cantE = Math.max(1, Math.min(20, cantE + Number(b.dataset.c))); totalE(); }));
+  dlgE.addEventListener('close', () => {
+    if (dlgE.returnValue !== 'ok' || !actual) return;
+    const opcion = dlgE.querySelector<HTMLInputElement>('#pd-e-opc-v input:checked')?.value;
+    const extras = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input:checked')].map((i) => ({ nombre: i.dataset.n!, precio: Number(i.value) }));
+    anadir(actual, cantE, actual.opciones ? opcion : undefined, extras, $<HTMLInputElement>('pd-e-nota').value.trim() || undefined);
+  });
+  dlgE.addEventListener('click', (e) => { if (e.target === dlgE) dlgE.close(); });
+
+  /* ---------- barra y hoja del pedido ---------- */
+  const dlg = $<HTMLDialogElement>('pd-hoja');
+  function pintar() {
+    const n = unidades();
+    $('pd-barra').hidden = n === 0;
+    document.documentElement.classList.toggle('con-pedido', n > 0);
+    $('pd-barra-n').textContent = String(n);
+    $('pd-barra-total').textContent = eur(total());
+    $('pd-total').textContent = eur(total());
+    $('pd-vitrina').hidden = !lineas.some((l) => l.precio == null);
+    $('pd-vacio').hidden = n > 0;
+    $('pd-datos').hidden = n === 0;
+    $('pd-lineas').innerHTML = lineas.map((l, i) => {
+      const p = precioLinea(l);
+      const det = [l.opcion, ...l.extras.map((e) => `+ ${e.nombre}`), l.nota && `«${l.nota}»`].filter(Boolean).map((x) => esc(String(x))).join(' · ');
+      return `<li class="pd-linea"><div class="pd-linea__txt"><b>${esc(l.nombre)}</b>${det ? `<small>${det}</small>` : ''}</div>
+        <div class="pd-cant pd-cant--peq"><button type="button" data-l="${i}" data-c="-1" aria-label="Uno menos">${l.cant === 1 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>' : '−'}</button><span>${l.cant}</span><button type="button" data-l="${i}" data-c="1" aria-label="Uno más">+</button></div>
+        <span class="pd-linea__p">${p == null ? 'en tienda' : eur(p)}</span></li>`;
+    }).join('');
+    pintarBotones();
+  }
+  $('pd-lineas').addEventListener('click', (e) => {
+    const b = (e.target as HTMLElement).closest<HTMLElement>('[data-l]');
+    if (!b) return;
+    const l = lineas[Number(b.dataset.l)];
+    l.cant += Number(b.dataset.c);
+    if (l.cant <= 0) lineas.splice(Number(b.dataset.l), 1);
+    guardar();
+    pintar();
+  });
+  $('pd-barra').addEventListener('click', () => { horas(); dlg.showModal(); });
+  dlg.querySelector('[data-cerrar]')!.addEventListener('click', () => dlg.close());
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  $('pd-vaciar').addEventListener('click', () => { if (confirm('¿Vaciar el pedido?')) { lineas = []; guardar(); pintar(); dlg.close(); } });
+  try { $<HTMLInputElement>('pd-nombre').value = localStorage.getItem('brava.pedido.nombre') || ''; } catch {}
+
+  /* ---------- horas de recogida según el horario de Brava ---------- */
+  function horas() {
+    const sel = $<HTMLSelectElement>('pd-hora');
+    const dias = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const ahoraMadrid = new Date(new Date().toLocaleString('en-US', { timeZone: 'Europe/Madrid' }));
+    const prep = parseInt(cfg.prep) || 15;
+    const opciones: string[] = [];
+    const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+    for (let d = 0; d < 7 && opciones.length === 0; d++) {
+      const dia = new Date(ahoraMadrid); dia.setDate(dia.getDate() + d);
+      const tramos = (cfg.horario[dias[dia.getDay()]] || '').match(/\d{1,2}:\d{2}–\d{1,2}:\d{2}/g) ?? [];
+      const ahoraMin = d === 0 ? ahoraMadrid.getHours() * 60 + ahoraMadrid.getMinutes() : -1;
+      const etiqueta = d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : dia.toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^./, (c) => c.toUpperCase());
+      for (const t of tramos) {
+        const [a, b] = t.split('–').map((s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; });
+        if (d === 0 && ahoraMin >= a && ahoraMin < b - prep && opciones.length === 0) opciones.push(`Lo antes posible (unos ${cfg.prep} min)`);
+        for (let m = Math.ceil(Math.max(a + prep, ahoraMin + prep) / 15) * 15; m <= b - 15; m += 15) opciones.push(`${etiqueta} a las ${hm(m)}`);
+      }
+    }
+    const previa = sel.value;
+    sel.innerHTML = opciones.map((o) => `<option>${o}</option>`).join('');
+    if (opciones.includes(previa)) sel.value = previa;
+  }
+
+  /* ---------- el mensaje ---------- */
+  $('pd-enviar').addEventListener('click', () => {
+    const nombre = $<HTMLInputElement>('pd-nombre').value.trim();
+    const err = $('pd-error');
+    if (!nombre) { err.textContent = 'Dinos tu nombre para tenerlo preparado.'; err.hidden = false; $('pd-nombre').focus(); return; }
+    err.hidden = true;
+    try { localStorage.setItem('brava.pedido.nombre', nombre); } catch {}
+    const notas = $<HTMLTextAreaElement>('pd-notas').value.trim();
+    const filas = lineas.map((l) => {
+      const p = precioLinea(l);
+      let t = `• ${l.cant} x ${l.nombre}${l.opcion ? ` (${l.opcion})` : ''} — ${p == null ? 'precio en tienda' : eur(p)}`;
+      l.extras.forEach((e) => { t += `\n   + ${e.nombre} (+${eur(e.precio)} c/u)`; });
+      if (l.nota) t += `\n   Nota: ${l.nota}`;
+      return t;
+    });
+    const msg = [
+      '¡Hola Brava! Quiero hacer un *pedido para llevar*:',
+      '',
+      ...filas,
+      '',
+      `*Total: ${eur(total())}*${lineas.some((l) => l.precio == null) ? ' + productos de vitrina' : ''}`,
+      '',
+      `Nombre: ${nombre}`,
+      `Recogida: ${$<HTMLSelectElement>('pd-hora').value || 'a confirmar'}`,
+      ...(notas ? [`Notas: ${notas}`] : []),
+      '',
+      '¿Me lo confirmáis? ¡Gracias!',
+    ].join('\n');
+    window.open(`https://wa.me/${cfg.wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+  });
+
+  /* ---------- aviso ---------- */
+  let tt = 0;
+  function toast(html: string) {
+    const t = $('pd-toast');
+    t.innerHTML = `<span class="pd-toast__t">${html}</span><button type="button">Ver pedido</button>`;
+    t.querySelector('button')!.onclick = () => { t.classList.remove('on'); horas(); dlg.showModal(); };
+    t.classList.add('on');
+    clearTimeout(tt);
+    tt = window.setTimeout(() => t.classList.remove('on'), 2600);
+  }
+
+  window.addEventListener('pedido:anadir', (e) => anadir((e as CustomEvent<Anadible>).detail));
+  pintar();
+  // Al volver a la pestaña (p. ej. tras enviar el WhatsApp) se refrescan los botones
+  document.addEventListener('visibilitychange', pintarBotones);
+</script>
+
+<style is:global>
+  /* botón + */
+  .bpd { position: relative; display: inline-grid; place-items: center; width: 2.3rem; height: 2.3rem; flex-shrink: 0; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); transition: transform .2s, background-color .2s; }
+  .bpd:hover { transform: scale(1.08); }
+  .bpd svg { width: 1.1rem; height: 1.1rem; }
+  .bpd__n { position: absolute; top: -.35rem; right: -.35rem; min-width: 1.25rem; height: 1.25rem; padding: 0 .3rem; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-size: .72rem; font-weight: 800; line-height: 1.25rem; display: none; }
+  .bpd.en .bpd__n { display: block; }
+  .bpd.pop { animation: bpd-pop .4s cubic-bezier(.3,1.6,.5,1); }
+  @keyframes bpd-pop { 40% { transform: scale(1.3); } }
+  .bpd--texto { width: auto; height: auto; display: inline-flex; gap: .5rem; padding: .85rem 1.3rem; font-weight: 700; }
+  .bpd--texto .bpd__mas { display: inline-grid; }
+
+  /* barra flotante */
+  .pd-barra { position: fixed; z-index: 70; left: 50%; bottom: max(1rem, env(safe-area-inset-bottom)); transform: translateX(-50%); display: flex; align-items: center; gap: .8rem; width: min(calc(100vw - 2rem), 26rem); border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); padding: .55rem .6rem .55rem .55rem; box-shadow: 0 18px 40px -14px rgba(0,0,0,.55); animation: pd-sube .45s cubic-bezier(.3,1.4,.5,1); }
+  .pd-barra[hidden] { display: none; }
+  @keyframes pd-sube { from { transform: translate(-50%, 150%); } }
+  .pd-barra__n { display: grid; place-items: center; min-width: 2.4rem; height: 2.4rem; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-weight: 800; }
+  .pd-barra__t { font-weight: 700; }
+  .pd-barra__total { margin-left: auto; font-weight: 800; }
+  .pd-barra__ver { display: inline-flex; align-items: center; gap: .2rem; border-radius: 999px; background: color-mix(in srgb, var(--color-brand-cream) 14%, transparent); padding: .55rem .8rem; font-weight: 700; font-size: .9rem; }
+  .pd-barra__ver svg { width: 1rem; height: 1rem; }
+  html.con-pedido a.fixed[aria-label="Escríbenos por WhatsApp"] { opacity: 0; pointer-events: none; }
+
+  /* hojas */
+  .pd-hoja { width: min(100vw, 34rem); max-width: none; max-height: 92dvh; margin: auto auto 0; padding: 0; border: 0; border-radius: 1.8rem 1.8rem 0 0; background: var(--color-brand-cream); color: var(--color-brand-brown); box-shadow: 0 -20px 60px -20px rgba(0,0,0,.5); }
+  .pd-hoja[open] { animation: pd-hoja .4s cubic-bezier(.2,.9,.25,1); }
+  @keyframes pd-hoja { from { transform: translateY(100%); } }
+  .pd-hoja::backdrop { background: rgba(30,20,16,.55); }
+  @media (min-width: 640px) { .pd-hoja { margin: auto; border-radius: 1.8rem; } }
+  .pd-hoja__in { padding: 1.4rem 1.3rem max(1.4rem, env(safe-area-inset-bottom)); }
+  .pd-hoja__cab { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+  .pd-hoja__cab h2 { font-size: 1.45rem; font-weight: 800; letter-spacing: -.02em; }
+  .pd-x { width: 2.4rem; height: 2.4rem; border-radius: 999px; background: var(--color-brand-cream-2); }
+  .pd-e-precio { margin-top: .2rem; font-weight: 700; color: var(--color-brand-brown-80); }
+  .pd-opc { margin-top: 1.1rem; border: 0; padding: 0; }
+  .pd-opc[hidden] { display: none; }
+  .pd-opc legend { font-weight: 700; margin-bottom: .5rem; }
+  .pd-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .pd-chip input { position: absolute; opacity: 0; }
+  .pd-chip span { display: inline-block; border-radius: 999px; border: 2px solid color-mix(in srgb, var(--color-brand-brown) 20%, transparent); padding: .55rem .95rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .pd-chip input:checked + span { background: var(--color-brand-brown); border-color: var(--color-brand-brown); color: var(--color-brand-cream); }
+  .pd-chip input:focus-visible + span { outline: 3px solid var(--color-brand-calm); }
+  .pd-campo { display: grid; gap: .35rem; margin-top: 1rem; font-size: .9rem; font-weight: 700; }
+  .pd-campo input, .pd-campo select, .pd-campo textarea { width: 100%; border-radius: 1rem; border: 2px solid color-mix(in srgb, var(--color-brand-brown) 16%, transparent); background: #fff; padding: .75rem .9rem; font: 500 1rem var(--font-sans); color: var(--color-brand-brown); }
+  .pd-e-pie { margin-top: 1.3rem; display: flex; gap: .8rem; align-items: center; }
+  .pd-cant { display: inline-flex; align-items: center; gap: .2rem; border-radius: 999px; background: var(--color-brand-cream-2); padding: .25rem; }
+  .pd-cant button { width: 2.4rem; height: 2.4rem; border-radius: 999px; background: #fff; font-size: 1.2rem; font-weight: 700; display: grid; place-items: center; }
+  .pd-cant button svg { width: 1rem; height: 1rem; }
+  .pd-cant span { min-width: 1.8rem; text-align: center; font-weight: 800; }
+  .pd-cant--peq button { width: 2rem; height: 2rem; font-size: 1rem; }
+  .pd-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); padding: 1rem 1.2rem; font-weight: 800; }
+  .pd-btn--wa { width: 100%; margin-top: 1.2rem; background: #25d366; color: #fff; font-size: 1.05rem; }
+  .pd-btn--wa svg { width: 1.3rem; height: 1.3rem; }
+  .pd-lineas { margin-top: 1rem; max-height: 38dvh; overflow-y: auto; display: grid; }
+  .pd-linea { display: grid; grid-template-columns: 1fr auto auto; gap: .7rem; align-items: center; padding: .7rem 0; border-bottom: 1.5px dashed color-mix(in srgb, var(--color-brand-brown) 18%, transparent); }
+  .pd-linea__txt small { display: block; margin-top: .1rem; color: var(--color-brand-brown-80); font-size: .8rem; }
+  .pd-linea__p { min-width: 4.6rem; text-align: right; font-weight: 800; font-size: .95rem; }
+  .pd-vacio { margin: 1.5rem 0 .5rem; color: var(--color-brand-brown-80); }
+  .pd-total { margin-top: 1rem; display: flex; justify-content: space-between; align-items: baseline; font-size: 1.1rem; font-weight: 700; }
+  .pd-total b { font-size: 1.9rem; letter-spacing: -.03em; }
+  .pd-aviso { margin-top: .3rem; font-size: .8rem; color: var(--color-brand-brown-80); }
+  .pd-grid { display: grid; gap: 0 .8rem; }
+  @media (min-width: 520px) { .pd-grid { grid-template-columns: 1fr 1fr; } }
+  .pd-error { margin-top: .8rem; font-weight: 700; color: #b42318; }
+  .pd-pie { margin-top: .6rem; text-align: center; font-size: .8rem; color: var(--color-brand-brown-80); }
+  .pd-vaciar { display: block; margin: .8rem auto 0; font-size: .85rem; text-decoration: underline; color: var(--color-brand-brown-80); }
+  .pd-toast { position: fixed; z-index: 75; left: 50%; bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.2rem); transform: translate(-50%, 30px); opacity: 0; pointer-events: none; display: flex; align-items: center; gap: .8rem; max-width: calc(100vw - 2rem); border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .55rem .6rem .55rem 1.1rem; box-shadow: 0 14px 30px -12px rgba(0,0,0,.45); transition: all .35s cubic-bezier(.3,1.4,.5,1); font-size: .92rem; white-space: nowrap; }
+  .pd-toast.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .pd-toast__t { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .pd-toast button { flex-shrink: 0; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); padding: .45rem .8rem; font-weight: 700; font-size: .82rem; }
+</style>

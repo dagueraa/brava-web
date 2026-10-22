@@ -6,6 +6,8 @@ import BrandIcon from '../components/BrandIcon.astro';
 import Blob from '../components/Blob.astro';
 import HandArrow from '../components/HandArrow.astro';
 import Plato from '../components/Plato.astro';
+import BotonPedido from '../components/BotonPedido.astro';
+import { anadible, extraDeNota } from '../data/pedido';
 import { Image } from 'astro:assets';
 import { img } from '../assets/images';
 import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
@@ -24,6 +26,18 @@ const plato = (nombre: string) => {
   return it;
 };
 const combos = categorias.find((c) => c.id === 'combos')!;
+// cada plato con su apartado de la carta, para añadirlo al pedido con el mismo id que en /carta
+const conApartado = categorias.flatMap((c) => [
+  ...(c.items ?? []).map((i) => ({ i, ap: '' })),
+  ...(c.subsecciones?.flatMap((s) => s.items.map((i) => ({ i, ap: s.titulo }))) ?? []),
+  ...(c.especiales?.items.map((i) => ({ i, ap: c.especiales!.titulo })) ?? []),
+]);
+const zumo = extraDeNota(combos.nota);
+const paraPedido = (it?: MenuItem) => {
+  if (!it) return undefined;
+  const x = conApartado.find((e) => e.i === it)!;
+  return anadible(it, x.ap, combos.items!.includes(it) ? zumo : undefined);
+};
 // plato de la carta que corresponde a cada foto (para abrirlo de cerca con su nombre y precio)
 const slug = (t: string) => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, '-');
 const porFoto = (k: MenuFotoKey) => todos.find((i) => i.foto === k) ?? todos.find((i) => slug(i.nombre) === k);
@@ -141,8 +155,8 @@ const objetivo = siteConfig.bravaPass.objetivo;
         <article class={`stack__card ${['bg-brand-cream-2', 'bg-brand-calm', 'bg-brand-fresh'][i]}`} style={`--i:${i}`}>
           <div class="stack__fotos">
             <Blob class="inset-0 h-full w-full scale-110 text-brand-cream/70" variant={((i % 3) + 1) as 1 | 2 | 3} />
-            <Plato foto={c.cafe as MenuFotoKey} alt="Café de especialidad de Brava" nombre={c.nombre} precio={c.precio} desc={c.desc} widths={[260, 420, 560]} sizes="(max-width: 768px) 46vw, 300px" class="stack__cafe" />
-            <Plato foto={c.foto as MenuFotoKey} alt={c.nombre} nombre={c.nombre} precio={c.precio} desc={c.desc} widths={[280, 460, 620]} sizes="(max-width: 768px) 50vw, 320px" class="stack__comida" />
+            <Plato foto={c.cafe as MenuFotoKey} alt="Café de especialidad de Brava" nombre={c.nombre} precio={c.precio} desc={c.desc} a={paraPedido(c)} widths={[260, 420, 560]} sizes="(max-width: 768px) 46vw, 300px" class="stack__cafe" />
+            <Plato foto={c.foto as MenuFotoKey} alt={c.nombre} nombre={c.nombre} precio={c.precio} desc={c.desc} a={paraPedido(c)} widths={[280, 460, 620]} sizes="(max-width: 768px) 50vw, 320px" class="stack__comida" />
             <HandArrow class="absolute -right-2 bottom-6 hidden w-24 text-brand-brown md:block" />
           </div>
           <div class="stack__txt">
@@ -150,7 +164,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
             <h3 class="stack__nombre">{c.nombre}</h3>
             <p class="stack__desc">{c.desc}</p>
             <p class="stack__precio">{c.precio}<span>€</span></p>
-            <a href={waLink(`¡Hola Brava! Para llevar quiero un ${c.nombre} (${c.precio} €).`)} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--brown mt-6">Pedirlo para llevar</a>
+            <BotonPedido a={paraPedido(c)!} texto="Añadir al pedido" class="mt-6" />
           </div>
         </article>
       ))}
@@ -171,7 +185,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
             <div class="hpanel__fotos">
               {p.fotos.map((f, k) => (
                 <div class={`hpanel__foto hpanel__foto--${k}`} data-par={(k + 1) * (i % 2 ? -1 : 1)}>
-                  <Plato foto={f} alt={porFoto(f)?.nombre ?? 'Café de especialidad'} nombre={porFoto(f)?.nombre} precio={porFoto(f)?.precio} desc={porFoto(f)?.desc} widths={[240, 400, 560]} sizes="(max-width: 768px) 38vw, 300px" />
+                  <Plato foto={f} alt={porFoto(f)?.nombre ?? 'Café de especialidad'} nombre={porFoto(f)?.nombre} precio={porFoto(f)?.precio} desc={porFoto(f)?.desc} a={paraPedido(porFoto(f))} widths={[240, 400, 560]} sizes="(max-width: 768px) 38vw, 300px" />
                 </div>
               ))}
             </div>
@@ -180,7 +194,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
               <Logo as="h3" suffix={p.suffix} class="text-4xl sm:text-5xl" />
               <ul class="hpanel__lista">
                 {p.platos.map((pl) => (
-                  <li><span><b>{pl.nombre}</b>{pl.desc && <small>{pl.desc}</small>}</span><em>{pl.precio} €</em></li>
+                  <li><span><b>{pl.nombre}</b>{pl.desc && <small>{pl.desc}</small>}</span><em>{pl.precio} €</em><BotonPedido a={paraPedido(pl)!} class="hpanel__mas" /></li>
                 ))}
               </ul>
               <a href={p.href} class="btn-e btn-e--brown mt-5">Ver {p.suffix}</a>
@@ -537,7 +551,9 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .hpanel__lista li { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; border-bottom: 1.5px dashed color-mix(in srgb, currentColor 28%, transparent); padding-bottom: .45rem; }
   .hpanel__lista b { font-weight: 700; }
   .hpanel__lista small { display: none; }
-  .hpanel__lista em { font-style: normal; font-weight: 800; white-space: nowrap; }
+  .hpanel__lista em { margin-left: auto; font-style: normal; font-weight: 800; white-space: nowrap; }
+  .hpanel__lista li { align-items: center; }
+  .hpanel__mas.bpd { width: 1.9rem; height: 1.9rem; }
   .hpanel--fin { place-content: center; justify-items: center; text-align: center; }
   @media (max-width: 767px) {
     .hpanel { grid-template-rows: 9.5rem 1fr; }

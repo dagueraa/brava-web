@@ -1,0 +1,94 @@
+---
+/* Monta tu tostada: pan + media/entera + toppings, con el precio de la carta sumado al momento. */
+import type { TostadaRow } from '../data/menu';
+import { centimos } from '../data/pedido';
+interface Props { bases: TostadaRow[]; toppings: TostadaRow[] }
+const { bases, toppings } = Astro.props;
+const fila = (r: TostadaRow) => ({ nombre: r.nombre, media: centimos(r.media), entera: centimos(r.entera) });
+const datos = { bases: bases.map(fila), toppings: toppings.map(fila) };
+---
+<div class="mt" data-tostada={JSON.stringify(datos)}>
+  <p class="mt__kicker">Monta tu tostada</p>
+  <div class="mt__paso">
+    <p class="mt__t">1 · Tamaño</p>
+    <div class="pd-chips" role="radiogroup" aria-label="Tamaño">
+      <label class="pd-chip"><input type="radio" name="mt-tam" value="media" checked><span>Media</span></label>
+      <label class="pd-chip"><input type="radio" name="mt-tam" value="entera"><span>Entera</span></label>
+    </div>
+  </div>
+  <div class="mt__paso">
+    <p class="mt__t">2 · Pan</p>
+    <div class="pd-chips" data-bases>
+      {datos.bases.map((b, i) => (
+        <label class="pd-chip"><input type="radio" name="mt-pan" value={i} checked={i === 0}><span>{b.nombre}</span></label>
+      ))}
+    </div>
+  </div>
+  <div class="mt__paso">
+    <p class="mt__t">3 · Lo que lleva encima <small>(los que quieras)</small></p>
+    <div class="pd-chips">
+      {datos.toppings.map((t, i) => (
+        <label class="pd-chip"><input type="checkbox" name="mt-top" value={i}><span>{t.nombre}</span></label>
+      ))}
+    </div>
+  </div>
+  <div class="mt__pie">
+    <p class="mt__res"><span data-resumen>Media tostada de pan blanco</span><b data-precio>1,40 €</b></p>
+    <button type="button" class="pd-btn" data-anadir-tostada>Añadir tostada</button>
+  </div>
+</div>
+
+<script>
+  type Fila = { nombre: string; media: number | null; entera: number | null };
+  document.querySelectorAll<HTMLElement>('[data-tostada]').forEach((el) => {
+    const d = JSON.parse(el.dataset.tostada!) as { bases: Fila[]; toppings: Fila[] };
+    const eur = (c: number) => (c / 100).toFixed(2).replace('.', ',') + ' €';
+    const leer = () => {
+      const tam = el.querySelector<HTMLInputElement>('input[name="mt-tam"]:checked')!.value as 'media' | 'entera';
+      const pan = d.bases[Number(el.querySelector<HTMLInputElement>('input[name="mt-pan"]:checked')!.value)];
+      const tops = [...el.querySelectorAll<HTMLInputElement>('input[name="mt-top"]:checked')].map((i) => d.toppings[Number(i.value)]);
+      return { tam, pan, tops };
+    };
+    function pintar() {
+      const { tam } = leer();
+      // pan sin precio en ese tamaño (p. ej. sin gluten solo entera): se desactiva
+      el.querySelectorAll<HTMLInputElement>('input[name="mt-pan"]').forEach((i) => {
+        const ok = d.bases[Number(i.value)][tam] != null;
+        i.disabled = !ok;
+        i.parentElement!.classList.toggle('off', !ok);
+        if (!ok && i.checked) el.querySelector<HTMLInputElement>('input[name="mt-pan"]:not(:disabled)')!.checked = true;
+      });
+      const { pan, tops } = leer();
+      const precio = (pan[tam] ?? 0) + tops.reduce((a, t) => a + (t[tam] ?? 0), 0);
+      el.querySelector('[data-resumen]')!.textContent = `${tam === 'media' ? 'Media tostada' : 'Tostada entera'} de ${pan.nombre.toLowerCase()}${tops.length ? ' con ' + tops.map((t) => t.nombre.toLowerCase()).join(', ') : ''}`;
+      el.querySelector('[data-precio]')!.textContent = eur(precio);
+      return precio;
+    }
+    el.addEventListener('change', pintar);
+    pintar();
+    el.querySelector('[data-anadir-tostada]')!.addEventListener('click', () => {
+      const precio = pintar();
+      const { tam, pan, tops } = leer();
+      const nombre = el.querySelector('[data-resumen]')!.textContent!;
+      window.dispatchEvent(new CustomEvent('pedido:anadir', { detail: { id: `tostada-${tam}-${pan.nombre}-${tops.map((t) => t.nombre).join('-')}`, nombre, precio } }));
+      el.querySelectorAll<HTMLInputElement>('input[name="mt-top"]').forEach((i) => (i.checked = false));
+      pintar();
+    });
+  });
+</script>
+
+<style is:global>
+  .mt { margin-top: 1.5rem; border-radius: 1.8rem; background: var(--color-brand-cream-2); padding: 1.4rem; }
+  .mt__kicker { font: 600 1.8rem var(--font-hand); color: var(--color-brand-calm-ink); }
+  .mt__paso { margin-top: 1rem; }
+  .mt__t { font-weight: 800; margin-bottom: .5rem; }
+  .mt__t small { font-weight: 500; color: var(--color-brand-brown-80); }
+  .mt .pd-chip span { background: #fff; padding: .45rem .8rem; font-size: .9rem; }
+  .mt .pd-chip input:checked + span { background: var(--color-brand-brown); }
+  .mt .pd-chip.off span { opacity: .35; text-decoration: line-through; cursor: not-allowed; }
+  .mt__pie { margin-top: 1.3rem; display: grid; gap: .8rem; }
+  .mt__res { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; }
+  .mt__res span { color: var(--color-brand-brown-80); }
+  .mt__res b { font-size: 1.6rem; letter-spacing: -.03em; white-space: nowrap; }
+  @media (min-width: 640px) { .mt__pie { grid-template-columns: 1fr auto; align-items: center; } }
+</style>
