@@ -299,7 +299,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
   if (webgl && !reduce) {
     // Se carga después de pintar el texto, para que la portada salga al instante.
     const arrancar = () => import('../scripts/taza3d').then(({ crearTaza }) =>
-      crearTaza(canvas, { onReady: () => epica.classList.add('is-3d') }).then((t) => { taza = t; tick(); }),
+      crearTaza(canvas, { onReady: () => epica.classList.add('is-3d') }).then((t) => { taza = t; pintarEpica(); }),
     ).catch(() => epica.classList.add('no-3d'));
     'requestIdleCallback' in window ? requestIdleCallback(arrancar, { timeout: 900 }) : setTimeout(arrancar, 300);
     // En móvil, el giroscopio también inclina la escena.
@@ -331,10 +331,13 @@ const objetivo = siteConfig.bravaPass.objetivo;
   /* ---------- 2 · franjas ---------- */
   const franjas = [...document.querySelectorAll<HTMLElement>('.franja__track')];
   let fx = 0;
+  // anchos medidos solo al cargar y al cambiar el tamaño (medir en cada fotograma provoca tirones)
+  let anchos = franjas.map((t) => t.scrollWidth / 2);
+  window.addEventListener('resize', () => { anchos = franjas.map((t) => t.scrollWidth / 2); });
   function pintarFranjas(dt: number) {
     fx += dt * 0.04;
-    franjas.forEach((t) => {
-      const w = t.scrollWidth / 2;
+    franjas.forEach((t, i) => {
+      const w = anchos[i];
       const dir = Number(t.dataset.dir);
       const x = ((fx + window.scrollY * 0.35) % w + w) % w;
       t.style.transform = `translate3d(${dir < 0 ? -x : x - w}px,0,0)`;
@@ -346,9 +349,11 @@ const objetivo = siteConfig.bravaPass.objetivo;
   const track = hcarta.querySelector<HTMLElement>('.hcarta__track')!;
   const hbar = hcarta.querySelector<HTMLElement>('.hcarta__bar i')!;
   const pars = [...hcarta.querySelectorAll<HTMLElement>('[data-par]')];
+  let maxTrack = track.scrollWidth - track.clientWidth;
+  window.addEventListener('resize', () => { maxTrack = track.scrollWidth - track.clientWidth; });
   function pintarCarta() {
     const p = avance(hcarta);
-    const max = track.scrollWidth - track.clientWidth;
+    const max = maxTrack;
     track.style.transform = `translate3d(${-p * max}px,0,0)`;
     hbar.style.transform = `scaleX(${p})`;
     pars.forEach((el) => { el.style.translate = `0 ${(p - 0.5) * Number(el.dataset.par) * 40}px`; });
@@ -406,16 +411,27 @@ const objetivo = siteConfig.bravaPass.objetivo;
   })();
 
   /* ---------- bucle ---------- */
-  let last = performance.now();
+  // Cada sección solo se recalcula mientras está en pantalla.
+  const enPantalla = new Map<Element, boolean>();
+  const vigia = new IntersectionObserver((es) => es.forEach((e) => enPantalla.set(e.target, e.isIntersecting)), { rootMargin: '200px 0px' });
+  const secFranjas = document.querySelector('.franjas')!;
+  const secAlma = document.querySelector('.alma__foto')!;
+  [epica, secFranjas, hcarta, pass, secAlma].forEach((el) => vigia.observe(el));
+  const ve = (el: Element) => enPantalla.get(el) !== false;
+
+  let last = performance.now(), yPrev = -1;
   function tick() {
     const now = performance.now();
     const dt = Math.min(64, now - last);
     last = now;
-    pintarEpica();
-    if (!reduce) pintarFranjas(dt);
-    pintarCarta();
-    pintarPass();
-    if (!reduce) pintarAlma();
+    const y = window.scrollY, movido = y !== yPrev;
+    yPrev = y;
+    if (ve(secFranjas) && !reduce) pintarFranjas(dt); // la franja se mueve sola
+    if (!movido) return; // el resto solo depende del scroll
+    if (ve(epica)) pintarEpica();
+    if (ve(hcarta)) pintarCarta();
+    if (ve(pass)) pintarPass();
+    if (ve(secAlma) && !reduce) pintarAlma();
   }
   (function loop() { tick(); requestAnimationFrame(loop); })();
 </script>
@@ -454,7 +470,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .epica__p { margin-top: 1rem; font-size: 1.15rem; line-height: 1.55; color: color-mix(in srgb, var(--color-brand-cream) 80%, transparent); }
   .epica__ctas { margin-top: 1.6rem; display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; }
   .epica__chips { margin-top: 1.4rem; display: flex; flex-wrap: wrap; gap: .5rem; }
-  .epica__chips li { display: inline-flex; gap: .6rem; align-items: baseline; border-radius: 999px; padding: .55rem 1rem; background: color-mix(in srgb, var(--color-brand-cream) 10%, transparent); border: 1px solid color-mix(in srgb, var(--color-brand-cream) 18%, transparent); font-size: .92rem; backdrop-filter: blur(6px); }
+  .epica__chips li { display: inline-flex; gap: .6rem; align-items: baseline; border-radius: 999px; padding: .55rem 1rem; background: color-mix(in srgb, var(--color-brand-cream) 10%, transparent); border: 1px solid color-mix(in srgb, var(--color-brand-cream) 18%, transparent); font-size: .92rem; }
   .epica__chips b { color: var(--color-brand-fresh); }
   .epica__hint { position: absolute; z-index: 3; left: 50%; bottom: 1.1rem; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: .3rem; font: 600 1.35rem var(--font-hand); color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); transition: opacity .4s; }
   .epica__hint i { width: 2px; height: 26px; background: currentColor; border-radius: 2px; animation: hint 1.6s ease-in-out infinite; transform-origin: top; }

@@ -184,7 +184,7 @@ function steamMaterial(seed: number) {
       float h(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float n(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
         return mix(mix(h(i), h(i+vec2(1,0)), f.x), mix(h(i+vec2(0,1)), h(i+vec2(1,1)), f.x), f.y); }
-      float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a*n(p); p *= 2.03; a *= 0.5; } return v; }
+      float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 4; i++) { v += a*n(p); p *= 2.03; a *= 0.5; } return v; }
       void main() {
         float t = uTime * 0.3 + uSeed * 7.0;
         float y = vUv.y;
@@ -224,11 +224,14 @@ const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () => void } = {}) {
   const small = Math.min(window.innerWidth, window.innerHeight) < 700;
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.75 : 2));
+  // Resolución contenida (la diferencia no se ve y el rendimiento sí); baja sola si el equipo va justo.
+  let dpr = Math.min(window.devicePixelRatio, 1.5);
+  renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.0;
   renderer.shadowMap.enabled = true;
+  renderer.shadowMap.autoUpdate = false;
   renderer.shadowMap.type = THREE.VSMShadowMap; // sombra difusa, de caja de luz
 
   const scene = new THREE.Scene();
@@ -242,7 +245,7 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
   const key = new THREE.DirectionalLight('#ffe6c7', 2.6);
   key.position.set(-4.5, 6.5, 4.5);
   key.castShadow = true;
-  key.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
+  key.shadow.mapSize.set(1024, 1024);
   key.shadow.camera.left = key.shadow.camera.bottom = -3.5;
   key.shadow.camera.right = key.shadow.camera.top = 3.5;
   key.shadow.camera.near = 1;
@@ -250,10 +253,10 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
   key.shadow.bias = -0.0008;
   key.shadow.normalBias = 0.02;
   key.shadow.radius = 14;
-  key.shadow.blurSamples = 20;
+  key.shadow.blurSamples = 12;
   const back = new THREE.DirectionalLight('#fff3e6', 1.6);
   back.position.set(3.5, 4, -6);
-  scene.add(key, key.target, back, new THREE.HemisphereLight('#fff1e2', '#2c211d', 0.45));
+  scene.add(back, new THREE.HemisphereLight('#fff1e2', '#2c211d', 0.45));
 
   /* ---- el vaso ---- */
   const world = new THREE.Group();
@@ -262,7 +265,9 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
   scene.add(world);
   world.add(rig);
   rig.add(cup);
-  key.target = rig;
+  // la luz principal va dentro del grupo del vaso: la sombra es la misma esté donde esté
+  rig.add(key, key.target);
+  key.target.position.set(0, 0, 0);
 
   const H = 2.6, RT = 1, RB = 0.76;
   const bump = paperBump();
@@ -277,7 +282,7 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
   });
   const outer = new THREE.Mesh(new THREE.CylinderGeometry(RT, RB, H, 160, 1, true), wall);
   outer.rotation.y = Math.PI; // centro de la textura (u = 0,5) mirando a cámara
-  outer.castShadow = true;
+  outer.castShadow = true; // el vaso es redondo: su sombra no cambia al girar
   const inner = new THREE.Mesh(
     new THREE.CylinderGeometry(RT * 0.975, RB * 0.975, H, 96, 1, true),
     new THREE.MeshStandardMaterial({ color: '#d8ccb6', roughness: 0.9, side: THREE.BackSide }),
@@ -387,7 +392,8 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
   window.addEventListener('pointermove', onPointer, { passive: true });
 
   const clock = new THREE.Clock();
-  let visible = true, raf = 0, ready = false;
+  let visible = true, raf = 0, ready = false, lentos = 0;
+  renderer.shadowMap.needsUpdate = true;
 
   function frame() {
     raf = requestAnimationFrame(frame);
@@ -420,6 +426,14 @@ export async function crearTaza(canvas: HTMLCanvasElement, opts: { onReady?: () 
     steam.quaternion.copy(camera.quaternion);
 
     renderer.render(scene, camera);
+    // si van varios fotogramas lentos seguidos, bajamos resolución (hasta 1x)
+    lentos = dt > 0.024 ? lentos + 1 : Math.max(0, lentos - 1);
+    if (lentos > 40 && dpr > 1) {
+      dpr = Math.max(1, dpr - 0.25);
+      renderer.setPixelRatio(dpr);
+      resize();
+      lentos = 0;
+    }
     if (!ready) {
       ready = true;
       opts.onReady?.();
