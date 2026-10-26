@@ -300,17 +300,18 @@ const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
   const clamp = (v: number) => Math.min(1, Math.max(0, v));
   /* Avance (0–1) de una sección alta mientras su escenario está fijo en pantalla.
      Se mide con el escenario real (alto y margen superior del sticky), no con la ventana,
-     y la animación acaba al 88 %: el último estado se queda quieto antes de soltarse. */
+     y la animación acaba antes del final (FIN): el último estado se queda quieto antes de soltarse.
+     La noche usa un FIN más corto porque su 3D llega con un poco de retardo (suavizado). */
   const FIN = 0.88;
   const escenarios = new Map<HTMLElement, HTMLElement | null>();
-  const avance = (el: HTMLElement) => {
+  const avance = (el: HTMLElement, fin = FIN) => {
     if (!escenarios.has(el)) escenarios.set(el, el.querySelector<HTMLElement>(':scope > [class$="__stage"]'));
     const st = escenarios.get(el);
     const fijo = st && getComputedStyle(st).position === 'sticky';
     const arriba = fijo ? parseFloat(getComputedStyle(st!).top) || 0 : 0;
     const recorrido = el.offsetHeight - (fijo ? st!.offsetHeight : window.innerHeight);
     const r = el.getBoundingClientRect();
-    return recorrido > 0 ? clamp((arriba - r.top) / recorrido / FIN) : 0;
+    return recorrido > 0 ? clamp((arriba - r.top) / recorrido / fin) : 0;
   };
 
 
@@ -338,7 +339,7 @@ const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
   }
 
   function pintarNoche() {
-    const p = avance(noche);
+    const p = avance(noche, 0.76);
     escena?.setProgress(p);
     bar.style.transform = `scaleX(${p})`;
     word.style.transform = `translate(-50%, -50%) scale(${1 + p * 0.35})`;
@@ -533,7 +534,7 @@ const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
   html:has(#noche) .hcarta__head .font-hand { color: var(--color-brand-fresh); }
 
   /* ── 1 · la noche ── */
-  .noche { height: 460vh; position: relative; color: var(--color-brand-cream); }
+  .noche { height: 520vh; position: relative; color: var(--color-brand-cream); }
   .noche__stage { position: sticky; top: 4rem; height: calc(100svh - 4rem); overflow: hidden; background: radial-gradient(ellipse 60% 70% at 70% 55%, #3b2c27 0%, #271c19 45%, #170f0d 100%); }
   .noche__cielo { position: absolute; inset: 0; pointer-events: none; }
   .noche__luna { position: absolute; left: 44%; top: 7%; width: min(13vw, 10rem); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 38% 35%, #fffaf0 0%, #f2e8d5 45%, #d9cbb0 100%); box-shadow: 0 0 60px 18px rgba(255,244,220,.18), 0 0 220px 80px rgba(201,212,255,.08); opacity: .9; }
@@ -644,7 +645,7 @@ const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
   html.con-pedido .ambiente { bottom: calc(max(1rem, env(safe-area-inset-bottom)) + 4.4rem); }
 
   @media (max-width: 767px) {
-    .noche { height: 420vh; }
+    .noche { height: 470vh; }
     .noche__step--intro { left: 0; right: 0; top: auto; bottom: 0; translate: none; max-width: none; padding: 3rem 1.25rem 2.4rem; text-align: center; background: linear-gradient(to top, #170f0d 55%, transparent); }
     .noche__h1 { align-items: center; }
     .noche__hw { font-size: clamp(2.6rem, 15vw, 4.2rem); }
