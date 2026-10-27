@@ -34,6 +34,7 @@ const hw = siteConfig.halloween;
     <link rel="sitemap" href="/sitemap-index.xml" />
     <Seo title={title} description={description} path={path} ogImage={ogImage} noindex={noindex} />
     <slot name="head" />
+    {siteConfig.google.umami && <script defer src="https://cloud.umami.is/script.js" data-website-id={siteConfig.google.umami} data-domains="hellobrava.es"></script>}
   </head>
   <body class="flex min-h-screen flex-col">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-brand-brown focus:px-4 focus:py-2 focus:text-brand-cream">
@@ -75,5 +76,15 @@ const hw = siteConfig.halloween;
       .hw-aviso b { color: var(--color-brand-fresh); }
       .hw-aviso__ver { flex-shrink: 0; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .2rem .7rem; font-weight: 700; font-size: .78rem; }
     </style>
+    <!-- Umami: cuenta los clics importantes (WhatsApp, llamadas, cómo llegar, Instagram) y desde qué página -->
+    <script is:inline>
+      document.addEventListener('click', (e) => {
+        const a = e.target.closest && e.target.closest('a[href]');
+        if (!a || !window.umami) return;
+        const h = a.getAttribute('href') || '';
+        const ev = /wa\.me|whatsapp/i.test(h) ? 'whatsapp' : h.startsWith('tel:') ? 'llamada' : /google\.[a-z.]+\/maps|maps\.app|goo\.gl\/maps/i.test(h) ? 'como-llegar' : /instagram\.com/i.test(h) ? 'instagram' : '';
+        if (ev) window.umami.track(ev, { desde: location.pathname });
+      }, { capture: true });
+    </script>
   </body>
 </html>

@@ -77,6 +77,8 @@ export const siteConfig = {
     // Google Analytics 4. Es público y tiene el formato G-XXXXXXXXXX.
     // Se completará al crear la propiedad de Analytics de Brava.
     analyticsMeasurementId: 'G-G8B3K41EGR',
+    // Estadísticas sin cookies (Umami Cloud de D.AGUERAA). Pon el «Website ID» para activarlas. Vacío = sin Umami.
+    umami: '',
   },
 
   // --- Brava To Go (para llevar) ---
@@ -121,10 +123,10 @@ export const siteConfig = {
     },
     // Cuenta de Instagram que da la guía de la campaña. OJO: no coincide con redes.instagramHandle
     // (@hellobravaes). Confirmar con Brava cuál es la buena antes de publicar.
-    instagramCampana: '@brava.coffeeandbrunch',
+    instagramCampana: '@hellobravaes',
     // En la guía figura como «Propuesta». Confirmar con Brava (y redactar bases legales) antes de publicar.
     concurso: {
-      activo: true,
+      activo: false,
       premio: 'un brunch para dos',
       texto: 'Entre todas las fotos del photocall publicadas y etiquetadas durante octubre.',
     },

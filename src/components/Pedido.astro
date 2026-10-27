@@ -244,6 +244,7 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
       '',
       '¿Me lo confirmáis? ¡Gracias!',
     ].join('\n');
+    (window as any).umami?.track('pedido-whatsapp', { productos: lineas.reduce((n, l) => n + l.cant, 0) });
     window.open(`https://wa.me/${cfg.wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
   });
 

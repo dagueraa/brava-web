@@ -224,6 +224,7 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
       const r = await api('alta', { nombre: d.get('nombre'), cumple: d.get('cumple') });
       token = r.token;
       guardar(token);
+      (window as any).umami?.track('brava-pass-alta', { cumple: d.get('cumple') ? 'si' : 'no' });
       vista('pass');
       pintar(r.pass);
       toast(`<b>¡Bienvenida/o, ${r.pass.nombre}!</b> Tu pass ya está listo`, true);
