@@ -93,11 +93,11 @@ const tela = (() => {
   }
   return d;
 })();
-const franjaHw = ['un café de miedo', 'halloween en brava', 'photocall', `latte + cookie ${hw.promo.precio} €`, 'La Ñora'];
+const franjaHw = ['un café de miedo', 'halloween en brava', 'photocall', `combo halloween ${hw.promo.precio} €`, 'La Ñora'];
 const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
 
 ---
-<Base title="Halloween en Brava" description={`Halloween en Brava: ${hw.lema} Latte macchiato + cookie especial Halloween por ${hw.promo.precio} € y nuestro photocall de Halloween en La Ñora.`} path="">
+<Base title="Halloween en Brava" description={`Halloween en Brava: ${hw.lema} ${hw.promo.nombre} por ${hw.promo.precio} € y nuestro photocall de Halloween en La Ñora.`} path="">
   <!-- ═════════ 1 · LA NOCHE (escena 3D coreografiada con el scroll) ═════════ -->
   <section id="noche" class="noche" aria-label={`Halloween en Brava. ${hw.lema}`}>
     <div class="noche__stage">
@@ -150,7 +150,7 @@ const iconosHw = ['cafe', 'cookie', 'taza', 'muffin', 'croissant'] as const;
   </section>
 
   <!-- ═════════ 2 · FRANJAS ═════════ -->
-  <section class="franjas franjas--hw" aria-label={`${hw.lema} Halloween en Brava, photocall y promo de latte y cookie`}>
+  <section class="franjas franjas--hw" aria-label={`${hw.lema} Halloween en Brava, photocall y Combo Halloween`}>
     <div class="franja franja--fresh"><div class="franja__track" data-dir="-1">
       {Array.from({ length: 2 }).map(() => (
         <div class="franja__group" aria-hidden="true">
