@@ -111,27 +111,6 @@ export const siteConfig = {
     ],
   },
 
-  // --- Campaña de Halloween (datos de la guía «Photocall Halloween · Team Brava») ---
-  halloween: {
-    activo: true,
-    lema: 'Un café de miedo.',
-    noche: '2026-10-31', // cuenta atrás
-    promo: {
-      nombre: 'Combo Halloween',
-      precio: '6,50',
-      frase: 'Un café de miedo y una foto inolvidable.',
-    },
-    // Cuenta de Instagram que da la guía de la campaña. OJO: no coincide con redes.instagramHandle
-    // (@hellobravaes). Confirmar con Brava cuál es la buena antes de publicar.
-    instagramCampana: '@hellobravaes',
-    // Confirmado por Brava (27-10-2026). Bases legales: pendientes de redactar.
-    concurso: {
-      activo: true,
-      premio: 'un brunch para dos',
-      texto: 'Entre todas las fotos del photocall publicadas y etiquetadas durante octubre.',
-    },
-  },
-
   // --- El Alma de Brava (historia) ---
   historia: {
     titulo: 'El Alma de Brava',

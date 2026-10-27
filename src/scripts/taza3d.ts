@@ -22,7 +22,7 @@ const loadImg = (src: string) =>
   });
 
 /* Pinta un logo (PNG negro con alfa) del color que toque. */
-export function tinted(img: HTMLImageElement, color: string, w: number, h: number) {
+function tinted(img: HTMLImageElement, color: string, w: number, h: number) {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
@@ -35,7 +35,7 @@ export function tinted(img: HTMLImageElement, color: string, w: number, h: numbe
 }
 
 /* Textura del vaso: papel kraft, "brava" en vertical y el monograma bv al dorso. */
-export async function cupTexture(maxAniso: number) {
+async function cupTexture(maxAniso: number) {
   const [word, mono, lock] = await Promise.all([
     loadImg('/brand/wordmark.png'),
     loadImg('/brand/monogram.png'),
@@ -87,7 +87,7 @@ export async function cupTexture(maxAniso: number) {
 }
 
 /* Relieve del papel: fibras finas + las líneas del pegado arriba y abajo. */
-export function paperBump() {
+function paperBump() {
   const W = 1024, H = 512;
   const c = document.createElement('canvas');
   c.width = W;
@@ -170,7 +170,7 @@ function latteTexture() {
 }
 
 /* Vapor: planos con un shader de ruido que sube y se enrosca. */
-export function steamMaterial(seed: number) {
+function steamMaterial(seed: number) {
   return new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -198,7 +198,7 @@ export function steamMaterial(seed: number) {
 }
 
 /* Grano de café tostado: elipsoide con la hendidura en S en la cara plana. */
-export function beanGeometry() {
+function beanGeometry() {
   const g = new THREE.SphereGeometry(1, 48, 32);
   const p = g.attributes.position as THREE.BufferAttribute;
   const v = new THREE.Vector3();
