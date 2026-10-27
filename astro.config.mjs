@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // Dominio público del sitio. El cliente lo cambia aquí cuando tenga dominio.
 // Se usa para sitemap, canonical y Open Graph.
-const SITE = process.env.SITE_URL || 'https://bravacoffee.es';
+const SITE = process.env.SITE_URL || 'https://hellobrava.es';
 
 // https://astro.build/config
 export default defineConfig({

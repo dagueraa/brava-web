@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://bravacoffee.es/sitemap-index.xml
+Sitemap: https://hellobrava.es/sitemap-index.xml
