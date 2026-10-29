@@ -258,7 +258,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
   </section>
 
   <!-- ═════════ 6 · EL ALMA ═════════ -->
-  <section class="mx-auto grid w-full max-w-6xl items-center gap-10 px-5 py-24 sm:px-6 md:grid-cols-2">
+  <section class="mx-auto grid w-full max-w-6xl items-center gap-10 overflow-x-clip px-5 py-24 sm:px-6 md:grid-cols-2">
     <div class="alma__foto relative">
       <Blob class="-inset-6 -z-10 h-[115%] w-[115%] text-brand-fresh/60" variant={2} />
       <Image src={img.founderSpace} alt="La dueña de Brava junto al rótulo de musgo brava coffee and brunch" widths={[360, 560, 760]} sizes="(max-width: 768px) 90vw, 520px" class="aspect-[4/5] w-full rounded-[2.5rem] object-cover shadow-2xl" loading="lazy" data-par="1" />
@@ -419,7 +419,8 @@ const objetivo = siteConfig.bravaPass.objetivo;
   function pintarAlma() {
     if (!alma) return;
     const r = alma.getBoundingClientRect();
-    const k = (r.top + r.height / 2 - window.innerHeight / 2) / window.innerHeight;
+    // Tope ±1,5 (el recorrido visible): lejos de la pantalla daba giros de 40° y la página se salía por los lados en el móvil.
+    const k = Math.max(-1.5, Math.min(1.5, (r.top + r.height / 2 - window.innerHeight / 2) / window.innerHeight));
     alma.style.transform = `translateY(${k * -40}px) rotate(${k * -3}deg)`;
   }
 
