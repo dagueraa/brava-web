@@ -89,7 +89,7 @@ import { siteConfig } from '../../site.config';
             <summary class="cursor-pointer font-bold">Cambiar el PIN</summary>
             <form id="h-pin" class="mt-3 grid gap-2">
               <input name="actual" class="b-input" inputmode="numeric" placeholder="PIN actual" type="password" required />
-              <input name="nuevo" class="b-input" inputmode="numeric" placeholder="PIN nuevo (4–8 números)" type="password" required pattern="\d{4,8}" />
+              <input name="nuevo" class="b-input" inputmode="numeric" placeholder="PIN nuevo (6–8 números)" type="password" required pattern="\d{6,8}" />
               <button class="b-btn" type="submit">Guardar</button>
               <p id="h-pin-msg" class="text-sm font-semibold"></p>
             </form>

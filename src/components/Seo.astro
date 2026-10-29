@@ -18,7 +18,7 @@ const {
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
-const canonical = `${siteUrl}${path}`;
+const canonical = `${siteUrl}${path.replace(/\/?$/, '/')}`; // con barra final, como el sitemap
 const ogUrl = `${siteUrl}${ogImage}`;
 const fullTitle = path === '' ? `${siteConfig.nombre} · ${siteConfig.tagline}` : `${title} · ${siteConfig.nombre}`;
 

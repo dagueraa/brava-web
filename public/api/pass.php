@@ -88,7 +88,8 @@ $secreto = ajuste($db, 'secreto', fn() => bin2hex(random_bytes(32)));
 ajuste($db, 'pin', fn() => password_hash(PIN_INICIAL, PASSWORD_DEFAULT));
 
 /* ---------- Utilidades ---------- */
-$ip = $_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '0';
+// Solo la IP de la conexión: Hostinger no usa Cloudflare y CF-Connecting-IP se puede inventar.
+$ip = $_SERVER['REMOTE_ADDR'] ?? '0';
 $ahora = time();
 $db->prepare('DELETE FROM intentos WHERE ts < ?')->execute([$ahora - 86400]);
 $db->prepare('DELETE FROM qr_mostrador WHERE expira < ?')->execute([$ahora - 86400]);
@@ -302,7 +303,7 @@ switch ($accion) {
     limitar($db, $ip, 'login', 6, 900, false);
     if (!password_verify((string) ($in['actual'] ?? ''), ajuste($db, 'pin'))) { apuntar($db, $ip, 'login'); fallo('El PIN actual no es correcto.', 403); }
     $nuevo = (string) ($in['nuevo'] ?? '');
-    if (!preg_match('/^\d{4,8}$/', $nuevo)) fallo('El PIN nuevo debe tener entre 4 y 8 números.');
+    if (!preg_match('/^\d{6,8}$/', $nuevo)) fallo('El PIN nuevo debe tener entre 6 y 8 números.');
     $db->prepare("UPDATE ajustes SET v = ? WHERE k = 'pin'")->execute([password_hash($nuevo, PASSWORD_DEFAULT)]);
     salir(['ok' => true]);
   }
