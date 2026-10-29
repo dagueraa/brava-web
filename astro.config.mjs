@@ -11,6 +11,9 @@ const SITE = process.env.SITE_URL || 'https://hellobrava.es';
 export default defineConfig({
   site: SITE,
   trailingSlash: 'ignore',
+  // Astro 7 se come el espacio entre un texto y el enlace de la línea siguiente («web.Más información»).
+  // Sin comprimir, el HTML se ve igual que con Astro 5.
+  compressHTML: false,
   build: { inlineStylesheets: 'auto' },
   // La campaña /instagram se descubre desde el QR del local, no desde buscadores.
   // El panel /barra es solo para el personal.

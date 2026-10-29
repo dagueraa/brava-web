@@ -27,15 +27,14 @@ const blobVariant = ((index % 3) + 1) as 1 | 2 | 3;
 <div class={`grid grid-cols-[minmax(0,0.95fr)_auto_minmax(0,1.05fr)] items-center gap-1.5 sm:gap-2 ${reverse ? '[direction:rtl]' : ''}`}>
   <!-- Fotos del producto flotando sobre blob -->
   <div class="relative mx-auto w-28 sm:w-52 [direction:ltr]">
+    {/* Composición taza + producto, como en la página de Combos del menú; si no, una sola foto */}
     {coffee ? (
-      <!-- Composición taza + producto, como en la página de Combos del menú -->
       <div class="relative aspect-square">
         <Blob class="absolute inset-0 m-auto h-full w-full text-brand-cream-2" variant={blobVariant} />
         <Plato foto={coffee} alt={coffeeAlt ?? 'Café de especialidad'} nombre={nombre} precio={precio} desc={desc} widths={[160, 240, 360]} sizes="(max-width: 640px) 7rem, 9rem" class={`!absolute top-0 z-10 w-[58%] ${reverse ? 'right-0' : 'left-0'}`} />
         <Plato foto={image} alt={alt} nombre={nombre} precio={precio} desc={desc} widths={[192, 280, 400]} sizes="(max-width: 640px) 9rem, 11rem" class={`!absolute bottom-0 z-20 w-[64%] ${reverse ? 'left-0' : 'right-0'}`} />
       </div>
     ) : (
-      <!-- Una sola foto -->
       <div class="relative grid place-items-center">
         <Blob class="absolute inset-0 m-auto h-[88%] w-[88%] text-brand-cream-2" variant={blobVariant} />
         <Plato foto={image} alt={alt} nombre={nombre} precio={precio} desc={desc} widths={[192, 280, 400]} sizes="(max-width: 640px) 12rem, 15rem" class="w-full" />
