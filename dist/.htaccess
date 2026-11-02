@@ -9,9 +9,22 @@ RewriteRule ^ https://hellobrava.es%{REQUEST_URI} [L,R=301]
 <FilesMatch "\.(sqlite|sqlite3|db)$">
   Require all denied
 </FilesMatch>
-# Caché larga para los archivos con huella (_astro)
+# Caché: js, css y fuentes llevan huella → un año; fotos y 3D un mes comprobando cambios (una foto que cambia, con otro nombre); páginas siempre frescas
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|webp|avif|png|jpg|woff2|glb)$">
+  <FilesMatch "\.(js|css|woff2)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
+  <FilesMatch "\.(webp|avif|png|jpg|svg|glb)$">
+    Header set Cache-Control "public, max-age=2592000, must-revalidate"
+  </FilesMatch>
+  <FilesMatch "\.(html|xml|txt)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  # HTTPS siempre · nadie puede meter esta web dentro de otra · la cámara solo para escanear el QR del Brava Pass
+  Header always set Strict-Transport-Security "max-age=31536000"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Content-Security-Policy "frame-ancestors 'self'; upgrade-insecure-requests"
+  Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
 </IfModule>
