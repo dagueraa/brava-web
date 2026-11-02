@@ -22,9 +22,8 @@ RewriteRule ^ https://hellobrava.es%{REQUEST_URI} [L,R=301]
   </FilesMatch>
   Header always set X-Content-Type-Options "nosniff"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
-  # HTTPS siempre · nadie puede meter esta web dentro de otra · la cámara solo para escanear el QR del Brava Pass
+  # HTTPS siempre · solo dagueraa.com puede meter esta web dentro de otra (la enseña en vivo en Tripulación; por eso no hay X-Frame-Options) · la cámara solo para escanear el QR del Brava Pass
   Header always set Strict-Transport-Security "max-age=31536000"
-  Header always set X-Frame-Options "SAMEORIGIN"
-  Header always set Content-Security-Policy "frame-ancestors 'self'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "frame-ancestors 'self' https://dagueraa.com; upgrade-insecure-requests"
   Header always set Permissions-Policy "camera=(self), microphone=(), geolocation=(), payment=(), usb=()"
 </IfModule>
