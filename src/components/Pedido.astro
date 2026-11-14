@@ -8,7 +8,13 @@
  *  El pedido se guarda en el móvil (localStorage) hasta que se envía.
  * ===================================================================== */
 import { siteConfig } from '../../site.config';
-const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: siteConfig.toGo.tiempoPreparacionMin };
+import { fechasPromo } from '../data/promo';
+const p = siteConfig.promo;
+const datos = {
+  wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: siteConfig.toGo.tiempoPreparacionMin,
+  // código promocional: solo vale en la web, en estas fechas, y hace 2x1 en los combos
+  promo: p.activo ? { nombre: p.nombre, codigo: p.codigo.toUpperCase(), desde: p.desde, hasta: p.hasta, combos: p.combos, fechas: fechasPromo } : null,
+};
 ---
 <div id="pd" data-cfg={JSON.stringify(datos)}>
   <button id="pd-barra" class="pd-barra" type="button" hidden>
@@ -40,6 +46,23 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
       <ul id="pd-lineas" class="pd-lineas"></ul>
       <p id="pd-vacio" class="pd-vacio" hidden>Aún no has añadido nada. Toca el <b>+</b> de cualquier cosa de la carta.</p>
       <div id="pd-datos">
+        <!-- Código promocional (solo si hay promo activa) -->
+        <div id="pd-promo" class="pd-promo" hidden>
+          <div id="pd-promo-form" class="pd-promo__form">
+            <label class="pd-campo"><span>¿Tienes un código?</span><input id="pd-codigo" maxlength="24" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Código promocional"></label>
+            <button id="pd-codigo-ok" class="pd-btn pd-btn--peq" type="button">Aplicar</button>
+          </div>
+          <p id="pd-promo-msg" class="pd-promo__msg" role="alert" hidden></p>
+          <div id="pd-promo-on" class="pd-promo__on" hidden>
+            <span class="pd-promo__chk" aria-hidden="true">✓</span>
+            <span class="pd-promo__txt"><b id="pd-promo-cod"></b> <span id="pd-promo-det"></span></span>
+            <button id="pd-codigo-x" class="pd-promo__x" type="button" aria-label="Quitar el código">✕</button>
+          </div>
+        </div>
+        <div id="pd-resumen" class="pd-resumen" hidden>
+          <div><span>Subtotal</span><span id="pd-subtotal"></span></div>
+          <div class="pd-resumen__dto"><span id="pd-dto-t"></span><span id="pd-dto"></span></div>
+        </div>
         <div class="pd-total"><span>Total</span><b id="pd-total">0,00 €</b></div>
         <p id="pd-vitrina" class="pd-aviso" hidden>Los productos de vitrina se cobran en tienda según lo que haya ese día.</p>
         <div class="pd-grid">
@@ -65,7 +88,8 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
   type Linea = { key: string; id: string; nombre: string; precio: number | null; cant: number; opcion?: string; extras: { nombre: string; precio: number }[]; nota?: string };
   const CLAVE = 'brava.pedido.v1';
   const root = document.getElementById('pd')!;
-  const cfg = JSON.parse(root.dataset.cfg!) as { wa: string; horario: Record<string, string>; prep: string };
+  type Promo = { nombre: string; codigo: string; desde: string; hasta: string; combos: string[]; fechas: string };
+  const cfg = JSON.parse(root.dataset.cfg!) as { wa: string; horario: Record<string, string>; prep: string; promo: Promo | null };
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
   const eur = (c: number) => (c / 100).toFixed(2).replace('.', ',') + ' €';
   const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -76,6 +100,59 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
   const precioLinea = (l: Linea) => l.precio == null ? null : (l.precio + l.extras.reduce((a, e) => a + e.precio, 0)) * l.cant;
   const total = () => lineas.reduce((a, l) => a + (precioLinea(l) ?? 0), 0);
   const unidades = () => lineas.reduce((a, l) => a + l.cant, 0);
+
+  /* ---------- código promocional (solo en la web) ---------- */
+  const promo = cfg.promo;
+  const CLAVE_COD = 'brava.pedido.codigo';
+  const hoyMadrid = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' }); // AAAA-MM-DD
+  const promoEnFechas = () => !!promo && hoyMadrid() >= promo.desde && hoyMadrid() <= promo.hasta;
+  let codigo: string | null = null;
+  try { codigo = localStorage.getItem(CLAVE_COD); } catch { /* modo privado */ }
+  if (!promo || codigo !== promo.codigo || !promoEnFechas()) codigo = null; // un código viejo o fuera de fechas no cuenta
+  /* 2x1 en combos: por cada dos combos, el más barato sale gratis (los extras se pagan) */
+  function descuento() {
+    if (!codigo || !promo) return 0;
+    const precios: number[] = [];
+    lineas.filter((l) => promo.combos.includes(l.nombre) && l.precio != null).forEach((l) => { for (let i = 0; i < l.cant; i++) precios.push(l.precio!); });
+    precios.sort((a, b) => b - a);
+    let d = 0;
+    for (let i = 1; i < precios.length; i += 2) d += precios[i];
+    return d;
+  }
+  const totalFinal = () => total() - descuento();
+  function pintarPromo() {
+    if (!promo) return;
+    $('pd-promo').hidden = false;
+    $('pd-promo-form').hidden = !!codigo;
+    $('pd-promo-on').hidden = !codigo;
+    const d = descuento();
+    $('pd-resumen').hidden = d === 0;
+    if (!codigo) return;
+    const nCombos = lineas.filter((l) => promo.combos.includes(l.nombre)).reduce((a, l) => a + l.cant, 0);
+    $('pd-promo-cod').textContent = codigo;
+    $('pd-promo-det').textContent = d > 0 ? `· 2x1 en combos: −${eur(d)}` : nCombos === 1 ? '· añade otro combo y el más barato sale gratis' : '· añade dos combos y el más barato sale gratis';
+    $('pd-subtotal').textContent = eur(total());
+    $('pd-dto-t').textContent = `${promo.nombre} · 2x1 en combos`;
+    $('pd-dto').textContent = `−${eur(d)}`;
+  }
+  function aplicarCodigo() {
+    const inp = $<HTMLInputElement>('pd-codigo'), msg = $('pd-promo-msg');
+    const v = inp.value.trim().toUpperCase().replace(/\s+/g, '');
+    const falla = (t: string) => { msg.textContent = t; msg.hidden = false; inp.focus(); };
+    if (!v) return falla('Escribe el código.');
+    if (v !== promo!.codigo) return falla('Ese código no existe. Revisa que esté bien escrito.');
+    if (hoyMadrid() < promo!.desde) return falla(`Este código vale ${promo!.fechas}. ¡Guárdalo!`);
+    if (hoyMadrid() > promo!.hasta) return falla('Esta promoción ya ha terminado.');
+    codigo = v; msg.hidden = true; inp.value = '';
+    try { localStorage.setItem(CLAVE_COD, codigo); } catch {}
+    (window as any).umami?.track('codigo-promo', { codigo });
+    pintar();
+  }
+  if (promo) {
+    $('pd-codigo-ok').addEventListener('click', aplicarCodigo);
+    $('pd-codigo').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); aplicarCodigo(); } });
+    $('pd-codigo-x').addEventListener('click', () => { codigo = null; try { localStorage.removeItem(CLAVE_COD); } catch {} pintar(); });
+  }
 
   function anadir(a: Anadible, cant = 1, opcion?: string, extras: Linea['extras'] = [], nota?: string) {
     const key = [a.id, opcion ?? '', extras.map((e) => e.nombre).join('+'), nota ?? ''].join('|');
@@ -163,8 +240,9 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
     $('pd-barra').hidden = n === 0;
     document.documentElement.classList.toggle('con-pedido', n > 0);
     $('pd-barra-n').textContent = String(n);
-    $('pd-barra-total').textContent = eur(total());
-    $('pd-total').textContent = eur(total());
+    $('pd-barra-total').textContent = eur(totalFinal());
+    $('pd-total').textContent = eur(totalFinal());
+    pintarPromo();
     $('pd-vitrina').hidden = !lineas.some((l) => l.precio == null);
     $('pd-vacio').hidden = n > 0;
     $('pd-datos').hidden = n === 0;
@@ -231,12 +309,15 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
       if (l.nota) t += `\n   Nota: ${l.nota}`;
       return t;
     });
+    const d = descuento();
     const msg = [
       '¡Hola Brava! Quiero hacer un *pedido para llevar*:',
       '',
       ...filas,
       '',
-      `*Total: ${eur(total())}*${lineas.some((l) => l.precio == null) ? ' + productos de vitrina' : ''}`,
+      // con código, el personal ve el subtotal, el descuento y el total ya calculado
+      ...(d > 0 ? [`Subtotal: ${eur(total())}`, `Código ${codigo} (${promo!.nombre}, 2x1 en combos): −${eur(d)}`] : []),
+      `*Total: ${eur(totalFinal())}*${lineas.some((l) => l.precio == null) ? ' + productos de vitrina' : ''}`,
       '',
       `Nombre: ${nombre}`,
       `Recogida: ${$<HTMLSelectElement>('pd-hora').value || 'a confirmar'}`,
@@ -326,6 +407,26 @@ const datos = { wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: site
   .pd-linea__txt small { display: block; margin-top: .1rem; color: var(--color-brand-brown-80); font-size: .8rem; }
   .pd-linea__p { min-width: 4.6rem; text-align: right; font-weight: 800; font-size: .95rem; }
   .pd-vacio { margin: 1.5rem 0 .5rem; color: var(--color-brand-brown-80); }
+  /* código promocional */
+  .pd-promo { margin-top: .4rem; }
+  .pd-promo[hidden] { display: none; }
+  .pd-promo__form { display: grid; grid-template-columns: 1fr auto; gap: .6rem; align-items: end; }
+  .pd-promo__form[hidden] { display: none; }
+  .pd-promo__form input { text-transform: uppercase; letter-spacing: .08em; }
+  .pd-promo__form input::placeholder { text-transform: none; letter-spacing: 0; }
+  .pd-btn--peq { flex: 0 0 auto; padding: .8rem 1.2rem; }
+  .pd-promo__msg { margin-top: .5rem; font-size: .85rem; font-weight: 700; color: #b42318; }
+  .pd-promo__msg[hidden] { display: none; }
+  .pd-promo__on { display: flex; align-items: center; gap: .6rem; margin-top: 1rem; border-radius: 1rem; background: color-mix(in srgb, var(--color-brand-fresh) 45%, #fff); padding: .7rem .5rem .7rem .8rem; font-size: .92rem; }
+  .pd-promo__on[hidden] { display: none; }
+  .pd-promo__chk { display: grid; place-items: center; width: 1.5rem; height: 1.5rem; flex-shrink: 0; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-fresh); font-size: .8rem; font-weight: 800; }
+  .pd-promo__txt { flex: 1; min-width: 0; }
+  .pd-promo__txt b { letter-spacing: .08em; }
+  .pd-promo__x { width: 2rem; height: 2rem; flex-shrink: 0; border-radius: 999px; background: rgba(68,54,49,.08); font-size: .8rem; }
+  .pd-resumen { margin-top: .9rem; display: grid; gap: .25rem; font-size: .92rem; color: var(--color-brand-brown-80); }
+  .pd-resumen[hidden] { display: none; }
+  .pd-resumen > div { display: flex; justify-content: space-between; }
+  .pd-resumen__dto { font-weight: 700; color: var(--color-brand-brown); }
   .pd-total { margin-top: 1rem; display: flex; justify-content: space-between; align-items: baseline; font-size: 1.1rem; font-weight: 700; }
   .pd-total b { font-size: 1.9rem; letter-spacing: -.03em; }
   .pd-aviso { margin-top: .3rem; font-size: .8rem; color: var(--color-brand-brown-80); }

@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Resenas from '../components/Resenas.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import Logo from '../components/Logo.astro';
 import BrandIcon from '../components/BrandIcon.astro';
 import Blob from '../components/Blob.astro';
@@ -146,6 +147,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
 
   <!-- ═════════ 3 · COMBOS (tarjetas que se apilan) ═════════ -->
   <section class="mx-auto w-full max-w-6xl px-5 pb-10 pt-6 sm:px-6">
+    <PromoBanner class="mb-10" />
     <div class="mb-10 flex flex-col items-center text-center">
       <p class="font-hand text-3xl text-brand-calm-ink">nuestros favoritos</p>
       <Logo as="h2" suffix="combos" class="mt-1 text-5xl text-brand-brown sm:text-6xl" />

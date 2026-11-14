@@ -93,6 +93,23 @@ export const siteConfig = {
     },
   },
 
+  // --- Promoción activa (Black Week) ---
+  // El descuento SOLO se aplica pidiendo por la web: el cliente escribe el código
+  // en su pedido para llevar y el mensaje de WhatsApp llega ya con el descuento.
+  // Para apagarla: activo: false. Para la siguiente campaña: cambia código, fechas y textos.
+  promo: {
+    activo: true,
+    nombre: 'Black Week',
+    codigo: 'BLACKWEEK', // (confirmar) el que Brava quiera; da igual mayúsculas o minúsculas
+    desde: '2026-11-23', // primer día que vale el código
+    hasta: '2026-11-27', // último día que vale el código
+    // 2x1 en combos: por cada dos combos del pedido, el más barato sale gratis (los extras no entran)
+    combos: ['Desayuno Brava', 'Capricho Brava', 'Brunch Brava'],
+    frase: 'Dos combos al precio de uno. Elige con quién: el segundo lo invita Brava.',
+    // Página /comparte: quien descarga el cartel, lo comparte y lo enseña en Brava se lleva esto
+    recompensaComparte: 'un dulce', // (confirmar)
+  },
+
   // --- Brava Pass (tarjeta de fidelidad digital) ---
   bravaPass: {
     activo: true,

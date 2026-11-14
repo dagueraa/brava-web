@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import Section from '../components/Section.astro';
+import { siteConfig } from '../../site.config';
+import { fechasPromo } from '../data/promo';
+/* Página para que la gente (sobre todo estudiantes) descargue los carteles de la promo
+   y los comparta en historias o en el grupo de clase. Los carteles viven en public/promo:
+   el .jpg a tamaño real es el que se descarga; el -p.webp es la vista previa. */
+const p = siteConfig.promo;
+const carteles = [
+  { f: 'black-week-post-cafe', tipo: 'Post', w: 1080, h: 1350, alt: `Cartel de la ${p.nombre} de Brava: «2x1» escrito con espuma sobre un café derramado en fondo amarillo` },
+  { f: 'black-week-historia', tipo: 'Historia', w: 1080, h: 1920, alt: 'Cartel vertical: «Dos combos al precio de uno», con un café con latte art y una cookie frente a un espejo' },
+  { f: 'black-week-post-cookie', tipo: 'Post', w: 1080, h: 1350, alt: `Cartel de la ${p.nombre} de Brava: «2x1» escrito con chocolate blanco sobre una cookie gigante` },
+];
+const texto = `Black Week en Brava ☕ 2x1 en combos ${fechasPromo}. Pide por hellobrava.es con el código ${p.codigo} y el segundo lo invita Brava. Calle Mayor, 71, La Ñora · ${siteConfig.redes.instagramHandle}`;
+const pasos = [
+  ['Descarga el cartel', 'El que más te guste: hay versión para post y para historia.'],
+  ['Compártelo', 'Súbelo a tu historia o mándalo al grupo de clase.'],
+  ['Enséñanoslo en Brava', `Y te invitamos a ${p.recompensaComparte}.`],
+];
+---
+<Base title={`Comparte la ${p.nombre}`} description={`Descarga los carteles de la ${p.nombre} de Brava (2x1 en combos ${fechasPromo}), compártelos y te invitamos a ${p.recompensaComparte}.`} path="/comparte" ogImage="/promo/black-week-post-cafe.jpg">
+  <Section class="pt-12 pb-4 text-center">
+    <p class="font-hand text-3xl text-brand-calm-ink">{p.nombre} · {fechasPromo}</p>
+    <h1 class="mt-2 text-4xl font-extrabold tracking-tight text-brand-brown sm:text-5xl">Comparte y te invitamos a {p.recompensaComparte}.</h1>
+    <p class="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-brand-brown-80">{p.frase} Si corres la voz, en Brava hay algo para ti.</p>
+  </Section>
+
+  <Section width="wide" class="pb-6">
+    <ol class="grid gap-3 sm:grid-cols-3">
+      {pasos.map(([t, d], i) => (
+        <li class="reveal rounded-2xl bg-brand-cream-2/60 p-5">
+          <span class="font-hand text-2xl text-brand-calm-ink">0{i + 1}</span>
+          <h2 class="mt-1 font-bold text-brand-brown">{t}</h2>
+          <p class="mt-1 text-sm text-brand-brown-80">{d}</p>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <Section width="wide" class="pb-10">
+    <ul class="grid gap-6 sm:grid-cols-3">
+      {carteles.map((c) => (
+        <li class="cartel reveal">
+          <a class="cartel__img" href={`/promo/${c.f}.jpg`} download={`Brava ${p.nombre} ${c.tipo}.jpg`} aria-label={`Descargar el cartel (${c.tipo})`}>
+            <img src={`/promo/${c.f}-p.webp`} alt={c.alt} width={c.w} height={c.h} loading="lazy" decoding="async" style={`aspect-ratio:${c.w}/${c.h}`} />
+          </a>
+          <div class="cartel__pie">
+            <span class="cartel__tipo">{c.tipo} · {c.w}×{c.h}</span>
+            <div class="cartel__btns">
+              <button type="button" class="cartel__btn cartel__btn--share" data-share={`/promo/${c.f}.jpg`} data-nombre={`Brava ${p.nombre} ${c.tipo}.jpg`} hidden>Compartir</button>
+              <a class="cartel__btn" href={`/promo/${c.f}.jpg`} download={`Brava ${p.nombre} ${c.tipo}.jpg`}>Descargar</a>
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section class="pb-20">
+    <div class="rounded-3xl border rule-soft bg-brand-cream-2/40 p-6 sm:p-8">
+      <h2 class="text-xl font-bold text-brand-brown">Texto para acompañarlo</h2>
+      <p class="mt-1 text-sm text-brand-brown-80">Cópialo tal cual o cámbialo a tu manera.</p>
+      <p id="texto" class="mt-4 rounded-2xl bg-white p-4 leading-relaxed text-brand-brown">{texto}</p>
+      <button id="copiar" type="button" class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-brown px-6 py-3 font-semibold text-brand-cream transition hover:bg-brand-brown-80">Copiar texto</button>
+    </div>
+  </Section>
+</Base>
+
+<script>
+  // «Compartir» solo sale en los móviles que abren la hoja del sistema con una imagen (Instagram, WhatsApp…)
+  const puede = (() => {
+    try { return !!navigator.canShare && navigator.canShare({ files: [new File([''], 'x.jpg', { type: 'image/jpeg' })] }); } catch { return false; }
+  })();
+  if (puede) document.querySelectorAll<HTMLButtonElement>('[data-share]').forEach((b) => {
+    b.hidden = false;
+    b.addEventListener('click', async () => {
+      b.disabled = true;
+      try {
+        const blob = await (await fetch(b.dataset.share!)).blob();
+        const file = new File([blob], b.dataset.nombre!, { type: 'image/jpeg' });
+        await navigator.share({ files: [file], title: document.title });
+        (window as any).umami?.track('compartir-cartel', { cartel: b.dataset.nombre });
+      } catch { /* lo ha cancelado */ }
+      b.disabled = false;
+    });
+  });
+  document.querySelectorAll<HTMLAnchorElement>('a[download]').forEach((a) =>
+    a.addEventListener('click', () => (window as any).umami?.track('descargar-cartel', { cartel: a.download })));
+
+  const btn = document.getElementById('copiar')!;
+  const texto = document.getElementById('texto')!;
+  btn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(texto.textContent!.trim()); btn.textContent = '¡Copiado!'; }
+    catch { const r = document.createRange(); r.selectNodeContents(texto); getSelection()?.removeAllRanges(); getSelection()?.addRange(r); btn.textContent = 'Selecciónalo y copia'; }
+    setTimeout(() => (btn.textContent = 'Copiar texto'), 2000);
+  });
+</script>
+
+<style>
+  .cartel { display: grid; gap: .7rem; align-content: start; }
+  .cartel__img { display: block; overflow: hidden; border-radius: 1.4rem; box-shadow: 0 18px 40px -18px rgba(68,54,49,.45); transition: transform .3s, box-shadow .3s; }
+  .cartel__img:hover { transform: translateY(-3px); box-shadow: 0 24px 48px -18px rgba(68,54,49,.5); }
+  .cartel__img img { display: block; width: 100%; height: auto; }
+  .cartel__pie { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
+  .cartel__tipo { font-size: .78rem; font-weight: 700; color: var(--color-brand-brown-60); letter-spacing: .05em; text-transform: uppercase; }
+  .cartel__btns { display: flex; gap: .4rem; }
+  .cartel__btn { display: inline-flex; align-items: center; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); padding: .55rem 1rem; font-size: .9rem; font-weight: 700; transition: background-color .2s, filter .2s; }
+  .cartel__btn:hover { background: var(--color-brand-brown-80); }
+  .cartel__btn--share { background: var(--color-brand-fresh); color: var(--color-brand-brown); }
+  .cartel__btn--share:hover { background: var(--color-brand-fresh); filter: brightness(1.04); }
+  .cartel__btn[hidden] { display: none; }
+</style>

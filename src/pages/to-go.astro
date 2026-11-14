@@ -3,10 +3,12 @@ import Base from '../layouts/Base.astro';
 import Section from '../components/Section.astro';
 import ToGoBlock from '../components/ToGoBlock.astro';
 import Button from '../components/Button.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import { siteConfig } from '../../site.config';
 ---
 <Base title="Brava To Go · Para llevar" description="Pide tu Brava favorito para llevar por WhatsApp o teléfono. Café de especialidad, brunch y batidos listos para recoger en La Ñora, Murcia." path="/to-go">
   <Section width="wide" class="pt-10 pb-6">
+    <PromoBanner class="mb-6" />
     <ToGoBlock variant="full" />
   </Section>
 

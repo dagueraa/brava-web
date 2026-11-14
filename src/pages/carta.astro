@@ -5,6 +5,7 @@ import CartaNav from '../components/CartaNav.astro';
 import MenuCategory from '../components/MenuCategory.astro';
 import Button from '../components/Button.astro';
 import Logo from '../components/Logo.astro';
+import PromoBanner from '../components/PromoBanner.astro';
 import { categorias, alergenos } from '../data/menu';
 ---
 <Base title="Carta" description="La carta de Brava: combos, café de especialidad, brunch saludable, tostadas, batidos funcionales y repostería en La Ñora, Murcia." path="/carta">
@@ -16,6 +17,7 @@ import { categorias, alergenos } from '../data/menu';
   </Section>
 
   <Section>
+    <PromoBanner class="mt-6 mb-8" />
     <CartaNav />
 
     <div class="space-y-20">

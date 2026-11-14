@@ -1,0 +1,33 @@
+---
+/* Aviso de la promoción activa (site.config → promo). Lleva al pedido para llevar,
+   que es donde se mete el código. Cuando pasa la última fecha, desaparece solo. */
+import { siteConfig } from '../../site.config';
+import { fechasPromo } from '../data/promo';
+interface Props { class?: string }
+const { class: className = '' } = Astro.props;
+const p = siteConfig.promo;
+---
+{p.activo && (
+  <a href="/to-go" class={`promo-banner reveal ${className}`} data-promo-hasta={p.hasta}>
+    <span class="promo-banner__tag">{p.nombre} · 2x1</span>
+    <span class="promo-banner__txt">{p.frase} <b>Solo {fechasPromo}</b> y solo pidiendo por la web, con el código <b class="promo-banner__cod">{p.codigo}</b>.</span>
+    <span class="promo-banner__cta">Pedir ahora →</span>
+  </a>
+)}
+
+<script>
+  // Cuando la promo termina, el aviso se quita solo (hora de Madrid)
+  document.querySelectorAll<HTMLElement>('[data-promo-hasta]').forEach((el) => {
+    const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
+    if (hoy > el.dataset.promoHasta!) el.remove();
+  });
+</script>
+
+<style>
+  .promo-banner { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; border-radius: 1.6rem; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .9rem 1.2rem .9rem .9rem; box-shadow: 0 14px 34px -18px rgba(68,54,49,.5); transition: transform .25s, box-shadow .25s; }
+  .promo-banner:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -16px rgba(68,54,49,.55); }
+  .promo-banner__tag { border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-fresh); padding: .4rem .85rem; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+  .promo-banner__txt { flex: 1 1 18rem; font-size: .95rem; line-height: 1.45; }
+  .promo-banner__cod { letter-spacing: .1em; background: rgba(68,54,49,.1); padding: .1rem .45rem; border-radius: .4rem; }
+  .promo-banner__cta { font-weight: 800; white-space: nowrap; }
+</style>
