@@ -17,7 +17,7 @@
     "@fontsource-variable/caveat": "^5.1.1",
     "@fontsource-variable/dm-sans": "^5.1.1",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "7.4.1",
+    "astro": "7.4.12",
     "jsqr": "^1.4.0",
     "qrcode-generator": "^1.4.4",
     "sharp": "^0.35.5",
