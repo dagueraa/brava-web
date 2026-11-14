@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Resenas from '../components/Resenas.astro';
 import PromoBanner from '../components/PromoBanner.astro';
+import { fechasPromo } from '../data/promo';
 import Logo from '../components/Logo.astro';
 import BrandIcon from '../components/BrandIcon.astro';
 import Blob from '../components/Blob.astro';
@@ -83,6 +84,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
 
       <!-- Paso 0 -->
       <div class="epica__step epica__step--intro" data-from="0" data-to="0.16">
+        {siteConfig.promo.activo && <a href="/to-go" class="epica__promo" data-promo-hasta={siteConfig.promo.hasta}><b>{siteConfig.promo.nombre}</b> 2x1 en combos<span class="epica__promo-f"> · {fechasPromo}</span> →</a>}
         <p class="epica__kicker">Café de especialidad · Brunch · {siteConfig.ciudad}, {siteConfig.provincia}</p>
         <h1 class="epica__h1">Café de especialidad y brunch, <span class="font-hand text-brand-fresh">hecho con calma.</span></h1>
         <div class="epica__ctas">
@@ -496,7 +498,11 @@ const objetivo = siteConfig.bravaPass.objetivo;
   .epica__step--intro .epica__ctas { justify-content: flex-start; }
   .epica__step--left { left: max(1.25rem, calc((100vw - 72rem) / 2 + 1.5rem)); top: 50%; translate: 0 -50%; max-width: 30rem; }
   .epica__step--bottom { left: 0; right: 0; bottom: 0; text-align: center; padding: 4rem 1.25rem 3.8rem; background: linear-gradient(to top, #2f2420 45%, transparent); }
-  .epica__kicker { display: inline-block; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); }
+  .epica__promo { display: inline-block; white-space: nowrap; margin-bottom: .9rem; border-radius: 999px; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .45rem .95rem; font-size: .82rem; font-weight: 600; box-shadow: 0 10px 24px -12px rgba(0,0,0,.5); transition: transform .2s; }
+  .epica__promo:hover { transform: translateY(-1px); }
+  .epica__promo b { margin-right: .35rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  @media (max-width: 767px) { .epica__promo { white-space: nowrap; margin-bottom: .7rem; } .epica__promo-f { display: none; } }
+  .epica__kicker { display: block; font-size: .78rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: color-mix(in srgb, var(--color-brand-cream) 70%, transparent); }
   .epica__h1 { margin: .6rem auto 0; max-width: 17ch; font-size: clamp(2.3rem, 5vw, 4.4rem); font-weight: 700; line-height: .98; letter-spacing: -.035em; }
   .epica__h1 .font-hand { font-weight: 600; letter-spacing: 0; }
   .epica__h2 { margin-top: .35rem; font-size: clamp(2.2rem, 5vw, 4.2rem); font-weight: 700; line-height: 1; letter-spacing: -.03em; }

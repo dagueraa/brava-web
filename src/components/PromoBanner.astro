@@ -1,13 +1,25 @@
 ---
 /* Aviso de la promoción activa (site.config → promo). Lleva al pedido para llevar,
-   que es donde se mete el código. Cuando pasa la última fecha, desaparece solo. */
+   que es donde se mete el código. Cuando pasa la última fecha, desaparece solo.
+   - variant="strip": franja fina encima de la cabecera (todas las páginas, se ve nada más entrar).
+   - variant="card" (por defecto): tarjeta amarilla dentro de la página. */
 import { siteConfig } from '../../site.config';
-import { fechasPromo } from '../data/promo';
-interface Props { class?: string }
-const { class: className = '' } = Astro.props;
+import { fechasPromo, fechasPromoCortas } from '../data/promo';
+interface Props { class?: string; variant?: 'strip' | 'card' }
+const { class: className = '', variant = 'card' } = Astro.props;
 const p = siteConfig.promo;
 ---
-{p.activo && (
+{p.activo && variant === 'strip' && (
+  <a href="/to-go" class={`promo-strip ${className}`} data-promo-hasta={p.hasta}>
+    <span class="promo-strip__in">
+      <b class="promo-strip__tag">{p.nombre}</b>
+      <span class="promo-strip__largo">2x1 en combos <b>{fechasPromo}</b>, solo por la web con el código <b class="promo-strip__cod">{p.codigo}</b></span>
+      <span class="promo-strip__corto">2x1 en combos {fechasPromoCortas} · código <b class="promo-strip__cod">{p.codigo}</b></span>
+      <span class="promo-strip__cta">Pedir →</span>
+    </span>
+  </a>
+)}
+{p.activo && variant === 'card' && (
   <a href="/to-go" class={`promo-banner reveal ${className}`} data-promo-hasta={p.hasta}>
     <span class="promo-banner__tag">{p.nombre} · 2x1</span>
     <span class="promo-banner__txt">{p.frase} <b>Solo {fechasPromo}</b> y solo pidiendo por la web, con el código <b class="promo-banner__cod">{p.codigo}</b>.</span>
@@ -16,7 +28,7 @@ const p = siteConfig.promo;
 )}
 
 <script>
-  // Cuando la promo termina, el aviso se quita solo (hora de Madrid)
+  // Cuando la promo termina, los avisos se quitan solos (hora de Madrid)
   document.querySelectorAll<HTMLElement>('[data-promo-hasta]').forEach((el) => {
     const hoy = new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Madrid' });
     if (hoy > el.dataset.promoHasta!) el.remove();
@@ -24,6 +36,23 @@ const p = siteConfig.promo;
 </script>
 
 <style>
+  /* franja de arriba */
+  .promo-strip { display: block; background: var(--color-brand-fresh); color: var(--color-brand-brown); font-size: .85rem; line-height: 1.35; transition: filter .2s; }
+  .promo-strip:hover { filter: brightness(1.03); }
+  .promo-strip__in { margin: 0 auto; max-width: 72rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .25rem .7rem; padding: .5rem 1.25rem; text-align: center; }
+  .promo-strip__tag { border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-fresh); padding: .18rem .65rem; font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .promo-strip__cod { letter-spacing: .1em; }
+  .promo-strip__cta { font-weight: 800; }
+  .promo-strip__corto { display: none; }
+  /* en el móvil, una sola frase corta: una línea o dos como mucho */
+  @media (max-width: 640px) {
+    .promo-strip { font-size: .8rem; }
+    .promo-strip__in { gap: .2rem .5rem; padding: .45rem .9rem; }
+    .promo-strip__largo { display: none; }
+    .promo-strip__corto { display: inline; }
+  }
+
+  /* tarjeta */
   .promo-banner { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; border-radius: 1.6rem; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: .9rem 1.2rem .9rem .9rem; box-shadow: 0 14px 34px -18px rgba(68,54,49,.5); transition: transform .25s, box-shadow .25s; }
   .promo-banner:hover { transform: translateY(-2px); box-shadow: 0 18px 40px -16px rgba(68,54,49,.55); }
   .promo-banner__tag { border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-fresh); padding: .4rem .85rem; font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
