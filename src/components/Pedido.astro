@@ -135,19 +135,38 @@ const datos = {
     $('pd-dto-t').textContent = `${promo.nombre} · 2x1 en combos`;
     $('pd-dto').textContent = `−${eur(d)}`;
   }
-  function aplicarCodigo() {
-    const inp = $<HTMLInputElement>('pd-codigo'), msg = $('pd-promo-msg');
-    const v = inp.value.trim().toUpperCase().replace(/\s+/g, '');
-    const falla = (t: string) => { msg.textContent = t; msg.hidden = false; inp.focus(); };
-    if (!v) return falla('Escribe el código.');
-    if (v !== promo!.codigo) return falla('Ese código no existe. Revisa que esté bien escrito.');
-    if (hoyMadrid() < promo!.desde) return falla(`Este código vale ${promo!.fechas}. ¡Guárdalo!`);
-    if (hoyMadrid() > promo!.hasta) return falla('Esta promoción ya ha terminado.');
-    codigo = v; msg.hidden = true; inp.value = '';
+  function validarCodigo(v: string) {
+    if (!v) return 'Escribe el código.';
+    if (v !== promo!.codigo) return 'Ese código no existe. Revisa que esté bien escrito.';
+    if (hoyMadrid() < promo!.desde) return `Este código vale ${promo!.fechas}. ¡Guárdalo!`;
+    if (hoyMadrid() > promo!.hasta) return 'Esta promoción ya ha terminado.';
+    return null;
+  }
+  function ponerCodigo(v: string) {
+    codigo = v;
     try { localStorage.setItem(CLAVE_COD, codigo); } catch {}
     (window as any).umami?.track('codigo-promo', { codigo });
     pintar();
   }
+  function aplicarCodigo() {
+    const inp = $<HTMLInputElement>('pd-codigo'), msg = $('pd-promo-msg');
+    const v = inp.value.trim().toUpperCase().replace(/\s+/g, '');
+    const err = validarCodigo(v);
+    if (err) { msg.textContent = err; msg.hidden = false; inp.focus(); return; }
+    msg.hidden = true; inp.value = '';
+    ponerCodigo(v);
+  }
+  // Desde la sección Black Week: el botón aplica el código y abre el pedido (aunque aún esté vacío, el código queda guardado)
+  window.addEventListener('pedido:codigo', (e) => {
+    if (!promo) return;
+    const v = String((e as CustomEvent).detail || '').toUpperCase().replace(/\s+/g, '');
+    const err = validarCodigo(v);
+    if (err) { toast(esc(err)); return; }
+    ponerCodigo(v);
+    const n = lineas.filter((l) => promo.combos.includes(l.nombre)).reduce((a, l) => a + l.cant, 0);
+    toast(n >= 2 ? `<b>${esc(v)}</b> aplicado: 2x1 en combos` : `<b>${esc(v)}</b> aplicado. Añade ${n === 1 ? 'otro combo' : 'dos combos'}`);
+    if (lineas.length) { horas(); dlg.showModal(); }
+  });
   if (promo) {
     $('pd-codigo-ok').addEventListener('click', aplicarCodigo);
     $('pd-codigo').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); aplicarCodigo(); } });

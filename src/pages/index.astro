@@ -1,7 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import Resenas from '../components/Resenas.astro';
-import PromoBanner from '../components/PromoBanner.astro';
+import BlackWeek from '../components/BlackWeek.astro';
 import { fechasPromo } from '../data/promo';
 import Logo from '../components/Logo.astro';
 import BrandIcon from '../components/BrandIcon.astro';
@@ -84,7 +84,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
 
       <!-- Paso 0 -->
       <div class="epica__step epica__step--intro" data-from="0" data-to="0.16">
-        {siteConfig.promo.activo && <a href="/to-go" class="epica__promo" data-promo-hasta={siteConfig.promo.hasta}><b>{siteConfig.promo.nombre}</b> 2x1 en combos<span class="epica__promo-f"> · {fechasPromo}</span> →</a>}
+        {siteConfig.promo.activo && <a href="/black-week" class="epica__promo" data-promo-hasta={siteConfig.promo.hasta}><b>{siteConfig.promo.nombre}</b> 2x1 en combos<span class="epica__promo-f"> · {fechasPromo}</span> →</a>}
         <p class="epica__kicker">Café de especialidad · Brunch · {siteConfig.ciudad}, {siteConfig.provincia}</p>
         <h1 class="epica__h1">Café de especialidad y brunch, <span class="font-hand text-brand-fresh">hecho con calma.</span></h1>
         <div class="epica__ctas">
@@ -148,8 +148,10 @@ const objetivo = siteConfig.bravaPass.objetivo;
   </section>
 
   <!-- ═════════ 3 · COMBOS (tarjetas que se apilan) ═════════ -->
+  <!-- ═════════ 2b · BLACK WEEK (solo mientras dure la promo) ═════════ -->
+  <BlackWeek class="pt-10 pb-4" />
+
   <section class="mx-auto w-full max-w-6xl px-5 pb-10 pt-6 sm:px-6">
-    <PromoBanner class="mb-10" />
     <div class="mb-10 flex flex-col items-center text-center">
       <p class="font-hand text-3xl text-brand-calm-ink">nuestros favoritos</p>
       <Logo as="h2" suffix="combos" class="mt-1 text-5xl text-brand-brown sm:text-6xl" />

@@ -10,7 +10,7 @@ const { class: className = '', variant = 'card' } = Astro.props;
 const p = siteConfig.promo;
 ---
 {p.activo && variant === 'strip' && (
-  <a href="/to-go" class={`promo-strip ${className}`} data-promo-hasta={p.hasta}>
+  <a href="/black-week" class={`promo-strip ${className}`} data-promo-hasta={p.hasta}>
     <span class="promo-strip__in">
       <b class="promo-strip__tag">{p.nombre}</b>
       <span class="promo-strip__largo">2x1 en combos <b>{fechasPromo}</b>, solo por la web con el código <b class="promo-strip__cod">{p.codigo}</b></span>
@@ -21,7 +21,7 @@ const p = siteConfig.promo;
 )}
 {p.activo && variant === 'card' && (
   <div class={`promo-banner reveal ${className}`} data-promo-hasta={p.hasta}>
-    <a href="/to-go" class="promo-banner__main">
+    <a href="/black-week" class="promo-banner__main">
       <span class="promo-banner__tag">{p.nombre} · 2x1</span>
       <span class="promo-banner__txt">{p.frase} <b>Solo {fechasPromo}</b> y solo pidiendo por la web, con el código <b class="promo-banner__cod">{p.codigo}</b>.</span>
       <span class="promo-banner__cta">Pedir ahora →</span>

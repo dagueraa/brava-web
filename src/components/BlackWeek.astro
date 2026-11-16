@@ -1,0 +1,102 @@
+---
+/* Sección de la promoción (site.config → promo): qué combos entran, cómo se pide
+   y el botón que aplica el código y abre el pedido. Sale en la portada y en /black-week.
+   Se quita sola cuando pasa la última fecha. */
+import { siteConfig } from '../../site.config';
+import { fechasPromo } from '../data/promo';
+import { categorias } from '../data/menu';
+import { anadible, extraDeNota } from '../data/pedido';
+import Plato from './Plato.astro';
+import BotonPedido from './BotonPedido.astro';
+import Blob from './Blob.astro';
+import type { MenuFotoKey } from '../assets/menuImages';
+interface Props { class?: string; as?: 'h1' | 'h2' }
+const { class: className = '', as: H = 'h2' } = Astro.props;
+const p = siteConfig.promo;
+const combos = categorias.find((c) => c.id === 'combos')!;
+const zumo = extraDeNota(combos.nota); // el extra opcional de los combos (zumo) se paga aparte
+const items = combos.items!.filter((c) => (p.combos as readonly string[]).includes(c.nombre));
+const pasos = [
+  ['Añade dos combos', 'Los que quieras, aquí mismo. Pueden ser distintos.'],
+  [`Aplica el código ${p.codigo}`, 'Con el botón de abajo o escribiéndolo en tu pedido.'],
+  ['Envía el pedido por WhatsApp', 'Llega con el 2x1 ya descontado. Pagas al recoger.'],
+];
+---
+{p.activo && (
+  <section id="black-week" class={`bw ${className}`} data-promo-hasta={p.hasta} aria-labelledby="bw-t">
+    <div class="bw__in">
+      <header class="bw__cab">
+        <p class="bw__tag">{p.nombre} · {fechasPromo}</p>
+        <H id="bw-t" class="bw__t">Dos combos al precio de uno.</H>
+        <p class="bw__lead">Elige con quién: el segundo lo invita Brava. <b>Solo pidiendo por la web</b>, con el código <b class="bw__cod">{p.codigo}</b>.</p>
+      </header>
+
+      <ul class="bw__combos" aria-label="Combos que entran en la promoción">
+        {items.map((c, i) => (
+          <li class="bw__combo">
+            <div class="bw__fotos">
+              <Blob class="absolute inset-0 m-auto h-full w-full text-brand-fresh/60" variant={((i % 3) + 1) as 1 | 2 | 3} />
+              <Plato foto={c.cafe as MenuFotoKey} alt="Café de especialidad" nombre={c.nombre} precio={c.precio} desc={c.desc} widths={[160, 240, 360]} sizes="(max-width: 640px) 34vw, 140px" class="!absolute left-0 top-0 z-10 w-[58%]" />
+              <Plato foto={c.foto as MenuFotoKey} alt={c.nombre} nombre={c.nombre} precio={c.precio} desc={c.desc} widths={[192, 280, 400]} sizes="(max-width: 640px) 40vw, 170px" class="!absolute bottom-0 right-0 z-20 w-[66%]" />
+            </div>
+            <h3 class="bw__nombre">{c.nombre}</h3>
+            <p class="bw__desc">{c.desc}</p>
+            <p class="bw__precio">{c.precio} €<small>el segundo, gratis</small></p>
+            <BotonPedido a={anadible(c, '', zumo)} texto="Añadir" class="bw__add" />
+          </li>
+        ))}
+      </ul>
+
+      <ol class="bw__pasos">
+        {pasos.map(([t, d], i) => (
+          <li><span class="bw__num font-hand">0{i + 1}</span><b>{t}</b><span>{d}</span></li>
+        ))}
+      </ol>
+
+      <div class="bw__cta">
+        <button type="button" class="bw__btn" data-aplicar-codigo={p.codigo}>Aplicar {p.codigo} y ver mi pedido</button>
+        <p class="bw__nota">Por cada dos combos, el más barato sale gratis; los extras se pagan. Solo para llevar, pidiendo por esta web {fechasPromo}.</p>
+      </div>
+    </div>
+  </section>
+)}
+
+<script>
+  // El botón manda el código al pedido (Pedido.astro lo valida, lo aplica y abre la hoja)
+  document.querySelectorAll<HTMLButtonElement>('[data-aplicar-codigo]').forEach((b) =>
+    b.addEventListener('click', () => window.dispatchEvent(new CustomEvent('pedido:codigo', { detail: b.dataset.aplicarCodigo }))));
+</script>
+
+<style>
+  .bw { margin: 0 auto; width: 100%; max-width: 72rem; padding-inline: 1.25rem; }
+  @media (min-width: 640px) { .bw { padding-inline: 1.5rem; } }
+  .bw__in { border-radius: 2.5rem; background: var(--color-brand-fresh); color: var(--color-brand-brown); padding: 2.4rem 1.3rem; box-shadow: 0 24px 60px -30px rgba(68,54,49,.5); }
+  @media (min-width: 768px) { .bw__in { padding: 3.5rem 3rem; } }
+  .bw__cab { margin: 0 auto; max-width: 42rem; text-align: center; }
+  .bw__tag { display: inline-block; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-fresh); padding: .45rem 1rem; font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+  .bw__t { margin-top: 1rem; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 800; letter-spacing: -.03em; line-height: 1.02; text-wrap: balance; }
+  .bw__lead { margin-top: .9rem; font-size: 1.05rem; line-height: 1.5; }
+  .bw__cod { letter-spacing: .1em; background: rgba(68,54,49,.1); padding: .1rem .45rem; border-radius: .4rem; white-space: nowrap; }
+
+  .bw__combos { margin-top: 2.2rem; display: grid; gap: 1rem; }
+  @media (min-width: 640px) { .bw__combos { grid-template-columns: repeat(3, 1fr); } }
+  .bw__combo { display: grid; justify-items: center; align-content: start; text-align: center; border-radius: 1.8rem; background: var(--color-brand-cream); padding: 1.4rem 1.2rem 1.5rem; }
+  .bw__fotos { position: relative; width: min(62%, 12rem); aspect-ratio: 1; }
+  .bw__nombre { margin-top: .9rem; font-size: 1.3rem; font-weight: 800; letter-spacing: -.02em; }
+  .bw__desc { margin-top: .25rem; font-size: .9rem; font-style: italic; color: var(--color-brand-brown-80); }
+  .bw__precio { margin-top: .6rem; font-size: 1.5rem; font-weight: 800; line-height: 1.1; }
+  .bw__precio small { display: block; margin-top: .15rem; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--color-brand-calm-ink); }
+  .bw :global(.bw__add) { margin-top: .9rem; }
+
+  .bw__pasos { margin-top: 2rem; display: grid; gap: .8rem; }
+  @media (min-width: 640px) { .bw__pasos { grid-template-columns: repeat(3, 1fr); } }
+  .bw__pasos li { display: grid; gap: .15rem; border-radius: 1.2rem; background: rgba(255,255,255,.38); padding: 1rem 1.1rem; font-size: .92rem; line-height: 1.4; }
+  .bw__pasos b { font-size: 1rem; }
+  .bw__num { font-size: 1.5rem; line-height: 1; color: var(--color-brand-calm-ink); }
+
+  .bw__cta { margin-top: 2rem; text-align: center; }
+  .bw__btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; background: var(--color-brand-brown); color: var(--color-brand-cream); padding: 1.05rem 1.8rem; font-size: 1.05rem; font-weight: 800; box-shadow: 0 16px 34px -16px rgba(68,54,49,.7); transition: transform .2s, background-color .2s; }
+  .bw__btn:hover { transform: translateY(-2px); background: var(--color-brand-brown-80); }
+  @media (max-width: 640px) { .bw__btn { width: 100%; } }
+  .bw__nota { margin: .9rem auto 0; max-width: 36rem; font-size: .82rem; line-height: 1.45; color: var(--color-brand-brown-80); }
+</style>
