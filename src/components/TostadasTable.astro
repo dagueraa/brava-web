@@ -1,5 +1,7 @@
 ---
 import type { TostadaRow } from '../data/menu';
+import { useLang } from '../i18n';
+const { t, tr } = useLang(Astro.url);
 interface Props {
   columnas: [string, string];
   bases: TostadaRow[];
@@ -11,7 +13,7 @@ const fmt = (value: string | null) => value ? `${value} €` : '';
 <table class="w-full border-collapse text-left text-sm text-brand-brown sm:text-base">
   <thead>
     <tr class="border-y rule-soft text-brand-brown-80 italic">
-      <th scope="col" class="py-2 font-normal"><span class="sr-only">Producto</span></th>
+      <th scope="col" class="py-2 font-normal"><span class="sr-only">{t('Producto', 'Item')}</span></th>
       <th scope="col" class="w-20 py-2 text-right font-normal">{columnas[0]}</th>
       <th scope="col" class="w-20 py-2 text-right font-normal">{columnas[1]}</th>
     </tr>
@@ -19,7 +21,7 @@ const fmt = (value: string | null) => value ? `${value} €` : '';
   <tbody>
     {bases.map((row) => (
       <tr class="border-b rule-soft">
-        <th scope="row" class="py-1.5 font-medium">{row.nombre}</th>
+        <th scope="row" class="py-1.5 font-medium">{tr(row.nombre)}</th>
         <td class="py-1.5 text-right tabular-nums">{fmt(row.media)}</td>
         <td class="py-1.5 text-right tabular-nums">{fmt(row.entera)}</td>
       </tr>
@@ -27,7 +29,7 @@ const fmt = (value: string | null) => value ? `${value} €` : '';
     <tr aria-hidden="true"><td colspan="3" class="h-5"></td></tr>
     {toppings.map((row) => (
       <tr class="border-b rule-soft">
-        <th scope="row" class="py-1.5 font-medium">{row.nombre}</th>
+        <th scope="row" class="py-1.5 font-medium">{tr(row.nombre)}</th>
         <td class="py-1.5 text-right tabular-nums">{fmt(row.media)}</td>
         <td class="py-1.5 text-right tabular-nums">{fmt(row.entera)}</td>
       </tr>

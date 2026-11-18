@@ -1,0 +1,41 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import ToGoBlock from '../../components/ToGoBlock.astro';
+import Button from '../../components/Button.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
+import { siteConfig, textosEn } from '../../../site.config';
+import { useLang } from '../../i18n';
+const { t, l } = useLang(Astro.url);
+---
+<Base title={t('Brava To Go · Para llevar', 'Brava To Go · Takeaway')} description={t('Pide tu Brava favorito para llevar por WhatsApp o teléfono. Café de especialidad, brunch y batidos listos para recoger en La Ñora, Murcia.', 'Order your Brava favourites to take away on WhatsApp or by phone. Specialty coffee, brunch and smoothies ready to pick up in La Ñora, Murcia.')} path="/to-go">
+  <Section width="wide" class="pt-10 pb-6">
+    <PromoBanner class="mb-6" />
+    <ToGoBlock variant="full" />
+  </Section>
+
+  <!-- Sin carrito: aclaración amable -->
+  <Section class="py-10">
+    <div class="grid gap-6 sm:grid-cols-2">
+      <div class="rounded-3xl border rule-soft bg-brand-cream-2/40 p-7">
+        <h2 class="text-xl font-bold text-brand-brown">{t('Así de fácil', 'It’s that easy')}</h2>
+        <p class="mt-2 leading-relaxed text-brand-brown-80">
+          {t('Elige lo que te apetece de la carta, escríbenos por WhatsApp o llámanos con tu pedido, y pásate a recogerlo cuando esté listo. Nosotros lo dejamos todo preparado.', 'Choose what you fancy from the menu, send us your order on WhatsApp or give us a call, and come by to pick it up when it’s ready. We’ll have everything prepared.')}
+        </p>
+        <div class="mt-5">
+          <Button href={l('/carta')} variant="outline">{t('Ver la carta', 'See the menu')}</Button>
+        </div>
+      </div>
+      <div class="rounded-3xl border rule-soft bg-brand-cream-2/40 p-7">
+        <h2 class="text-xl font-bold text-brand-brown">{t('Horario de recogida', 'Pick-up hours')}</h2>
+        <p class="mt-2 leading-relaxed text-brand-brown-80">{t(siteConfig.horarioResumen, textosEn.horarioResumen)}.</p>
+        <p class="mt-2 text-sm text-brand-brown-80">
+          {siteConfig.toGo.tiempoPreparacionMin && <>{t('Tiempo medio de preparación: aprox.', 'Average preparation time: approx.')} {siteConfig.toGo.tiempoPreparacionMin} min. </>}
+          {t('Si tienes prisa, avísanos al hacer el pedido.', 'In a hurry? Just tell us when you order.')}
+        </p>
+      </div>
+    </div>
+  </Section>
+</Base>

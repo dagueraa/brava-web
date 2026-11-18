@@ -8,6 +8,8 @@ import { Image, getImage } from 'astro:assets';
 import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
 import { siteConfig } from '../../site.config';
 import type { Anadible } from '../data/pedido';
+import { useLang } from '../i18n';
+const { t } = useLang(Astro.url);
 
 interface Props {
   foto: MenuFotoKey;
@@ -40,7 +42,7 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
   data-anadir={a ? JSON.stringify(a) : undefined}
   tabindex={zoom ? 0 : undefined}
   role={zoom ? 'button' : undefined}
-  aria-label={zoom ? `Ver ${nombre ?? alt} de cerca` : undefined}
+  aria-label={zoom ? t(`Ver ${nombre ?? alt} de cerca`, `See ${nombre ?? alt} up close`) : undefined}
 >
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
@@ -54,6 +56,7 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
 
 <script>
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EN = document.documentElement.lang === 'en';
   const tactil = matchMedia('(pointer: coarse)').matches;
   const platos = [...document.querySelectorAll<HTMLElement>('.plato')];
   const vivos = new Set<HTMLElement>();
@@ -110,9 +113,9 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
     dlg = document.createElement('dialog');
     dlg.className = 'pz';
     dlg.innerHTML = `
-      <button class="pz__cerrar" type="button" aria-label="Cerrar">✕</button>
+      <button class="pz__cerrar" type="button" aria-label="${EN ? 'Close' : 'Cerrar'}">✕</button>
       <div class="pz__escena"><figure class="plato plato--grande vivo"><span class="plato__sombra"></span><span class="plato__cuerpo"><span class="plato__giro"><img class="plato__img" alt="" draggable="false"><span class="plato__brillo"><i></i></span></span></span></figure></div>
-      <div class="pz__info"><p class="pz__pista"></p><h3></h3><p class="pz__desc"></p><div class="pz__pie"><b></b><button type="button" class="pz__pedir">Añadir al pedido</button></div></div>`;
+      <div class="pz__info"><p class="pz__pista"></p><h3></h3><p class="pz__desc"></p><div class="pz__pie"><b></b><button type="button" class="pz__pedir">${EN ? 'Add to order' : 'Añadir al pedido'}</button></div></div>`;
     document.body.appendChild(dlg);
     dlg.querySelector('.pz__cerrar')!.addEventListener('click', cerrar);
     dlg.addEventListener('click', (e) => { if (e.target === dlg) cerrar(); });
@@ -151,7 +154,7 @@ const grande = await getImage({ src, width: Math.min(1000, src.width), format: '
     poner(fig, 0, 0);
     dlg!.querySelector('h3')!.textContent = d.nombre ?? img.alt;
     dlg!.querySelector('.pz__desc')!.textContent = d.desc ?? '';
-    dlg!.querySelector('.pz__pista')!.textContent = 'gira' in d ? 'arrastra para girarlo' : 'muévelo para verlo';
+    dlg!.querySelector('.pz__pista')!.textContent = 'gira' in d ? (EN ? 'drag to spin it' : 'arrastra para girarlo') : (EN ? 'move it around' : 'muévelo para verlo');
     const precio = dlg!.querySelector<HTMLElement>('.pz__pie b')!;
     precio.textContent = d.precio ? `${d.precio} €` : '';
     const pedir = dlg!.querySelector<HTMLButtonElement>('.pz__pedir')!;

@@ -1,20 +1,25 @@
 ---
-import Base from '../layouts/Base.astro';
-import Resenas from '../components/Resenas.astro';
-import BlackWeek from '../components/BlackWeek.astro';
-import { fechasPromo } from '../data/promo';
-import Logo from '../components/Logo.astro';
-import BrandIcon from '../components/BrandIcon.astro';
-import Blob from '../components/Blob.astro';
-import HandArrow from '../components/HandArrow.astro';
-import Plato from '../components/Plato.astro';
-import BotonPedido from '../components/BotonPedido.astro';
-import { anadible, extraDeNota } from '../data/pedido';
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Resenas from '../../components/Resenas.astro';
+import BlackWeek from '../../components/BlackWeek.astro';
+import { fechasDe } from '../../data/promo';
+import { useLang, DIAS, horas } from '../../i18n';
+import Logo from '../../components/Logo.astro';
+import BrandIcon from '../../components/BrandIcon.astro';
+import Blob from '../../components/Blob.astro';
+import HandArrow from '../../components/HandArrow.astro';
+import Plato from '../../components/Plato.astro';
+import BotonPedido from '../../components/BotonPedido.astro';
+import { anadible, extraDeNota } from '../../data/pedido';
 import { Image } from 'astro:assets';
-import { img } from '../assets/images';
-import { menuFotos, type MenuFotoKey } from '../assets/menuImages';
-import { categorias, type MenuItem } from '../data/menu';
-import { siteConfig, waLink } from '../../site.config';
+import { img } from '../../assets/images';
+import { menuFotos, type MenuFotoKey } from '../../assets/menuImages';
+import { categorias, type MenuItem } from '../../data/menu';
+import { siteConfig, waLink, textosEn } from '../../../site.config';
+const { t, tr, l, lang } = useLang(Astro.url);
+const fechasPromo = fechasDe(lang);
 
 /* Todos los platos y precios salen de la carta oficial (src/data/menu.ts). */
 const todos: MenuItem[] = categorias.flatMap((c) => [
@@ -46,32 +51,33 @@ const porFoto = (k: MenuFotoKey) => todos.find((i) => i.foto === k) ?? todos.fin
 
 const panels = [
   {
-    suffix: 'drinks', fondo: 'bg-brand-calm', tinta: 'text-brand-brown', kicker: 'Para beber despacio',
+    suffix: 'drinks', fondo: 'bg-brand-calm', tinta: 'text-brand-brown', kicker: t('Para beber despacio', 'To sip slowly'),
     fotos: ['iced-brava', 'blue-matcha', 'cafe-amarillo'] as MenuFotoKey[],
     platos: ['Iced Brava', 'Blue Matcha', 'Brava Coffee', 'Matcha Latte Pistacho', 'Pink Latte'].map(plato),
-    href: '/carta#drinks',
+    href: l('/carta#drinks'),
   },
   {
-    suffix: 'brunch', fondo: 'bg-brand-cream-2', tinta: 'text-brand-brown', kicker: 'Al momento',
+    suffix: 'brunch', fondo: 'bg-brand-cream-2', tinta: 'text-brand-brown', kicker: t('Al momento', 'Made to order'),
     fotos: ['esp-salmone-brioche', 'esp-mortadella-bagel', 'focaccia-pompeyana'] as MenuFotoKey[],
     platos: ['Salmone Brioche', 'Mortadella Bagel', 'Focaccia Pompeyana', 'Brava Brioche'].map(plato),
-    href: '/carta#brunch',
+    href: l('/carta#brunch'),
   },
   {
-    suffix: 'treats', fondo: 'bg-brand-fresh', tinta: 'text-brand-brown', kicker: 'El capricho',
+    suffix: 'treats', fondo: 'bg-brand-fresh', tinta: 'text-brand-brown', kicker: t('El capricho', 'The treat'),
     fotos: ['brava-pop', 'esp-pistachio', 'focaccia-lotus'] as MenuFotoKey[],
     platos: ['Brava Pop', 'Pistachio Brioche', 'Focaccia Lotus', 'Nutella Brioche'].map(plato),
-    href: '/carta#treats',
+    href: l('/carta#treats'),
   },
 ];
 
 const lattes = ['Caramelo Salado', 'Vainilla', 'Avellana Tostada', 'Pistacho'].map(plato);
 const clasicos = ['Espresso', 'Flat White', 'Cappuccino'].map(plato);
-const frase = ['café de especialidad', 'brunch', 'treats', 'para llevar', 'La Ñora'];
+const frase = t(['café de especialidad', 'brunch', 'treats', 'para llevar', 'La Ñora'], ['specialty coffee', 'brunch', 'treats', 'takeaway', 'La Ñora']);
+const lema = t('por venir, te damos', 'keep coming, we’ll treat you');
 const iconosFranja = ['croissant', 'cafe', 'cookie', 'smoothie', 'muffin'] as const;
 const objetivo = siteConfig.bravaPass.objetivo;
 ---
-<Base title="Inicio" path="">
+<Base title={t('Inicio', 'Home')} path="">
   <!-- ═════════ 1 · LA TAZA 3D (scroll coreografiado) ═════════ -->
   <section id="epica" class="epica relative bg-brand-brown text-brand-cream" aria-label="Brava coffee and brunch">
     <div class="epica__stage">
@@ -84,49 +90,49 @@ const objetivo = siteConfig.bravaPass.objetivo;
 
       <!-- Paso 0 -->
       <div class="epica__step epica__step--intro" data-from="0" data-to="0.16">
-        {siteConfig.promo.activo && <a href="/black-week" class="epica__promo" data-promo-hasta={siteConfig.promo.hasta}><b>{siteConfig.promo.nombre}</b> 2x1 en combos<span class="epica__promo-f"> · {fechasPromo}</span> →</a>}
-        <p class="epica__kicker">Café de especialidad · Brunch · {siteConfig.ciudad}, {siteConfig.provincia}</p>
-        <h1 class="epica__h1">Café de especialidad y brunch, <span class="font-hand text-brand-fresh">hecho con calma.</span></h1>
+        {siteConfig.promo.activo && <a href={l('/black-week')} class="epica__promo" data-promo-hasta={siteConfig.promo.hasta}><b>{siteConfig.promo.nombre}</b> {t('2x1 en combos', '2-for-1 combos')}<span class="epica__promo-f"> · {fechasPromo}</span> →</a>}
+        <p class="epica__kicker">{t('Café de especialidad', 'Specialty coffee')} · Brunch · {siteConfig.ciudad}, {siteConfig.provincia}</p>
+        <h1 class="epica__h1">{t('Café de especialidad y brunch, ', 'Specialty coffee and brunch, ')}<span class="font-hand text-brand-fresh">{t('hecho con calma.', 'made with care.')}</span></h1>
         <div class="epica__ctas">
-          <a href="/carta" class="btn-e btn-e--fresh">Ver la carta</a>
-          <a href="/brava-pass" class="btn-e btn-e--ghost">Brava Pass</a>
+          <a href={l('/carta')} class="btn-e btn-e--fresh">{t('Ver la carta', 'See the menu')}</a>
+          <a href={l('/brava-pass')} class="btn-e btn-e--ghost">Brava Pass</a>
         </div>
       </div>
       <!-- Paso 1 -->
       <div class="epica__step epica__step--left" data-from="0.2" data-to="0.42">
-        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">el primero de la mañana</p>
-        <h2 class="epica__h2">Donde el café sabe a café.</h2>
-        <p class="epica__p">Y el pan a pan, y las cosas se hacen con intención.</p>
+        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">{t('el primero de la mañana', 'the first one of the morning')}</p>
+        <h2 class="epica__h2">{t('Donde el café sabe a café.', 'Where coffee tastes like coffee.')}</h2>
+        <p class="epica__p">{t('Y el pan a pan, y las cosas se hacen con intención.', 'And bread tastes like bread, and everything is done with intention.')}</p>
         <ul class="epica__chips">
-          {clasicos.map((c) => <li><span>{c.nombre}</span><b>{c.precio} €</b></li>)}
+          {clasicos.map((c) => <li><span>{tr(c.nombre)}</span><b>{c.precio} €</b></li>)}
         </ul>
       </div>
       <!-- Paso 2 (vista cenital del latte art) -->
       <div class="epica__step epica__step--bottom" data-from="0.46" data-to="0.64">
-        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">latte macchiato especiales</p>
-        <h2 class="epica__h2">Ponle tu sabor.</h2>
+        <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">{t('latte macchiato especiales', 'special latte macchiatos')}</p>
+        <h2 class="epica__h2">{t('Ponle tu sabor.', 'Pick your flavour.')}</h2>
         <ul class="epica__chips justify-center">
-          {lattes.map((c) => <li><span>{c.nombre}</span><b>{c.precio} €</b></li>)}
+          {lattes.map((c) => <li><span>{tr(c.nombre)}</span><b>{c.precio} €</b></li>)}
         </ul>
       </div>
       <!-- Paso 3 -->
       <div class="epica__step epica__step--left" data-from="0.7" data-to="1.01">
         <Logo suffix="combos" class="text-4xl text-brand-cream sm:text-5xl" />
-        <h2 class="epica__h2 mt-4">Empieza bien el día.</h2>
-        <p class="epica__p">{combos.items![0].nombre}: {combos.items![0].desc!.toLowerCase()}, <b class="text-brand-fresh">{combos.items![0].precio} €</b>.</p>
+        <h2 class="epica__h2 mt-4">{t('Empieza bien el día.', 'Start your day right.')}</h2>
+        <p class="epica__p">{tr(combos.items![0].nombre)}: {tr(combos.items![0].desc)!.toLowerCase()}, <b class="text-brand-fresh">{combos.items![0].precio} €</b>.</p>
         <div class="epica__ctas !justify-start">
-          <a href="/carta" class="btn-e btn-e--fresh">Ver la carta</a>
-          <a href="/to-go" class="btn-e btn-e--ghost">Pedir para llevar</a>
+          <a href={l('/carta')} class="btn-e btn-e--fresh">{t('Ver la carta', 'See the menu')}</a>
+          <a href={l('/to-go')} class="btn-e btn-e--ghost">{t('Pedir para llevar', 'Order to take away')}</a>
         </div>
       </div>
 
-      <div class="epica__hint" aria-hidden="true"><span>desliza</span><i></i></div>
+      <div class="epica__hint" aria-hidden="true"><span>{t('desliza', 'scroll')}</span><i></i></div>
       <div class="epica__bar" aria-hidden="true"><i></i></div>
     </div>
   </section>
 
   <!-- ═════════ 2 · FRANJAS CRUZADAS ═════════ -->
-  <section class="franjas" aria-label="Café de especialidad, brunch, treats y para llevar en La Ñora">
+  <section class="franjas" aria-label={t('Café de especialidad, brunch, treats y para llevar en La Ñora', 'Specialty coffee, brunch, treats and takeaway in La Ñora')}>
     <div class="franja franja--fresh"><div class="franja__track" data-dir="-1">
       {Array.from({ length: 2 }).map(() => (
         <div class="franja__group" aria-hidden="true">
@@ -139,7 +145,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
     <div class="franja franja--calm"><div class="franja__track" data-dir="1">
       {Array.from({ length: 2 }).map(() => (
         <div class="franja__group" aria-hidden="true">
-          {Array.from({ length: 3 }).flatMap(() => ['hello brava!', 'coffee and brunch', 'por venir, te damos']).map((f) => (
+          {Array.from({ length: 3 }).flatMap(() => ['hello brava!', 'coffee and brunch', lema]).map((f) => (
             <><span class="font-hand !font-semibold normal-case !tracking-normal">{f}</span><span class="opacity-60">✦</span></>
           ))}
         </div>
@@ -153,7 +159,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
 
   <section class="mx-auto w-full max-w-6xl px-5 pb-10 pt-6 sm:px-6">
     <div class="mb-10 flex flex-col items-center text-center">
-      <p class="font-hand text-3xl text-brand-calm-ink">nuestros favoritos</p>
+      <p class="font-hand text-3xl text-brand-calm-ink">{t('nuestros favoritos', 'our favourites')}</p>
       <Logo as="h2" suffix="combos" class="mt-1 text-5xl text-brand-brown sm:text-6xl" />
     </div>
     <div class="stack">
@@ -161,29 +167,29 @@ const objetivo = siteConfig.bravaPass.objetivo;
         <article class={`stack__card ${['bg-brand-cream-2', 'bg-brand-calm', 'bg-brand-fresh'][i]}`} style={`--i:${i}`}>
           <div class="stack__fotos">
             <Blob class="inset-0 h-full w-full scale-110 text-brand-cream/70" variant={((i % 3) + 1) as 1 | 2 | 3} />
-            <Plato foto={c.cafe as MenuFotoKey} alt="Café de especialidad de Brava" nombre={c.nombre} precio={c.precio} desc={c.desc} a={paraPedido(c)} widths={[260, 420, 560]} sizes="(max-width: 768px) 46vw, 300px" class="stack__cafe" />
-            <Plato foto={c.foto as MenuFotoKey} alt={c.nombre} nombre={c.nombre} precio={c.precio} desc={c.desc} a={paraPedido(c)} widths={[280, 460, 620]} sizes="(max-width: 768px) 50vw, 320px" class="stack__comida" />
+            <Plato foto={c.cafe as MenuFotoKey} alt={t('Café de especialidad de Brava', 'Brava specialty coffee')} nombre={tr(c.nombre)} precio={c.precio} desc={tr(c.desc)} a={paraPedido(c)} widths={[260, 420, 560]} sizes="(max-width: 768px) 46vw, 300px" class="stack__cafe" />
+            <Plato foto={c.foto as MenuFotoKey} alt={tr(c.nombre)} nombre={tr(c.nombre)} precio={c.precio} desc={tr(c.desc)} a={paraPedido(c)} widths={[280, 460, 620]} sizes="(max-width: 768px) 50vw, 320px" class="stack__comida" />
             <HandArrow class="absolute -right-2 bottom-6 hidden w-24 text-brand-brown md:block" />
           </div>
           <div class="stack__txt">
             <p class="stack__n">0{i + 1}</p>
-            <h3 class="stack__nombre">{c.nombre}</h3>
-            <p class="stack__desc">{c.desc}</p>
+            <h3 class="stack__nombre">{tr(c.nombre)}</h3>
+            <p class="stack__desc">{tr(c.desc)}</p>
             <p class="stack__precio">{c.precio}<span>€</span></p>
-            <BotonPedido a={paraPedido(c)!} texto="Añadir al pedido" class="mt-6" />
+            <BotonPedido a={paraPedido(c)!} texto={t('Añadir al pedido', 'Add to order')} class="mt-6" />
           </div>
         </article>
       ))}
     </div>
-    {combos.nota && <p class="mt-8 text-center text-sm font-semibold text-brand-brown-80">{combos.nota}</p>}
+    {combos.nota && <p class="mt-8 text-center text-sm font-semibold text-brand-brown-80">{tr(combos.nota)}</p>}
   </section>
 
   <!-- ═════════ 4 · LA CARTA EN HORIZONTAL ═════════ -->
-  <section class="hcarta" aria-label="La carta de Brava">
+  <section class="hcarta" aria-label={t('La carta de Brava', 'Brava’s menu')}>
     <div class="hcarta__stage">
       <div class="hcarta__head">
-        <p class="font-hand text-3xl text-brand-calm-ink">la carta, de un vistazo</p>
-        <h2 class="text-3xl font-bold text-brand-brown sm:text-5xl">Todo lo que te espera.</h2>
+        <p class="font-hand text-3xl text-brand-calm-ink">{t('la carta, de un vistazo', 'the menu at a glance')}</p>
+        <h2 class="text-3xl font-bold text-brand-brown sm:text-5xl">{t('Todo lo que te espera.', 'Everything waiting for you.')}</h2>
       </div>
       <div class="hcarta__track">
         {panels.map((p, i) => (
@@ -191,7 +197,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
             <div class="hpanel__fotos">
               {p.fotos.map((f, k) => (
                 <div class={`hpanel__foto hpanel__foto--${k}`} data-par={(k + 1) * (i % 2 ? -1 : 1)}>
-                  <Plato foto={f} alt={porFoto(f)?.nombre ?? 'Café de especialidad'} nombre={porFoto(f)?.nombre} precio={porFoto(f)?.precio} desc={porFoto(f)?.desc} a={paraPedido(porFoto(f))} widths={[240, 400, 560]} sizes="(max-width: 768px) 38vw, 300px" />
+                  <Plato foto={f} alt={tr(porFoto(f)?.nombre) ?? t('Café de especialidad', 'Specialty coffee')} nombre={tr(porFoto(f)?.nombre)} precio={porFoto(f)?.precio} desc={tr(porFoto(f)?.desc)} a={paraPedido(porFoto(f))} widths={[240, 400, 560]} sizes="(max-width: 768px) 38vw, 300px" />
                 </div>
               ))}
             </div>
@@ -200,20 +206,20 @@ const objetivo = siteConfig.bravaPass.objetivo;
               <Logo as="h3" suffix={p.suffix} class="text-4xl sm:text-5xl" />
               <ul class="hpanel__lista">
                 {p.platos.map((pl) => (
-                  <li><span><b>{pl.nombre}</b>{pl.desc && <small>{pl.desc}</small>}</span><em>{pl.precio} €</em><BotonPedido a={paraPedido(pl)!} class="hpanel__mas" /></li>
+                  <li><span><b>{tr(pl.nombre)}</b>{pl.desc && <small>{tr(pl.desc)}</small>}</span><em>{pl.precio} €</em><BotonPedido a={paraPedido(pl)!} class="hpanel__mas" /></li>
                 ))}
               </ul>
-              <a href={p.href} class="btn-e btn-e--brown mt-5">Ver {p.suffix}</a>
+              <a href={p.href} class="btn-e btn-e--brown mt-5">{t(`Ver ${p.suffix}`, `See ${p.suffix}`)}</a>
             </div>
           </article>
         ))}
         <article class="hpanel hpanel--fin bg-brand-brown text-brand-cream">
           <BrandIcon name="bolsa" class="h-24 w-24 text-brand-fresh" />
           <Logo as="h3" suffix="to go" class="mt-5 text-4xl text-brand-cream sm:text-5xl" />
-          <p class="mt-3 max-w-xs text-brand-cream/80">Pídelo por WhatsApp y pásate a recogerlo en {siteConfig.toGo.tiempoPreparacionMin} minutos.</p>
+          <p class="mt-3 max-w-xs text-brand-cream/80">{t(`Pídelo por WhatsApp y pásate a recogerlo en ${siteConfig.toGo.tiempoPreparacionMin} minutos.`, `Order on WhatsApp and pick it up in ${siteConfig.toGo.tiempoPreparacionMin} minutes.`)}</p>
           <div class="mt-6 flex flex-wrap justify-center gap-3">
-            <a href="/carta" class="btn-e btn-e--fresh">Carta completa</a>
-            <a href="/to-go" class="btn-e btn-e--ghost">Para llevar</a>
+            <a href={l('/carta')} class="btn-e btn-e--fresh">{t('Carta completa', 'Full menu')}</a>
+            <a href={l('/to-go')} class="btn-e btn-e--ghost">{t('Para llevar', 'Takeaway')}</a>
           </div>
         </article>
       </div>
@@ -226,16 +232,16 @@ const objetivo = siteConfig.bravaPass.objetivo;
     <div class="pass__stage">
       <div class="pass__rejilla mx-auto grid w-full max-w-6xl items-center gap-10 px-5 sm:px-6 md:grid-cols-[1.1fr_1fr]">
         <div class="pass__txt">
-          <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">por venir, te damos</p>
+          <p class="font-hand text-3xl text-brand-fresh sm:text-4xl">{lema}</p>
           <Logo as="h2" suffix="pass" class="mt-1 text-5xl text-brand-cream sm:text-6xl" />
-          <p class="pass__desc mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">Tu tarjeta de cafés, en el móvil y sin cartón. Pagas, escaneas el QR de la barra y el sello se pone solo.</p>
+          <p class="pass__desc mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">{t('Tu tarjeta de cafés, en el móvil y sin cartón. Pagas, escaneas el QR de la barra y el sello se pone solo.', 'Your coffee card, on your phone, no paper. Pay, scan the QR at the counter and the stamp goes on by itself.')}</p>
           <ol class="pass__pasos">
-            <li data-at="0.05"><b>1</b><span><strong>Hazte el pass en 20 segundos.</strong> Solo tu nombre. Sin apps ni contraseñas.</span></li>
-            <li data-at="0.3"><b>2</b><span><strong>Pide y escanea.</strong> En la barra te enseñan un QR; lo apuntas con la cámara y tu café queda sellado.</span></li>
-            <li data-at="0.6"><b>3</b><span><strong>Al {objetivo}º, invita Brava.</strong> El café gratis aparece en tu pass y lo canjeas cuando quieras.</span></li>
-            <li data-at="0.85"><b><BrandIcon name="muffin" class="h-5 w-5" /></b><span><strong>Y en tu cumpleaños,</strong> el brunch corre de nuestra cuenta.</span></li>
+            <li data-at="0.05"><b>1</b><span><strong>{t('Hazte el pass en 20 segundos.', 'Get your pass in 20 seconds.')}</strong> {t('Solo tu nombre. Sin apps ni contraseñas.', 'Just your name. No apps, no passwords.')}</span></li>
+            <li data-at="0.3"><b>2</b><span><strong>{t('Pide y escanea.', 'Order and scan.')}</strong> {t('En la barra te enseñan un QR; lo apuntas con la cámara y tu café queda sellado.', 'At the counter they show you a QR; point your camera at it and your coffee is stamped.')}</span></li>
+            <li data-at="0.6"><b>3</b><span><strong>{t(`Al ${objetivo}º, invita Brava.`, `Your ${objetivo}th is on Brava.`)}</strong> {t('El café gratis aparece en tu pass y lo canjeas cuando quieras.', 'The free coffee appears on your pass and you redeem it whenever you like.')}</span></li>
+            <li data-at="0.85"><b><BrandIcon name="muffin" class="h-5 w-5" /></b><span><strong>{t('Y en tu cumpleaños,', 'And on your birthday,')}</strong> {t('el brunch corre de nuestra cuenta.', 'brunch is on us.')}</span></li>
           </ol>
-          <a href="/brava-pass" class="pass__cta btn-e btn-e--fresh mt-8">Consigue tu Brava Pass</a>
+          <a href={l('/brava-pass')} class="pass__cta btn-e btn-e--fresh mt-8">{t('Consigue tu Brava Pass', 'Get your Brava Pass')}</a>
         </div>
         <div class="pass__phone" aria-hidden="true">
           <div class="phone">
@@ -245,14 +251,14 @@ const objetivo = siteConfig.bravaPass.objetivo;
                 <Logo suffix="pass" class="text-2xl text-brand-brown" />
                 <span class="rounded-full bg-brand-brown px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cream">K7Q4MZ</span>
               </div>
-              <p class="mt-4 text-sm text-brand-brown-80">Hola, <b class="text-brand-brown">Lucía</b></p>
-              <p class="pass__cuenta"><span id="pass-n">0</span><small>/ {objetivo} cafés</small></p>
+              <p class="mt-4 text-sm text-brand-brown-80">{t('Hola,', 'Hi,')} <b class="text-brand-brown">Lucía</b></p>
+              <p class="pass__cuenta"><span id="pass-n">0</span><small>/ {objetivo} {t('cafés', 'coffees')}</small></p>
               <div class="pass__sellos">
                 {Array.from({ length: objetivo }).map((_, i) => (
                   <span class="sello" style={`--d:${i}`}><BrandIcon name="taza" class="h-6 w-6" /></span>
                 ))}
               </div>
-              <div class="pass__premio"><BrandIcon name="cafe" class="h-7 w-7" /><span><b>¡Café gratis!</b><small>Enséñalo en barra</small></span></div>
+              <div class="pass__premio"><BrandIcon name="cafe" class="h-7 w-7" /><span><b>{t('¡Café gratis!', 'Free coffee!')}</b><small>{t('Enséñalo en barra', 'Show it at the counter')}</small></span></div>
               <div class="pass__qr">
                 <svg viewBox="0 0 29 29" class="h-full w-full" shape-rendering="crispEdges"><path id="qr-demo" fill="currentColor" d="" /></svg>
               </div>
@@ -267,13 +273,13 @@ const objetivo = siteConfig.bravaPass.objetivo;
   <section class="mx-auto grid w-full max-w-6xl items-center gap-10 overflow-x-clip px-5 py-24 sm:px-6 md:grid-cols-2">
     <div class="alma__foto relative">
       <Blob class="-inset-6 -z-10 h-[115%] w-[115%] text-brand-fresh/60" variant={2} />
-      <Image src={img.founderSpace} alt="La dueña de Brava junto al rótulo de musgo brava coffee and brunch" widths={[360, 560, 760]} sizes="(max-width: 768px) 90vw, 520px" class="aspect-[4/5] w-full rounded-[2.5rem] object-cover shadow-2xl" loading="lazy" data-par="1" />
+      <Image src={img.founderSpace} alt={t('La dueña de Brava junto al rótulo de musgo brava coffee and brunch', 'Brava’s owner next to the moss sign “brava coffee and brunch”')} widths={[360, 560, 760]} sizes="(max-width: 768px) 90vw, 520px" class="aspect-[4/5] w-full rounded-[2.5rem] object-cover shadow-2xl" loading="lazy" data-par="1" />
     </div>
     <div>
-      <p class="font-hand text-3xl text-brand-calm-ink">{siteConfig.historia.titulo}</p>
-      <h2 class="mt-2 text-4xl font-bold leading-[1.02] text-brand-brown sm:text-6xl">No es solo un café.</h2>
-      <p class="mt-5 text-xl leading-relaxed text-brand-brown-80">{siteConfig.historia.frase.replace('No es solo un café. ', '')} Un lugar pequeño, pero con alma, creado para disfrutar, desconectar y sentirse como en casa.</p>
-      <a href="/historia" class="btn-e btn-e--brown mt-8">Conoce nuestra historia</a>
+      <p class="font-hand text-3xl text-brand-calm-ink">{t(siteConfig.historia.titulo, textosEn.historia.titulo)}</p>
+      <h2 class="mt-2 text-4xl font-bold leading-[1.02] text-brand-brown sm:text-6xl">{t('No es solo un café.', 'It’s not just a coffee.')}</h2>
+      <p class="mt-5 text-xl leading-relaxed text-brand-brown-80">{t(`${siteConfig.historia.frase.replace('No es solo un café. ', '')} Un lugar pequeño, pero con alma, creado para disfrutar, desconectar y sentirse como en casa.`, `${textosEn.historia.frase.replace('It’s not just a coffee. ', '')} A small place with a big soul, made for enjoying, switching off and feeling at home.`)}</p>
+      <a href={l('/historia')} class="btn-e btn-e--brown mt-8">{t('Conoce nuestra historia', 'Discover our story')}</a>
     </div>
   </section>
 
@@ -282,19 +288,19 @@ const objetivo = siteConfig.bravaPass.objetivo;
   <!-- ═════════ 7 · VEN A VERNOS ═════════ -->
   <section class="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6">
     <div class="visita">
-      <Image src={img.entrada} alt="Entrada de Brava: rótulo brava sobre la pared vegetal" widths={[480, 800, 1100]} sizes="(max-width: 768px) 100vw, 560px" class="visita__foto" loading="lazy" />
+      <Image src={img.entrada} alt={t('Entrada de Brava: rótulo brava sobre la pared vegetal', 'Brava’s entrance: the brava sign on a living plant wall')} widths={[480, 800, 1100]} sizes="(max-width: 768px) 100vw, 560px" class="visita__foto" loading="lazy" />
       <div class="visita__txt">
-        <p id="abierto" class="visita__estado"><i></i><span>Horario</span></p>
-        <h2 class="mt-4 text-4xl font-bold text-brand-cream sm:text-5xl">Te esperamos en La Ñora.</h2>
+        <p id="abierto" class="visita__estado"><i></i><span>{t('Horario', 'Opening hours')}</span></p>
+        <h2 class="mt-4 text-4xl font-bold text-brand-cream sm:text-5xl">{t('Te esperamos en La Ñora.', 'See you in La Ñora.')}</h2>
         <p class="mt-3 text-lg text-brand-cream/80">{siteConfig.direccion}</p>
         <dl class="visita__horario">
           {Object.entries(siteConfig.horario).map(([d, h]) => (
-            <div data-dia={d}><dt>{d === 'miercoles' ? 'miércoles' : d === 'sabado' ? 'sábado' : d}</dt><dd>{h}</dd></div>
+            <div data-dia={d}><dt>{t(DIAS[d].es, DIAS[d].en).toLowerCase()}</dt><dd>{horas(h, lang)}</dd></div>
           ))}
         </dl>
         <div class="mt-7 flex flex-wrap gap-3">
-          <a href={siteConfig.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--fresh">Cómo llegar</a>
-          <a href={waLink('¡Hola Brava!')} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--ghost">WhatsApp</a>
+          <a href={siteConfig.mapsUrl} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--fresh">{t('Cómo llegar', 'Get directions')}</a>
+          <a href={waLink(t('¡Hola Brava!', 'Hi Brava!'))} target="_blank" rel="noopener noreferrer" class="btn-e btn-e--ghost">WhatsApp</a>
         </div>
       </div>
     </div>
@@ -332,7 +338,7 @@ const objetivo = siteConfig.bravaPass.objetivo;
   const webgl = (() => { try { const c = document.createElement('canvas'); return !!(c.getContext('webgl2') || c.getContext('webgl')); } catch { return false; } })();
   if (webgl && !reduce) {
     // Se carga después de pintar el texto, para que la portada salga al instante.
-    const arrancar = () => import('../scripts/taza3d').then(({ crearTaza }) =>
+    const arrancar = () => import('../../scripts/taza3d').then(({ crearTaza }) =>
       crearTaza(canvas, { onReady: () => epica.classList.add('is-3d') }).then((t) => { taza = t; pintarEpica(); }),
     ).catch(() => epica.classList.add('no-3d'));
     'requestIdleCallback' in window ? requestIdleCallback(arrancar, { timeout: 900 }) : setTimeout(arrancar, 300);
@@ -444,7 +450,10 @@ const objetivo = siteConfig.bravaPass.objetivo;
     const abierto = tramos.some((t) => { const [a, b] = t.split('–'); return mins >= toMin(a) && mins < toMin(b); });
     const prox = tramos.map((t) => t.split('–')[0]).find((a) => toMin(a) > mins);
     el.classList.toggle('on', abierto);
-    el.querySelector('span')!.textContent = abierto ? 'Abierto ahora' : prox ? `Cerrado · abrimos a las ${prox}` : 'Cerrado ahora';
+    const EN = document.documentElement.lang === 'en';
+    el.querySelector('span')!.textContent = EN
+      ? (abierto ? 'Open now' : prox ? `Closed · we open at ${prox}` : 'Closed now')
+      : (abierto ? 'Abierto ahora' : prox ? `Cerrado · abrimos a las ${prox}` : 'Cerrado ahora');
   })();
 
   /* ---------- bucle ---------- */

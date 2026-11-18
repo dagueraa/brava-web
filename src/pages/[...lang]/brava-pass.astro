@@ -1,15 +1,21 @@
 ---
-import Base from '../layouts/Base.astro';
-import Logo from '../components/Logo.astro';
-import BrandIcon from '../components/BrandIcon.astro';
-import Blob from '../components/Blob.astro';
-import { siteConfig, reviewLink } from '../../site.config';
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Logo from '../../components/Logo.astro';
+import BrandIcon from '../../components/BrandIcon.astro';
+import Blob from '../../components/Blob.astro';
+import { siteConfig, reviewLink, textosEn } from '../../../site.config';
+import { useLang } from '../../i18n';
+const { t, l, en } = useLang(Astro.url);
 
-const { objetivo, privilegios } = siteConfig.bravaPass;
+const { objetivo } = siteConfig.bravaPass;
+// los textos de los privilegios, en el idioma de la página (los iconos son los de site.config)
+const privilegios = siteConfig.bravaPass.privilegios.map((p, i) => (en ? { ...p, ...textosEn.privilegios[i] } : p));
 ---
 <Base
   title="Brava Pass"
-  description="Brava Pass: tu tarjeta de cafés en el móvil. Pagas, escaneas el QR de la barra y el sello se pone solo. 10 cafés = 1 gratis y brunch en tu cumpleaños."
+  description={t('Brava Pass: tu tarjeta de cafés en el móvil. Pagas, escaneas el QR de la barra y el sello se pone solo. 10 cafés = 1 gratis y brunch en tu cumpleaños.', 'Brava Pass: your coffee card on your phone. Pay, scan the QR at the counter and the stamp goes on by itself. 10 coffees = 1 free, plus brunch on your birthday.')}
   path="/brava-pass"
 >
   <link rel="manifest" href="/brava-pass.webmanifest" slot="head" />
@@ -17,38 +23,38 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
     <div class="pointer-events-none absolute inset-0" style="background-image:repeating-linear-gradient(90deg,rgba(254,249,245,.045) 0 1px,transparent 1px 26px)"></div>
     <Blob class="-right-24 -top-24 h-80 w-80 text-brand-fresh/15" variant={1} />
     <div class="relative mx-auto max-w-md px-5 text-center">
-      <p class="font-hand text-3xl text-brand-fresh">por venir, te damos</p>
+      <p class="font-hand text-3xl text-brand-fresh">{t('por venir, te damos', 'keep coming, we’ll treat you')}</p>
       <Logo as="h1" suffix="pass" class="mt-1 text-5xl text-brand-cream sm:text-6xl" />
     </div>
 
     <div id="bp" class="relative mx-auto mt-8 max-w-md px-5" data-objetivo={objetivo}>
       <!-- Cargando -->
-      <div data-v="cargando" class="bp-card grid place-items-center py-20 text-brand-brown-80">Cargando tu pass…</div>
+      <div data-v="cargando" class="bp-card grid place-items-center py-20 text-brand-brown-80">{t('Cargando tu pass…', 'Loading your pass…')}</div>
 
       <!-- Alta -->
       <div data-v="alta" class="bp-card hidden">
-        <p id="bp-aviso-qr" class="mb-4 hidden rounded-2xl bg-brand-fresh px-4 py-3 text-sm font-semibold text-brand-brown">Tienes un café esperando: crea tu pass y se sella solo.</p>
-        <h2 class="text-2xl font-bold text-brand-brown">Hazte tu pass</h2>
-        <p class="mt-1 text-brand-brown-80">20 segundos. Sin apps, sin contraseñas, sin cartón.</p>
+        <p id="bp-aviso-qr" class="mb-4 hidden rounded-2xl bg-brand-fresh px-4 py-3 text-sm font-semibold text-brand-brown">{t('Tienes un café esperando: crea tu pass y se sella solo.', 'You’ve got a coffee waiting: create your pass and it gets stamped automatically.')}</p>
+        <h2 class="text-2xl font-bold text-brand-brown">{t('Hazte tu pass', 'Get your pass')}</h2>
+        <p class="mt-1 text-brand-brown-80">{t('20 segundos. Sin apps, sin contraseñas, sin cartón.', '20 seconds. No apps, no passwords, no paper cards.')}</p>
         <form id="bp-form" class="mt-6 grid gap-4">
           <label class="grid gap-1.5">
-            <span class="text-sm font-semibold text-brand-brown">Tu nombre</span>
-            <input name="nombre" required maxlength="40" autocomplete="given-name" placeholder="Ej. Lucía" class="bp-input" />
+            <span class="text-sm font-semibold text-brand-brown">{t('Tu nombre', 'Your name')}</span>
+            <input name="nombre" required maxlength="40" autocomplete="given-name" placeholder={t('Ej. Lucía', 'E.g. Lucía')} class="bp-input" />
           </label>
           <label class="grid gap-1.5">
-            <span class="text-sm font-semibold text-brand-brown">Tu cumpleaños <span class="font-normal text-brand-brown-60">(opcional, para invitarte al brunch)</span></span>
+            <span class="text-sm font-semibold text-brand-brown">{t('Tu cumpleaños', 'Your birthday')} <span class="font-normal text-brand-brown-60">{t('(opcional, para invitarte al brunch)', '(optional, so we can treat you to brunch)')}</span></span>
             <input name="cumple" type="date" class="bp-input" />
           </label>
           <label class="flex items-start gap-3 text-sm text-brand-brown-80">
             <input type="checkbox" required class="mt-1 h-4 w-4 accent-[#443631]" />
-            <span>Acepto que Brava guarde mi nombre, mi cumpleaños y mis cafés solo para este pass. <a href="/privacidad" class="underline">Privacidad</a>.</span>
+            <span>{t('Acepto que Brava guarde mi nombre, mi cumpleaños y mis cafés solo para este pass. ', 'I agree that Brava keeps my name, my birthday and my coffees only for this pass. ')}<a href={l('/privacidad')} class="underline">{t('Privacidad', 'Privacy')}</a>.</span>
           </label>
-          <button class="bp-btn bp-btn--brown" type="submit">Crear mi Brava Pass</button>
+          <button class="bp-btn bp-btn--brown" type="submit">{t('Crear mi Brava Pass', 'Create my Brava Pass')}</button>
           <p id="bp-error-alta" class="hidden text-sm font-semibold text-red-700" role="alert"></p>
         </form>
         <a href={reviewLink} target="_blank" rel="noopener noreferrer" class="mt-6 flex items-center gap-3 rounded-2xl border border-brand-brown/15 p-4 text-sm text-brand-brown-80 hover:bg-brand-cream-2">
           <svg class="h-6 w-6 shrink-0 text-brand-calm-ink" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="m12 17.27 5.18 3.13-1.37-5.9 4.55-3.94-5.99-.51L12 4.5 9.63 10.05l-5.99.51 4.55 3.94-1.37 5.9z"/></svg>
-          <span><b class="text-brand-brown">¿Te gusta Brava?</b> Déjanos una reseña en Google: nos ayuda muchísimo.</span>
+          <span><b class="text-brand-brown">{t('¿Te gusta Brava?', 'Enjoying Brava?')}</b> {t('Déjanos una reseña en Google: nos ayuda muchísimo.', 'Leave us a Google review: it helps us loads.')}</span>
         </a>
       </div>
 
@@ -59,33 +65,33 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
             <Logo suffix="pass" class="text-2xl text-brand-brown" />
             <span id="bp-codigo" class="rounded-full bg-brand-brown px-3 py-1 text-xs font-bold tracking-[.18em] text-brand-cream"></span>
           </div>
-          <p class="mt-5 text-brand-brown-80">Hola, <b id="bp-nombre" class="text-brand-brown"></b></p>
-          <p class="bp-cuenta"><span id="bp-n">0</span><small>/ {objetivo} cafés</small></p>
+          <p class="mt-5 text-brand-brown-80">{t('Hola,', 'Hi,')} <b id="bp-nombre" class="text-brand-brown"></b></p>
+          <p class="bp-cuenta"><span id="bp-n">0</span><small>/ {objetivo} {t('cafés', 'coffees')}</small></p>
           <div id="bp-sellos" class="bp-sellos">
             {Array.from({ length: objetivo }).map(() => <span class="bp-sello"><BrandIcon name="taza" class="h-[55%] w-[55%]" /></span>)}
           </div>
-          <div id="bp-gratis" class="bp-banner hidden bg-brand-calm"><BrandIcon name="cafe" class="h-9 w-9 shrink-0" /><span><b>¡Tienes <span id="bp-gratis-n">un</span> café gratis!</b><small>Enséñale este pass a quien te atienda.</small></span></div>
-          <div id="bp-cumple" class="bp-banner hidden bg-brand-fresh"><BrandIcon name="muffin" class="h-9 w-9 shrink-0" /><span><b>¡Feliz cumpleaños!</b><small>Hoy el brunch corre de nuestra cuenta.</small></span></div>
+          <div id="bp-gratis" class="bp-banner hidden bg-brand-calm"><BrandIcon name="cafe" class="h-9 w-9 shrink-0" /><span><b id="bp-gratis-t"></b><small>{t('Enséñale este pass a quien te atienda.', 'Show this pass to whoever serves you.')}</small></span></div>
+          <div id="bp-cumple" class="bp-banner hidden bg-brand-fresh"><BrandIcon name="muffin" class="h-9 w-9 shrink-0" /><span><b>{t('¡Feliz cumpleaños!', 'Happy birthday!')}</b><small>{t('Hoy el brunch corre de nuestra cuenta.', 'Today, brunch is on us.')}</small></span></div>
 
           <button id="bp-escanear" class="bp-btn bp-btn--brown mt-6 w-full" type="button">
             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M7 12h10"/></svg>
-            Escanear el QR de la barra
+            {t('Escanear el QR de la barra', 'Scan the QR at the counter')}
           </button>
           <div class="mt-5 grid grid-cols-[7.5rem_1fr] items-center gap-4 rounded-2xl bg-brand-cream-2 p-3">
             <div id="bp-qr" class="aspect-square overflow-hidden rounded-xl"></div>
-            <p class="text-sm leading-snug text-brand-brown-80">¿Sin cobertura? Enséñale este QR a quien te atienda y te sella desde la barra.</p>
+            <p class="text-sm leading-snug text-brand-brown-80">{t('¿Sin cobertura? Enséñale este QR a quien te atienda y te sella desde la barra.', 'No signal? Show this QR to whoever serves you and they’ll stamp it from the counter.')}</p>
           </div>
         </div>
 
         <div class="bp-card mt-4">
-          <h3 class="font-bold text-brand-brown">Tus últimos cafés</h3>
+          <h3 class="font-bold text-brand-brown">{t('Tus últimos cafés', 'Your latest coffees')}</h3>
           <ul id="bp-historial" class="mt-3 grid gap-2 text-sm text-brand-brown-80"></ul>
         </div>
         <div class="mt-4 grid gap-3 text-sm sm:grid-cols-2">
-          <button id="bp-guardar" class="bp-btn bp-btn--ghost" type="button">Guardar mi pass</button>
-          <a href="/carta" class="bp-btn bp-btn--ghost">Ver la carta</a>
+          <button id="bp-guardar" class="bp-btn bp-btn--ghost" type="button">{t('Guardar mi pass', 'Save my pass')}</button>
+          <a href={l('/carta')} class="bp-btn bp-btn--ghost">{t('Ver la carta', 'See the menu')}</a>
         </div>
-        <p class="mt-3 text-center text-xs text-brand-cream/60">Tu pass vive en este móvil. «Guardar mi pass» te da un enlace privado para recuperarlo en otro.</p>
+        <p class="mt-3 text-center text-xs text-brand-cream/60">{t('Tu pass vive en este móvil. «Guardar mi pass» te da un enlace privado para recuperarlo en otro.', 'Your pass lives on this phone. “Save my pass” gives you a private link to get it back on another one.')}</p>
       </div>
     </div>
   </section>
@@ -95,8 +101,8 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
     <div class="relative h-full w-full bg-black">
       <video class="h-full w-full object-cover" muted playsinline></video>
       <div class="bp-scan__marco" aria-hidden="true"></div>
-      <p class="absolute inset-x-0 top-6 text-center font-semibold text-white">Apunta al QR de la barra</p>
-      <button class="bp-btn bp-btn--fresh absolute bottom-8 left-1/2 -translate-x-1/2" data-cerrar type="button">Cancelar</button>
+      <p class="absolute inset-x-0 top-6 text-center font-semibold text-white">{t('Apunta al QR de la barra', 'Point at the QR on the counter')}</p>
+      <button class="bp-btn bp-btn--fresh absolute bottom-8 left-1/2 -translate-x-1/2" data-cerrar type="button">{t('Cancelar', 'Cancel')}</button>
     </div>
   </dialog>
 
@@ -118,22 +124,38 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
       ))}
     </div>
     <div class="mx-auto mt-10 max-w-2xl rounded-3xl bg-brand-cream-2/60 p-7">
-      <h2 class="text-lg font-bold text-brand-brown">¿Cómo funciona?</h2>
+      <h2 class="text-lg font-bold text-brand-brown">{t('¿Cómo funciona?', 'How does it work?')}</h2>
       <ol class="mt-3 grid gap-2 text-brand-brown-80">
-        <li><b class="text-brand-brown">1.</b> Te haces el pass aquí con tu nombre.</li>
-        <li><b class="text-brand-brown">2.</b> Pides tu café y, al pagar, en la barra te enseñan un QR. Lo escaneas con la cámara del móvil y el sello se pone solo.</li>
-        <li><b class="text-brand-brown">3.</b> Al llegar a {objetivo}, el café gratis aparece en tu pass. Lo canjeas cuando quieras.</li>
-        <li><b class="text-brand-brown">4.</b> En tu cumpleaños, enséñalo y te invitamos al brunch.</li>
+        <li><b class="text-brand-brown">1.</b> {t('Te haces el pass aquí con tu nombre.', 'Create your pass here with just your name.')}</li>
+        <li><b class="text-brand-brown">2.</b> {t('Pides tu café y, al pagar, en la barra te enseñan un QR. Lo escaneas con la cámara del móvil y el sello se pone solo.', 'Order your coffee and, when you pay, they show you a QR at the counter. Scan it with your phone camera and the stamp goes on by itself.')}</li>
+        <li><b class="text-brand-brown">3.</b> {t(`Al llegar a ${objetivo}, el café gratis aparece en tu pass. Lo canjeas cuando quieras.`, `When you reach ${objetivo}, the free coffee appears on your pass. Redeem it whenever you like.`)}</li>
+        <li><b class="text-brand-brown">4.</b> {t('En tu cumpleaños, enséñalo y te invitamos al brunch.', 'On your birthday, show it and brunch is on us.')}</li>
       </ol>
     </div>
   </section>
 </Base>
 
 <script>
-  import { api, qrSvg, escanear } from '../scripts/qr';
+  import { api, qrSvg, escanear } from '../../scripts/qr';
 
   type Pass = { codigo: string; nombre: string; sellos: number; gratis: number; total: number; objetivo: number; cumpleHoy: boolean; historial?: { tipo: string; n: number; via: string; ts: number }[] };
   const CLAVE = 'bravaPass.v2';
+  const EN = document.documentElement.lang === 'en';
+  const t = (es: string, en: string) => (EN ? en : es);
+  /* Los avisos del servidor vienen en español: en la web inglesa se traducen */
+  const ERRORES_EN: Record<string, string> = {
+    'Demasiados intentos. Prueba en unos minutos.': 'Too many attempts. Try again in a few minutes.',
+    'Dinos tu nombre.': 'Tell us your name.',
+    'Pass no encontrado.': 'Pass not found.',
+    'Este QR no es válido. Pide que te lo generen de nuevo.': 'This QR isn’t valid. Ask for a new one.',
+    'Este café ya está sellado en tu pass.': 'This coffee is already stamped on your pass.',
+    'Este QR ya se ha usado.': 'This QR has already been used.',
+    'Este QR ha caducado. Pide uno nuevo en barra.': 'This QR has expired. Ask for a new one at the counter.',
+    'Has llegado al máximo de sellos de hoy.': 'You’ve reached today’s stamp limit.',
+    'Sin conexión. Prueba otra vez.': 'No connection. Please try again.',
+    'Algo ha fallado.': 'Something went wrong.',
+  };
+  const error = (e: unknown) => { const m = (e as Error).message; return EN ? ERRORES_EN[m] ?? m : m; };
   const root = document.getElementById('bp')!;
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
   const vista = (v: string) => root.querySelectorAll<HTMLElement>('[data-v]').forEach((el) => el.classList.toggle('hidden', el.dataset.v !== v));
@@ -147,7 +169,7 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
   const tUrl = url.searchParams.get('t');
   if (tUrl && /^[a-f0-9]{40}$/.test(tUrl)) { token = tUrl; guardar(tUrl); }
   let pendiente = url.searchParams.get('s') || sessionStorage.getItem('bp.s') || '';
-  if (tUrl || url.searchParams.has('s')) history.replaceState(null, '', '/brava-pass/');
+  if (tUrl || url.searchParams.has('s')) history.replaceState(null, '', location.pathname);
 
   function toast(html: string, fiesta = false) {
     const t = $('bp-toast');
@@ -171,16 +193,17 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
       }
     });
     $('bp-gratis').classList.toggle('hidden', p.gratis < 1);
-    $('bp-gratis-n').textContent = p.gratis === 1 ? 'un' : String(p.gratis);
+    $('bp-gratis-t').textContent = p.gratis === 1 ? t('¡Tienes un café gratis!', 'You have a free coffee!') : t(`¡Tienes ${p.gratis} cafés gratis!`, `You have ${p.gratis} free coffees!`);
     $('bp-cumple').classList.toggle('hidden', !p.cumpleHoy);
     $('bp-qr').innerHTML = qrSvg(`BRAVA:${p.codigo}`);
-    const nombres: Record<string, string> = { sello: 'café', gratis: 'Café gratis canjeado', cumple: 'Brunch de cumpleaños' };
-    const fmt = new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const nombres: Record<string, string> = EN ? { sello: 'coffee', gratis: 'Free coffee redeemed', cumple: 'Birthday brunch' } : { sello: 'café', gratis: 'Café gratis canjeado', cumple: 'Brunch de cumpleaños' };
+    const cafes = (n: number) => (n > 1 ? t('cafés', 'coffees') : t('café', 'coffee'));
+    const fmt = new Intl.DateTimeFormat(EN ? 'en-GB' : 'es-ES', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
     $('bp-historial').innerHTML = (p.historial ?? []).length
-      ? p.historial!.map((h) => `<li class="flex justify-between gap-3 border-b border-brand-brown/10 pb-2"><span>${h.tipo === 'sello' ? `+${h.n} ${h.n > 1 ? 'cafés' : 'café'}` : nombres[h.tipo]}<small class="ml-2 opacity-60">${h.via === 'qr' ? 'con QR' : 'en barra'}</small></span><span class="opacity-70">${fmt.format(h.ts * 1000)}</span></li>`).join('')
-      : '<li>Aún nada. ¡Tu primer café te espera!</li>';
-    if (anterior && p.gratis > anterior.gratis) toast('<b>¡Café gratis desbloqueado!</b> Invita Brava ☕', true);
-    else if (anterior && nuevos > 0) toast(`<b>+${nuevos} ${nuevos > 1 ? 'cafés' : 'café'}</b> en tu pass`);
+      ? p.historial!.map((h) => `<li class="flex justify-between gap-3 border-b border-brand-brown/10 pb-2"><span>${h.tipo === 'sello' ? `+${h.n} ${cafes(h.n)}` : nombres[h.tipo]}<small class="ml-2 opacity-60">${h.via === 'qr' ? t('con QR', 'with QR') : t('en barra', 'at the counter')}</small></span><span class="opacity-70">${fmt.format(h.ts * 1000)}</span></li>`).join('')
+      : `<li>${t('Aún nada. ¡Tu primer café te espera!', 'Nothing yet. Your first coffee is waiting!')}</li>`;
+    if (anterior && p.gratis > anterior.gratis) toast(t('<b>¡Café gratis desbloqueado!</b> Invita Brava ☕', '<b>Free coffee unlocked!</b> It’s on Brava ☕'), true);
+    else if (anterior && nuevos > 0) toast(`<b>+${nuevos} ${cafes(nuevos)}</b> ${t('en tu pass', 'on your pass')}`);
     anterior = p;
   }
 
@@ -191,7 +214,7 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
       const r = await api('reclamar', { t: token, s });
       pintar(r.pass);
     } catch (e) {
-      toast(`<b>${(e as Error).message}</b>`);
+      toast(`<b>${error(e)}</b>`);
     }
   }
 
@@ -208,7 +231,7 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
       if (pendiente) await reclamar(pendiente);
     } catch (e) {
       if ((e as any).status === 404) { token = ''; try { localStorage.removeItem(CLAVE); } catch {} vista('alta'); }
-      else { vista('cargando'); root.querySelector('[data-v="cargando"]')!.textContent = (e as Error).message; }
+      else { vista('cargando'); root.querySelector('[data-v="cargando"]')!.textContent = error(e); }
     }
   }
 
@@ -227,10 +250,10 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
       (window as any).umami?.track('brava-pass-alta', { cumple: d.get('cumple') ? 'si' : 'no' });
       vista('pass');
       pintar(r.pass);
-      toast(`<b>¡Bienvenida/o, ${r.pass.nombre}!</b> Tu pass ya está listo`, true);
+      toast(t(`<b>¡Bienvenida/o, ${r.pass.nombre}!</b> Tu pass ya está listo`, `<b>Welcome, ${r.pass.nombre}!</b> Your pass is ready`), true);
       if (pendiente) await reclamar(pendiente);
     } catch (e) {
-      err.textContent = (e as Error).message;
+      err.textContent = error(e);
       err.classList.remove('hidden');
     } finally {
       btn.disabled = false;
@@ -251,19 +274,19 @@ const { objetivo, privilegios } = siteConfig.bravaPass;
         let s = '';
         try { s = new URL(texto).searchParams.get('s') || ''; } catch { /* no es una URL */ }
         if (s) reclamar(s);
-        else toast('<b>Ese QR no es el de la barra de Brava.</b>');
+        else toast(t('<b>Ese QR no es el de la barra de Brava.</b>', '<b>That isn’t the QR from Brava’s counter.</b>'));
       });
     } catch {
       cerrar();
-      toast('<b>No podemos usar la cámara.</b> Escanéalo con la cámara del móvil.');
+      toast(t('<b>No podemos usar la cámara.</b> Escanéalo con la cámara del móvil.', '<b>We can’t use the camera.</b> Scan it with your phone’s camera app.'));
     }
   });
 
   $('bp-guardar').addEventListener('click', async () => {
-    const enlace = `${location.origin}/brava-pass/?t=${token}`;
+    const enlace = `${location.origin}${location.pathname}?t=${token}`;
     try {
-      if (navigator.share) await navigator.share({ title: 'Mi Brava Pass', text: 'Mi Brava Pass (enlace privado, no lo compartas)', url: enlace });
-      else { await navigator.clipboard.writeText(enlace); toast('<b>Enlace copiado.</b> Guárdalo en tus notas: es solo tuyo.'); }
+      if (navigator.share) await navigator.share({ title: t('Mi Brava Pass', 'My Brava Pass'), text: t('Mi Brava Pass (enlace privado, no lo compartas)', 'My Brava Pass (private link, don’t share it)'), url: enlace });
+      else { await navigator.clipboard.writeText(enlace); toast(t('<b>Enlace copiado.</b> Guárdalo en tus notas: es solo tuyo.', '<b>Link copied.</b> Save it in your notes: it’s just for you.')); }
     } catch { /* cancelado */ }
   });
 

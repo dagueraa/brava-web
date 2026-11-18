@@ -1,5 +1,6 @@
 /* Textos de la promoción que se repiten en varias páginas (site.config → promo) */
 import { siteConfig } from '../../site.config';
+import type { Lang } from '../i18n';
 
 const p = siteConfig.promo;
 const f = (s: string, conMes: boolean) =>
@@ -12,3 +13,13 @@ export const fechasPromo = `del ${f(p.desde, !mismoMes)} al ${f(p.hasta, true)}`
 export const fechasPromoCortas = mismoMes
   ? `del ${f(p.desde, false)} al ${f(p.hasta, false)}`
   : `del ${f(p.desde, true).replace(/ de (\w{3})\w*/, ' $1')} al ${f(p.hasta, true).replace(/ de (\w{3})\w*/, ' $1')}`;
+
+/* En inglés: «23–27 November» (o «28 November – 2 December») y corta «23–27 Nov» */
+const fe = (s: string, mes: 'long' | 'short' | false) =>
+  new Date(`${s}T12:00:00`).toLocaleDateString('en-GB', mes ? { day: 'numeric', month: mes } : { day: 'numeric' });
+export const fechasPromoEn = mismoMes ? `${fe(p.desde, false)}–${fe(p.hasta, 'long')}` : `${fe(p.desde, 'long')} – ${fe(p.hasta, 'long')}`;
+export const fechasPromoCortasEn = mismoMes ? `${fe(p.desde, false)}–${fe(p.hasta, 'short')}` : `${fe(p.desde, 'short')} – ${fe(p.hasta, 'short')}`;
+
+/** Fechas en el idioma de la página. En inglés van con «from…» delante cuando hace falta: «on 23–27 November» */
+export const fechasDe = (lang: Lang) => (lang === 'en' ? fechasPromoEn : fechasPromo);
+export const fechasCortasDe = (lang: Lang) => (lang === 'en' ? fechasPromoCortasEn : fechasPromoCortas);

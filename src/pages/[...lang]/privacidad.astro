@@ -1,0 +1,128 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import LegalLayout from '../../components/LegalLayout.astro';
+import { siteConfig } from '../../../site.config';
+import { useLang } from '../../i18n';
+const { t, en } = useLang(Astro.url);
+---
+<LegalLayout title={t('Política de privacidad', 'Privacy policy')} path="/privacidad" updated={t('29 de septiembre de 2026', '29 September 2026')}>
+  {en && <p slot="aviso" class="mt-6 rounded-2xl bg-brand-cream-2/60 px-4 py-3 text-sm text-brand-brown-80">This is a courtesy translation. The <a href="/privacidad/" class="underline" lang="es" data-idioma="es">Spanish version</a> is the legally binding one.</p>}
+  {en ? (
+    <>
+      <h2>1. Data controller</h2>
+      <ul>
+        <li><strong>Controller:</strong> {siteConfig.empresa.razonSocial} (Tax ID {siteConfig.empresa.nif})</li>
+        <li><strong>Address:</strong> {siteConfig.empresa.domicilioLegal}</li>
+        <li><strong>Contact:</strong> {siteConfig.email || '{{email de contacto}}'} · {siteConfig.telefono}</li>
+      </ul>
+
+      <h2>2. Why we process your data</h2>
+      <p>
+        This website has no online shopping or payments. If you contact us or place an order by WhatsApp, phone or
+        email, we will process your data only to deal with your question or order.
+      </p>
+      <p>
+        <strong>Brava Pass.</strong> If you sign up for our loyalty card, we keep your name, your birthday if you choose
+        to give it, your coffee stamps and what you redeem, to manage your card, add your stamps and give you what
+        you’ve earned. We don’t ask for your phone number or email.
+      </p>
+      <p>
+        If you accept analytics cookies, we will process technical and usage data to produce aggregated statistics
+        about visits to the website and how it is used.
+      </p>
+      <p>
+        We also use Umami, a <strong>cookie-free</strong> statistics service that does not store your IP address or
+        any personal data: it only counts anonymously how many people visit each page and which buttons are pressed.
+      </p>
+
+      <h2>3. Legal basis</h2>
+      <p>
+        The legal basis is your consent when you contact us and our legitimate interest in helping you. For Google
+        Analytics, the legal basis is your consent, which you can withdraw at any time. For the Brava Pass, the legal
+        basis is your consent when you sign up; for Umami’s anonymous statistics, our legitimate interest in knowing
+        how the website is used.
+      </p>
+
+      <h2>4. How long we keep your data</h2>
+      <p>
+        We will keep your data for as long as needed to deal with your request and, afterwards, for the periods
+        required by law. Brava Pass data is kept while you use your card, and we delete it as soon as you ask us to
+        cancel it.
+      </p>
+
+      <h2>5. Who receives your data</h2>
+      <p>
+        We do not share data with third parties unless required by law. The website and the Brava Pass data are hosted
+        on Hostinger servers, and technical maintenance is carried out by D.AGUERAA; both act as data processors, only
+        following our instructions. When you accept analytics, Google Ireland Limited acts as the technology provider
+        of Google Analytics under its own terms and privacy policy.
+      </p>
+
+      <h2>6. Your rights</h2>
+      <p>
+        You can exercise your rights of access, rectification, erasure, objection, restriction and portability by
+        writing to {siteConfig.email || '{{email de contacto}}'}. You can also file a complaint with the Spanish Data
+        Protection Agency (www.aepd.es).
+      </p>
+    </>
+  ) : (
+    <>
+      <h2>1. Responsable del tratamiento</h2>
+      <ul>
+        <li><strong>Responsable:</strong> {siteConfig.empresa.razonSocial} (NIF {siteConfig.empresa.nif})</li>
+        <li><strong>Domicilio:</strong> {siteConfig.empresa.domicilioLegal}</li>
+        <li><strong>Contacto:</strong> {siteConfig.email || '{{email de contacto}}'} · {siteConfig.telefono}</li>
+      </ul>
+
+      <h2>2. Finalidad del tratamiento</h2>
+      <p>
+        Esta web no dispone de compra ni pago en línea. Si nos contactas o nos haces un pedido por WhatsApp,
+        teléfono o correo, trataremos tus datos con la única finalidad de atender tu consulta o pedido.
+      </p>
+      <p>
+        <strong>Brava Pass.</strong> Si te das de alta en nuestra tarjeta de fidelidad, guardamos tu nombre, tu fecha
+        de cumpleaños si decides darla, los sellos de tus cafés y los canjes, para gestionar tu tarjeta, sumarte los
+        sellos y regalarte lo que te corresponda. No te pedimos teléfono ni correo.
+      </p>
+      <p>
+        Si aceptas las cookies de analítica, trataremos datos técnicos y de uso para elaborar estadísticas agregadas
+        sobre las visitas a la web y cómo se utiliza.
+      </p>
+      <p>
+        Además usamos Umami, un servicio de estadísticas <strong>sin cookies</strong> que no guarda tu IP ni datos
+        personales: solo cuenta de forma anónima cuántas personas visitan cada página y qué botones se pulsan.
+      </p>
+
+      <h2>3. Legitimación</h2>
+      <p>
+        La base legal es tu consentimiento al ponerte en contacto y el interés legítimo en atenderte. Para el uso de
+        Google Analytics, la base legal es el consentimiento que puedes retirar en cualquier momento. Para el Brava
+        Pass, la base legal es tu consentimiento al darte de alta; para las estadísticas anónimas de Umami, nuestro
+        interés legítimo en saber cómo se usa la web.
+      </p>
+
+      <h2>4. Conservación de los datos</h2>
+      <p>
+        Conservaremos tus datos el tiempo necesario para atender tu solicitud y, posteriormente, durante los plazos
+        legalmente exigidos. Los datos del Brava Pass se conservan mientras uses tu tarjeta y los eliminamos en cuanto
+        nos pidas la baja.
+      </p>
+
+      <h2>5. Destinatarios</h2>
+      <p>
+        No se cederán datos a terceros salvo obligación legal. La web y los datos del Brava Pass están alojados en
+        servidores de Hostinger, y el mantenimiento técnico lo realiza D.AGUERAA; ambos actúan
+        como encargados del tratamiento, solo siguiendo nuestras instrucciones. Cuando aceptas la analítica, Google Ireland Limited
+        actúa como proveedor tecnológico de Google Analytics conforme a sus condiciones y política de privacidad.
+      </p>
+
+      <h2>6. Tus derechos</h2>
+      <p>
+        Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y portabilidad
+        escribiendo a {siteConfig.email || '{{email de contacto}}'}. También puedes reclamar ante la Agencia Española
+        de Protección de Datos (www.aepd.es).
+      </p>
+    </>
+  )}
+</LegalLayout>

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="es" class="bg-stripes">
+<html lang="es" class="bg-stripes" data-es="/" data-en="/en/">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#fef9f5">
     <script>document.documentElement.classList.add('js')</script>
+    <!-- Quien eligió el inglés, vuelve siempre a la web en inglés (también desde el QR de la barra o un enlace en español) -->
+    <script>try{var d=document.documentElement;if(d.lang==='es'&&d.dataset.en&&localStorage.getItem('brava.lang')==='en')location.replace(d.dataset.en+location.search+location.hash)}catch(e){}</script>
     <link rel="preload" href="/_astro/dm-sans-latin-wght-normal.Xz1IZZA0.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -14,6 +16,11 @@
 <link rel="canonical" href="https://hellobrava.es/">
 
 
+    <link rel="alternate" hreflang="es" href="https://hellobrava.es/">
+    <link rel="alternate" hreflang="en" href="https://hellobrava.es/en/">
+    <link rel="alternate" hreflang="x-default" href="https://hellobrava.es/">
+  
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Brava">
 <meta property="og:title" content="Brava · coffee and brunch">
@@ -21,16 +28,17 @@
 <meta property="og:url" content="https://hellobrava.es/">
 <meta property="og:image" content="https://hellobrava.es/og-image.png">
 <meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="en_GB">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Brava · coffee and brunch">
 <meta name="twitter:description" content="Brava — cafetería de especialidad, brunch y repostería en La Ñora (Murcia). Carta digital, combos, brunch saludable y opciones para llevar.">
 <meta name="twitter:image" content="https://hellobrava.es/og-image.png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":["Restaurant","CafeOrCoffeeShop"],"name":"Brava","description":"Brava — cafetería de especialidad, brunch y repostería en La Ñora (Murcia). Carta digital, combos, brunch saludable y opciones para llevar.","servesCuisine":["Café de especialidad","Brunch","Repostería"],"priceRange":"€","url":"https://hellobrava.es","telephone":"+34868620516","image":"https://hellobrava.es/og-image.png","address":{"@type":"PostalAddress","streetAddress":"Calle Mayor, 71","addressLocality":"La Ñora","addressRegion":"Murcia","postalCode":"30830","addressCountry":"ES"},"geo":{"@type":"GeoCoordinates","latitude":38.0009,"longitude":-1.1869},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"17:00","closes":"20:00"}],"sameAs":["https://instagram.com/hellobravaes","https://tiktok.com/@hellobravaes"],"hasMenu":"https://hellobrava.es/carta","acceptsReservations":"False"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":["Restaurant","CafeOrCoffeeShop"],"name":"Brava","description":"Brava — cafetería de especialidad, brunch y repostería en La Ñora (Murcia). Carta digital, combos, brunch saludable y opciones para llevar.","servesCuisine":["Café de especialidad","Brunch","Repostería"],"priceRange":"€","url":"https://hellobrava.es","telephone":"+34868620516","image":"https://hellobrava.es/og-image.png","address":{"@type":"PostalAddress","streetAddress":"Calle Mayor, 71","addressLocality":"La Ñora","addressRegion":"Murcia","postalCode":"30830","addressCountry":"ES"},"geo":{"@type":"GeoCoordinates","latitude":38.0009,"longitude":-1.1869},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"17:00","closes":"20:00"}],"sameAs":["https://instagram.com/hellobravaes","https://tiktok.com/@hellobravaes"],"hasMenu":"https://hellobrava.es/carta/","acceptsReservations":"False"}</script>
     
     
-  <link rel="stylesheet" href="/_astro/Base.Ca3xLV4C.css">
+  <link rel="stylesheet" href="/_astro/Base.DjjYe_wi.css">
 <link rel="stylesheet" href="/_astro/index.C2_ru27o.css">
 <style>.bw[data-astro-cid-7vxafgbm]{width:100%;max-width:72rem;margin:0 auto;padding-inline:1.25rem}@media (width>=640px){.bw[data-astro-cid-7vxafgbm]{padding-inline:1.5rem}}.bw__in[data-astro-cid-7vxafgbm]{background:var(--color-brand-fresh);color:var(--color-brand-brown);border-radius:2.5rem;padding:2.4rem 1.3rem;box-shadow:0 24px 60px -30px #44363180}@media (width>=768px){.bw__in[data-astro-cid-7vxafgbm]{padding:3.5rem 3rem}}.bw__cab[data-astro-cid-7vxafgbm]{text-align:center;max-width:42rem;margin:0 auto}.bw__tag[data-astro-cid-7vxafgbm]{background:var(--color-brand-brown);color:var(--color-brand-fresh);letter-spacing:.1em;text-transform:uppercase;border-radius:999px;padding:.45rem 1rem;font-size:.76rem;font-weight:800;display:inline-block}.bw__t[data-astro-cid-7vxafgbm]{letter-spacing:-.03em;text-wrap:balance;margin-top:1rem;font-size:clamp(2rem,5vw,3.4rem);font-weight:800;line-height:1.02}.bw__lead[data-astro-cid-7vxafgbm]{margin-top:.9rem;font-size:1.05rem;line-height:1.5}.bw__cod[data-astro-cid-7vxafgbm]{letter-spacing:.1em;white-space:nowrap;background:#4436311a;border-radius:.4rem;padding:.1rem .45rem}.bw__combos[data-astro-cid-7vxafgbm]{gap:1rem;margin-top:2.2rem;display:grid}@media (width>=640px){.bw__combos[data-astro-cid-7vxafgbm]{grid-template-columns:repeat(3,1fr)}}.bw__combo[data-astro-cid-7vxafgbm]{text-align:center;background:var(--color-brand-cream);border-radius:1.8rem;align-content:start;justify-items:center;padding:1.4rem 1.2rem 1.5rem;display:grid}.bw__fotos[data-astro-cid-7vxafgbm]{aspect-ratio:1;width:min(62%,12rem);position:relative}.bw__nombre[data-astro-cid-7vxafgbm]{letter-spacing:-.02em;margin-top:.9rem;font-size:1.3rem;font-weight:800}.bw__desc[data-astro-cid-7vxafgbm]{color:var(--color-brand-brown-80);margin-top:.25rem;font-size:.9rem;font-style:italic}.bw__precio[data-astro-cid-7vxafgbm]{margin-top:.6rem;font-size:1.5rem;font-weight:800;line-height:1.1}.bw__precio[data-astro-cid-7vxafgbm] small[data-astro-cid-7vxafgbm]{letter-spacing:.04em;text-transform:uppercase;color:var(--color-brand-calm-ink);margin-top:.15rem;font-size:.78rem;font-weight:700;display:block}.bw[data-astro-cid-7vxafgbm] .bw__add{margin-top:.9rem}.bw__pasos[data-astro-cid-7vxafgbm]{gap:.8rem;margin-top:2rem;display:grid}@media (width>=640px){.bw__pasos[data-astro-cid-7vxafgbm]{grid-template-columns:repeat(3,1fr)}}.bw__pasos[data-astro-cid-7vxafgbm] li[data-astro-cid-7vxafgbm]{background:#ffffff61;border-radius:1.2rem;gap:.15rem;padding:1rem 1.1rem;font-size:.92rem;line-height:1.4;display:grid}.bw__pasos[data-astro-cid-7vxafgbm] b[data-astro-cid-7vxafgbm]{font-size:1rem}.bw__num[data-astro-cid-7vxafgbm]{color:var(--color-brand-calm-ink);font-size:1.5rem;line-height:1}.bw__cta[data-astro-cid-7vxafgbm]{text-align:center;margin-top:2rem}.bw__btn[data-astro-cid-7vxafgbm]{background:var(--color-brand-brown);color:var(--color-brand-cream);border-radius:999px;justify-content:center;align-items:center;padding:1.05rem 1.8rem;font-size:1.05rem;font-weight:800;transition:transform .2s,background-color .2s;display:inline-flex;box-shadow:0 16px 34px -16px #443631b3}.bw__btn[data-astro-cid-7vxafgbm]:hover{background:var(--color-brand-brown-80);transform:translateY(-2px)}@media (width<=640px){.bw__btn[data-astro-cid-7vxafgbm]{width:100%}}.bw__nota[data-astro-cid-7vxafgbm]{max-width:36rem;color:var(--color-brand-brown-80);margin:.9rem auto 0;font-size:.82rem;line-height:1.45}
 @layer astro.images{:where([data-astro-image]){height:auto}:where([data-astro-image=full-width]){width:100%}:where([data-astro-image=constrained]){max-width:100%}[data-astro-image-fit=fill]{object-fit:fill}[data-astro-image-fit=contain]{object-fit:contain}[data-astro-image-fit=cover]{object-fit:cover}[data-astro-image-fit=scale-down]{object-fit:scale-down}[data-astro-image-pos=top]{object-position:top}[data-astro-image-pos=bottom]{object-position:bottom}[data-astro-image-pos=left]{object-position:left}[data-astro-image-pos=right]{object-position:right}[data-astro-image-pos=center]{object-position:center}[data-astro-image-pos=top-left]{object-position:top left}[data-astro-image-pos=top-right]{object-position:top right}[data-astro-image-pos=top-center]{object-position:top center}[data-astro-image-pos=bottom-left]{object-position:bottom left}[data-astro-image-pos=bottom-right]{object-position:bottom right}[data-astro-image-pos=bottom-center]{object-position:bottom center}[data-astro-image-pos=left-top]{object-position:left top}[data-astro-image-pos=left-bottom]{object-position:left bottom}[data-astro-image-pos=left-center]{object-position:left center}[data-astro-image-pos=right-top]{object-position:right top}[data-astro-image-pos=right-bottom]{object-position:right bottom}[data-astro-image-pos=right-center]{object-position:right center}[data-astro-image-pos=center-top]{object-position:center top}[data-astro-image-pos=center-bottom]{object-position:center bottom}[data-astro-image-pos=center-left]{object-position:center left}[data-astro-image-pos=center-right]{object-position:center right}}
@@ -51,98 +59,118 @@
 
 
 <script type="module">document.querySelectorAll(`[data-promo-hasta]`).forEach(e=>{new Date().toLocaleDateString(`en-CA`,{timeZone:`Europe/Madrid`})>e.dataset.promoHasta&&e.remove()});</script>
-    <header class="sticky top-0 z-50 border-b rule-soft bg-brand-cream/85 backdrop-blur-md">
-  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6" aria-label="Principal">
-    <a href="/" class="shrink-0" aria-label="Brava — Inicio">
+    <header class="sticky top-0 z-50 border-b rule-soft bg-brand-cream/85 backdrop-blur-md" data-astro-cid-nen7h5rs>
+  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5 sm:px-6" aria-label="Principal" data-astro-cid-nen7h5rs>
+    <a href="/" class="shrink-0" aria-label="Brava — Inicio" data-astro-cid-nen7h5rs>
       <span class="brava-logo inline-flex items-end leading-none text-2xl text-brand-brown" aria-label="brava" role="img">
   <span class="brava-mark shrink-0" aria-hidden="true" style="display:inline-block;height:0.78em;aspect-ratio:2.991253644314869;background-color:currentColor;-webkit-mask:url(/brand/wordmark.png) center/contain no-repeat;mask:url(/brand/wordmark.png) center/contain no-repeat;"></span>
   </span>
     </a>
 
     <!-- Nav escritorio -->
-    <ul class="hidden items-center gap-6 lg:flex">
-      <li>
-          <a href="/" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown" aria-current="page">
+    <ul class="hidden items-center gap-6 lg:flex" data-astro-cid-nen7h5rs>
+      <li data-astro-cid-nen7h5rs>
+          <a href="/" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown" aria-current="page" data-astro-cid-nen7h5rs>
             Inicio
           </a>
-        </li><li>
-          <a href="/carta" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/carta" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Carta
           </a>
-        </li><li>
-          <a href="/brava-pass" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/brava-pass" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Brava Pass
           </a>
-        </li><li>
-          <a href="/historia" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/historia" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Historia
           </a>
-        </li><li>
-          <a href="/local" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/local" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Local
           </a>
-        </li><li>
-          <a href="/contacto" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/contacto" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Contacto
           </a>
         </li>
-      <li>
-        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-2 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105 ">
+      <li data-astro-cid-nen7h5rs>
+        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-2 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105 " data-astro-cid-nen7h5rs>
           Para llevar
         </a>
       </li>
     </ul>
 
-    <!-- Botón hamburguesa móvil -->
-    <button id="nav-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu">
-      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <path id="icon-open" d="M4 7h16M4 12h16M4 17h16"></path>
-        <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18"></path>
-      </svg>
-    </button>
+    <div class="ml-auto flex items-center gap-1 lg:ml-0" data-astro-cid-nen7h5rs>
+      <!-- Idioma: el que estás viendo, marcado -->
+      <div class="idioma" role="group" aria-label="Idioma" data-astro-cid-nen7h5rs>
+        <a href="/" hreflang="es" lang="es" data-idioma="es" class="idioma__op is-on" aria-current="true" title="Español" data-astro-cid-nen7h5rs>
+            <span aria-hidden="true" data-astro-cid-nen7h5rs>ES</span><span class="sr-only" data-astro-cid-nen7h5rs>Español</span>
+          </a><a href="/en/" hreflang="en" lang="en" data-idioma="en" class="idioma__op " title="English" data-astro-cid-nen7h5rs>
+            <span aria-hidden="true" data-astro-cid-nen7h5rs>EN</span><span class="sr-only" data-astro-cid-nen7h5rs>English</span>
+          </a>
+      </div>
+
+      <!-- Botón hamburguesa móvil -->
+      <button id="nav-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" data-abrir="Abrir menú" data-cerrar="Cerrar menú" data-astro-cid-nen7h5rs>
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" data-astro-cid-nen7h5rs>
+          <path id="icon-open" d="M4 7h16M4 12h16M4 17h16" data-astro-cid-nen7h5rs></path>
+          <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18" data-astro-cid-nen7h5rs></path>
+        </svg>
+      </button>
+    </div>
   </nav>
 
   <!-- Menú móvil -->
-  <div id="mobile-menu" class="hidden border-t rule-soft bg-brand-cream lg:hidden">
-    <ul class="space-y-1 px-5 py-4">
-      <li>
-          <a href="/" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+  <div id="mobile-menu" class="hidden border-t rule-soft bg-brand-cream lg:hidden" data-astro-cid-nen7h5rs>
+    <ul class="space-y-1 px-5 py-4" data-astro-cid-nen7h5rs>
+      <li data-astro-cid-nen7h5rs>
+          <a href="/" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Inicio
           </a>
-        </li><li>
-          <a href="/carta" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/carta" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Carta
           </a>
-        </li><li>
-          <a href="/brava-pass" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/brava-pass" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Brava Pass
           </a>
-        </li><li>
-          <a href="/historia" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/historia" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Historia
           </a>
-        </li><li>
-          <a href="/local" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/local" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Local
           </a>
-        </li><li>
-          <a href="/contacto" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/contacto" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Contacto
           </a>
         </li>
-      <li class="grid grid-cols-2 gap-3 pt-3">
-        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown">
+      <li class="grid grid-cols-2 gap-3 pt-3" data-astro-cid-nen7h5rs>
+        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown" data-astro-cid-nen7h5rs>
           Para llevar
         </a>
-        <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white">
+        <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white" data-astro-cid-nen7h5rs>
           WhatsApp
         </a>
       </li>
     </ul>
   </div>
+
+  <!-- Para quien tiene el móvil en otro idioma: aviso discreto de que la web está en inglés -->
+  <div id="aviso-idioma" class="aviso-idioma" hidden lang="en" data-astro-cid-nen7h5rs>
+      <a href="/en/" data-idioma="en" class="aviso-idioma__a" data-astro-cid-nen7h5rs>
+        <span class="aviso-idioma__t" data-astro-cid-nen7h5rs>This site is also in English</span>
+        <b data-astro-cid-nen7h5rs>English →</b>
+      </a>
+      <button type="button" class="aviso-idioma__x" aria-label="Close" data-aviso-x data-astro-cid-nen7h5rs>✕</button>
+    </div>
 </header>
 
-<script type="module">var e=document.getElementById(`nav-toggle`),t=document.getElementById(`mobile-menu`),n=document.getElementById(`icon-open`),r=document.getElementById(`icon-close`);e?.addEventListener(`click`,()=>{let i=e.getAttribute(`aria-expanded`)===`true`;e.setAttribute(`aria-expanded`,String(!i)),e.setAttribute(`aria-label`,i?`Abrir menú`:`Cerrar menú`),t?.classList.toggle(`hidden`),n?.classList.toggle(`hidden`),r?.classList.toggle(`hidden`)});</script>
+<script type="module">var e=document.getElementById(`nav-toggle`),t=document.getElementById(`mobile-menu`),n=document.getElementById(`icon-open`),r=document.getElementById(`icon-close`);e?.addEventListener(`click`,()=>{let i=e.getAttribute(`aria-expanded`)===`true`;e.setAttribute(`aria-expanded`,String(!i)),e.setAttribute(`aria-label`,(i?e.dataset.abrir:e.dataset.cerrar)??``),t?.classList.toggle(`hidden`),n?.classList.toggle(`hidden`),r?.classList.toggle(`hidden`)});var i=e=>{try{localStorage.setItem(`brava.lang`,e)}catch{}};document.querySelectorAll(`[data-idioma]`).forEach(e=>e.addEventListener(`click`,()=>{i(e.dataset.idioma),window.umami?.track(`idioma`,{a:e.dataset.idioma,desde:location.pathname}),(location.search||location.hash)&&(e.href=e.pathname+location.search+location.hash)}));var a=document.getElementById(`aviso-idioma`);if(a){let e=null;try{e=localStorage.getItem(`brava.lang`)||localStorage.getItem(`brava.lang.aviso`)}catch{}let t=(navigator.languages?.length?navigator.languages:[navigator.language]).some(e=>/^(es|ca|gl|eu)\b/i.test(e));!e&&!t&&(a.hidden=!1),a.querySelector(`[data-aviso-x]`)?.addEventListener(`click`,()=>{a.hidden=!0;try{localStorage.setItem(`brava.lang.aviso`,`cerrado`)}catch{}})}</script>
     <main id="main" class="flex-1">
       
   
@@ -314,7 +342,7 @@
 
   
   
-  <section id="black-week" class="bw pt-10 pb-4" data-promo-hasta="2026-11-27" aria-labelledby="bw-t" data-astro-cid-7vxafgbm>
+  <section id="black-week" class="bw pt-10 pb-4" data-promo-hasta="2026-11-27" aria-labelledby="bw-t" lang="es" data-astro-cid-7vxafgbm>
     <div class="bw__in" data-astro-cid-7vxafgbm>
       <header class="bw__cab" data-astro-cid-7vxafgbm>
         <p class="bw__tag" data-astro-cid-7vxafgbm>Black Week · del 23 al 27 de noviembre</p>
@@ -341,7 +369,7 @@
   </span>
 </figure>
 
-<script type="module" src="/_astro/Plato.astro_astro_type_script_index_0_lang.CGIrVJDj.js"></script>
+<script type="module" src="/_astro/Plato.astro_astro_type_script_index_0_lang.CPFLI5z5.js"></script>
               <figure class="plato !absolute bottom-0 right-0 z-20 w-[66%]" data-zoom="/_astro/croissant.aM6RBCo__ZBJEwE.webp" data-nombre="Desayuno Brava" data-precio="4,50" data-desc="Café de especialidad + Croissant o Napolitana" data-wa="34658520040" tabindex="0" role="button" aria-label="Ver Desayuno Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
@@ -360,7 +388,7 @@
             <h3 class="bw__nombre" data-astro-cid-7vxafgbm>Desayuno Brava</h3>
             <p class="bw__desc" data-astro-cid-7vxafgbm>Café de especialidad + Croissant o Napolitana</p>
             <p class="bw__precio" data-astro-cid-7vxafgbm>4,50 €<small data-astro-cid-7vxafgbm>el segundo, gratis</small></p>
-            <button type="button" class="bpd bpd--texto bw__add" data-add="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" data-id="desayuno-brava" aria-label="Añadir Desayuno Brava al pedido">
+            <button type="button" class="bpd bpd--texto bw__add" data-add="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;en&quot;:&quot;Brava Breakfast&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana (chocolate pastry)&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" data-id="desayuno-brava" aria-label="Añadir Desayuno Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   <span class="bpd__t">Añadir</span>
@@ -402,7 +430,7 @@
             <h3 class="bw__nombre" data-astro-cid-7vxafgbm>Capricho Brava</h3>
             <p class="bw__desc" data-astro-cid-7vxafgbm>Café de especialidad + Cookie de Pistacho, Dubai o Brownie</p>
             <p class="bw__precio" data-astro-cid-7vxafgbm>6,50 €<small data-astro-cid-7vxafgbm>el segundo, gratis</small></p>
-            <button type="button" class="bpd bpd--texto bw__add" data-add="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" data-id="capricho-brava" aria-label="Añadir Capricho Brava al pedido">
+            <button type="button" class="bpd bpd--texto bw__add" data-add="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;en&quot;:&quot;Brava Treat&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Pistachio cookie&quot;,&quot;Dubai cookie&quot;,&quot;Brownie&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" data-id="capricho-brava" aria-label="Añadir Capricho Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   <span class="bpd__t">Añadir</span>
@@ -444,7 +472,7 @@
             <h3 class="bw__nombre" data-astro-cid-7vxafgbm>Brunch Brava</h3>
             <p class="bw__desc" data-astro-cid-7vxafgbm>Café de especialidad + Fit Bagel</p>
             <p class="bw__precio" data-astro-cid-7vxafgbm>8,90 €<small data-astro-cid-7vxafgbm>el segundo, gratis</small></p>
-            <button type="button" class="bpd bpd--texto bw__add" data-add="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" data-id="brunch-brava" aria-label="Añadir Brunch Brava al pedido">
+            <button type="button" class="bpd bpd--texto bw__add" data-add="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;en&quot;:&quot;Brava Brunch&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" data-id="brunch-brava" aria-label="Añadir Brunch Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   <span class="bpd__t">Añadir</span>
@@ -478,7 +506,7 @@
             <svg viewBox="-80 -80 160 160" class="pointer-events-none absolute text-brand-cream-2  inset-0 h-full w-full scale-110 text-brand-cream/70" fill="currentColor" aria-hidden="true">
   <path d="M44.5,-58.3C56.9,-49.4,65.5,-35.3,69.4,-19.9C73.3,-4.5,72.5,12.2,65.6,25.9C58.7,39.6,45.7,50.3,31.3,57.7C16.9,65.1,1.1,69.2,-15.6,67.4C-32.3,65.6,-49.9,57.9,-60.4,44.4C-70.9,30.9,-74.3,11.6,-71.2,-6.2C-68.1,-24,-58.5,-40.3,-45.3,-49.4C-32.1,-58.5,-15.3,-60.4,1.2,-62C17.7,-63.6,32.1,-67.2,44.5,-58.3Z"></path>
 </svg>
-            <figure class="plato stack__cafe" data-gira data-zoom="/_astro/cafe-teal.BvVBzoUu_1S9EDJ.webp" data-nombre="Desayuno Brava" data-precio="4,50" data-desc="Café de especialidad + Croissant o Napolitana" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Desayuno Brava de cerca">
+            <figure class="plato stack__cafe" data-gira data-zoom="/_astro/cafe-teal.BvVBzoUu_1S9EDJ.webp" data-nombre="Desayuno Brava" data-precio="4,50" data-desc="Café de especialidad + Croissant o Napolitana" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;en&quot;:&quot;Brava Breakfast&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana (chocolate pastry)&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Desayuno Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -492,7 +520,7 @@
 </figure>
 
 
-            <figure class="plato stack__comida" data-zoom="/_astro/croissant.aM6RBCo__ZBJEwE.webp" data-nombre="Desayuno Brava" data-precio="4,50" data-desc="Café de especialidad + Croissant o Napolitana" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Desayuno Brava de cerca">
+            <figure class="plato stack__comida" data-zoom="/_astro/croissant.aM6RBCo__ZBJEwE.webp" data-nombre="Desayuno Brava" data-precio="4,50" data-desc="Café de especialidad + Croissant o Napolitana" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;en&quot;:&quot;Brava Breakfast&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana (chocolate pastry)&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Desayuno Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -516,7 +544,7 @@
             <h3 class="stack__nombre">Desayuno Brava</h3>
             <p class="stack__desc">Café de especialidad + Croissant o Napolitana</p>
             <p class="stack__precio">4,50<span>€</span></p>
-            <button type="button" class="bpd bpd--texto mt-6" data-add="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" data-id="desayuno-brava" aria-label="Añadir Desayuno Brava al pedido">
+            <button type="button" class="bpd bpd--texto mt-6" data-add="{&quot;id&quot;:&quot;desayuno-brava&quot;,&quot;nombre&quot;:&quot;Desayuno Brava&quot;,&quot;en&quot;:&quot;Brava Breakfast&quot;,&quot;precio&quot;:450,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Croissant&quot;,&quot;Napolitana (chocolate pastry)&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" data-id="desayuno-brava" aria-label="Añadir Desayuno Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   <span class="bpd__t">Añadir al pedido</span>
@@ -527,7 +555,7 @@
             <svg viewBox="-80 -80 160 160" class="pointer-events-none absolute text-brand-cream-2  inset-0 h-full w-full scale-110 text-brand-cream/70" fill="currentColor" aria-hidden="true">
   <path d="M38.9,-50.9C50.8,-42.4,60.9,-31.1,64.9,-17.8C68.9,-4.5,66.8,10.8,60.2,23.9C53.6,37,42.5,47.9,29.4,55.2C16.3,62.5,1.2,66.2,-14.8,64.6C-30.8,63,-47.7,56.1,-57.8,43.6C-67.9,31.1,-71.2,13,-69.2,-3.9C-67.2,-20.8,-59.9,-36.5,-48.1,-45.2C-36.3,-53.9,-20,-55.6,-3.4,-51.4C13.2,-47.2,27,-59.4,38.9,-50.9Z"></path>
 </svg>
-            <figure class="plato stack__cafe" data-gira data-zoom="/_astro/cafe-amarillo.DQDzCVbo_Z24RBNo.webp" data-nombre="Capricho Brava" data-precio="6,50" data-desc="Café de especialidad + Cookie de Pistacho, Dubai o Brownie" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Capricho Brava de cerca">
+            <figure class="plato stack__cafe" data-gira data-zoom="/_astro/cafe-amarillo.DQDzCVbo_Z24RBNo.webp" data-nombre="Capricho Brava" data-precio="6,50" data-desc="Café de especialidad + Cookie de Pistacho, Dubai o Brownie" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;en&quot;:&quot;Brava Treat&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Pistachio cookie&quot;,&quot;Dubai cookie&quot;,&quot;Brownie&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Capricho Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -541,7 +569,7 @@
 </figure>
 
 
-            <figure class="plato stack__comida" data-gira data-zoom="/_astro/cookie.DIZ_bo-b_Z1m8qBB.webp" data-nombre="Capricho Brava" data-precio="6,50" data-desc="Café de especialidad + Cookie de Pistacho, Dubai o Brownie" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Capricho Brava de cerca">
+            <figure class="plato stack__comida" data-gira data-zoom="/_astro/cookie.DIZ_bo-b_Z1m8qBB.webp" data-nombre="Capricho Brava" data-precio="6,50" data-desc="Café de especialidad + Cookie de Pistacho, Dubai o Brownie" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;en&quot;:&quot;Brava Treat&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Pistachio cookie&quot;,&quot;Dubai cookie&quot;,&quot;Brownie&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Capricho Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -565,7 +593,7 @@
             <h3 class="stack__nombre">Capricho Brava</h3>
             <p class="stack__desc">Café de especialidad + Cookie de Pistacho, Dubai o Brownie</p>
             <p class="stack__precio">6,50<span>€</span></p>
-            <button type="button" class="bpd bpd--texto mt-6" data-add="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;]},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" data-id="capricho-brava" aria-label="Añadir Capricho Brava al pedido">
+            <button type="button" class="bpd bpd--texto mt-6" data-add="{&quot;id&quot;:&quot;capricho-brava&quot;,&quot;nombre&quot;:&quot;Capricho Brava&quot;,&quot;en&quot;:&quot;Brava Treat&quot;,&quot;precio&quot;:650,&quot;opciones&quot;:{&quot;titulo&quot;:&quot;Para acompañar&quot;,&quot;valores&quot;:[&quot;Cookie de pistacho&quot;,&quot;Dubai&quot;,&quot;Brownie&quot;],&quot;en&quot;:{&quot;titulo&quot;:&quot;To go with it&quot;,&quot;valores&quot;:[&quot;Pistachio cookie&quot;,&quot;Dubai cookie&quot;,&quot;Brownie&quot;]}},&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" data-id="capricho-brava" aria-label="Añadir Capricho Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   <span class="bpd__t">Añadir al pedido</span>
@@ -576,7 +604,7 @@
             <svg viewBox="-80 -80 160 160" class="pointer-events-none absolute text-brand-cream-2  inset-0 h-full w-full scale-110 text-brand-cream/70" fill="currentColor" aria-hidden="true">
   <path d="M41.3,-54.7C52.4,-46.4,59.4,-32.6,63.2,-17.8C67,-3,67.6,12.8,61.9,25.8C56.2,38.8,44.2,49,30.8,55.9C17.4,62.8,2.6,66.4,-12.8,65.1C-28.2,63.8,-44.2,57.6,-54.4,46C-64.6,34.4,-69,17.2,-68.4,0.3C-67.8,-16.5,-62.2,-33.1,-51.4,-41.9C-40.6,-50.7,-24.6,-51.7,-8.9,-52.9C6.8,-54.1,30.2,-63,41.3,-54.7Z"></path>
 </svg>
-            <figure class="plato stack__cafe" data-gira data-zoom="/_astro/cafe-art.DZTxhas2_2nyW72.webp" data-nombre="Brunch Brava" data-precio="8,90" data-desc="Café de especialidad + Fit Bagel" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Brunch Brava de cerca">
+            <figure class="plato stack__cafe" data-gira data-zoom="/_astro/cafe-art.DZTxhas2_2nyW72.webp" data-nombre="Brunch Brava" data-precio="8,90" data-desc="Café de especialidad + Fit Bagel" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;en&quot;:&quot;Brava Brunch&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Brunch Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -590,7 +618,7 @@
 </figure>
 
 
-            <figure class="plato stack__comida" data-gira data-zoom="/_astro/bagel.DOqWJXuo_JVzfr.webp" data-nombre="Brunch Brava" data-precio="8,90" data-desc="Café de especialidad + Fit Bagel" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Brunch Brava de cerca">
+            <figure class="plato stack__comida" data-gira data-zoom="/_astro/bagel.DOqWJXuo_JVzfr.webp" data-nombre="Brunch Brava" data-precio="8,90" data-desc="Café de especialidad + Fit Bagel" data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;en&quot;:&quot;Brava Brunch&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" tabindex="0" role="button" aria-label="Ver Brunch Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -614,7 +642,7 @@
             <h3 class="stack__nombre">Brunch Brava</h3>
             <p class="stack__desc">Café de especialidad + Fit Bagel</p>
             <p class="stack__precio">8,90<span>€</span></p>
-            <button type="button" class="bpd bpd--texto mt-6" data-add="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;precio&quot;:280}]}" data-id="brunch-brava" aria-label="Añadir Brunch Brava al pedido">
+            <button type="button" class="bpd bpd--texto mt-6" data-add="{&quot;id&quot;:&quot;brunch-brava&quot;,&quot;nombre&quot;:&quot;Brunch Brava&quot;,&quot;en&quot;:&quot;Brava Brunch&quot;,&quot;precio&quot;:890,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Zumo natural&quot;,&quot;en&quot;:&quot;Fresh juice&quot;,&quot;precio&quot;:280}]}" data-id="brunch-brava" aria-label="Añadir Brunch Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   <span class="bpd__t">Añadir al pedido</span>
@@ -636,7 +664,7 @@
         <article class="hpanel bg-brand-calm text-brand-brown">
             <div class="hpanel__fotos">
               <div class="hpanel__foto hpanel__foto--0" data-par="1">
-                  <figure class="plato " data-gira data-zoom="/_astro/iced-brava.BKn2kGdZ_2eHUla.webp" data-nombre="Iced Brava" data-precio="6,50" data-desc="Plátano, cacao, crema de cacahuete con un toque de naranja." data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;batidos-funcionales-iced-brava&quot;,&quot;nombre&quot;:&quot;Iced Brava&quot;,&quot;precio&quot;:650,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" tabindex="0" role="button" aria-label="Ver Iced Brava de cerca">
+                  <figure class="plato " data-gira data-zoom="/_astro/iced-brava.BKn2kGdZ_2eHUla.webp" data-nombre="Iced Brava" data-precio="6,50" data-desc="Plátano, cacao, crema de cacahuete con un toque de naranja." data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;batidos-funcionales-iced-brava&quot;,&quot;nombre&quot;:&quot;Iced Brava&quot;,&quot;precio&quot;:650,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" tabindex="0" role="button" aria-label="Ver Iced Brava de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -651,7 +679,7 @@
 
 
                 </div><div class="hpanel__foto hpanel__foto--1" data-par="2">
-                  <figure class="plato " data-gira data-zoom="/_astro/blue-matcha.CnimD7Vs_Z1Ecc1D.webp" data-nombre="Blue Matcha" data-precio="4,70" data-desc="Infusión de flor mariposa azul y leche vegetal." data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;tes-e-infusiones-blue-matcha&quot;,&quot;nombre&quot;:&quot;Blue Matcha&quot;,&quot;precio&quot;:470,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" tabindex="0" role="button" aria-label="Ver Blue Matcha de cerca">
+                  <figure class="plato " data-gira data-zoom="/_astro/blue-matcha.CnimD7Vs_Z1Ecc1D.webp" data-nombre="Blue Matcha" data-precio="4,70" data-desc="Infusión de flor mariposa azul y leche vegetal." data-wa="34658520040" data-anadir="{&quot;id&quot;:&quot;tes-e-infusiones-blue-matcha&quot;,&quot;nombre&quot;:&quot;Blue Matcha&quot;,&quot;precio&quot;:470,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" tabindex="0" role="button" aria-label="Ver Blue Matcha de cerca">
   <span class="plato__sombra" aria-hidden="true"></span>
   <span class="plato__cuerpo">
     <span class="plato__giro">
@@ -688,23 +716,23 @@
   <span class="brava-mark shrink-0" aria-hidden="true" style="display:inline-block;height:0.78em;aspect-ratio:2.991253644314869;background-color:currentColor;-webkit-mask:url(/brand/wordmark.png) center/contain no-repeat;mask:url(/brand/wordmark.png) center/contain no-repeat;"></span>
   <span class="brava-suffix font-light tracking-tight" aria-hidden="true" style="font-size:0.62em;margin-left:0.16em;line-height:0.95">/drinks</span></h3>
               <ul class="hpanel__lista">
-                <li><span><b>Iced Brava</b><small>Plátano, cacao, crema de cacahuete con un toque de naranja.</small></span><em>6,50 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;batidos-funcionales-iced-brava&quot;,&quot;nombre&quot;:&quot;Iced Brava&quot;,&quot;precio&quot;:650,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" data-id="batidos-funcionales-iced-brava" aria-label="Añadir Iced Brava al pedido">
+                <li><span><b>Iced Brava</b><small>Plátano, cacao, crema de cacahuete con un toque de naranja.</small></span><em>6,50 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;batidos-funcionales-iced-brava&quot;,&quot;nombre&quot;:&quot;Iced Brava&quot;,&quot;precio&quot;:650,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" data-id="batidos-funcionales-iced-brava" aria-label="Añadir Iced Brava al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   
-</button></li><li><span><b>Blue Matcha</b><small>Infusión de flor mariposa azul y leche vegetal.</small></span><em>4,70 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;tes-e-infusiones-blue-matcha&quot;,&quot;nombre&quot;:&quot;Blue Matcha&quot;,&quot;precio&quot;:470,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" data-id="tes-e-infusiones-blue-matcha" aria-label="Añadir Blue Matcha al pedido">
+</button></li><li><span><b>Blue Matcha</b><small>Infusión de flor mariposa azul y leche vegetal.</small></span><em>4,70 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;tes-e-infusiones-blue-matcha&quot;,&quot;nombre&quot;:&quot;Blue Matcha&quot;,&quot;precio&quot;:470,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" data-id="tes-e-infusiones-blue-matcha" aria-label="Añadir Blue Matcha al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   
-</button></li><li><span><b>Brava Coffee</b><small>Naranja y chocolate</small></span><em>4,60 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;latte-macchiato-especiales-brava-coffee&quot;,&quot;nombre&quot;:&quot;Brava Coffee&quot;,&quot;precio&quot;:460,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" data-id="latte-macchiato-especiales-brava-coffee" aria-label="Añadir Brava Coffee al pedido">
+</button></li><li><span><b>Brava Coffee</b><small>Naranja y chocolate</small></span><em>4,60 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;latte-macchiato-especiales-brava-coffee&quot;,&quot;nombre&quot;:&quot;Brava Coffee&quot;,&quot;precio&quot;:460,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" data-id="latte-macchiato-especiales-brava-coffee" aria-label="Añadir Brava Coffee al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   
-</button></li><li><span><b>Matcha Latte Pistacho</b></span><em>4,50 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;matcha-matcha-latte-pistacho&quot;,&quot;nombre&quot;:&quot;Matcha Latte Pistacho&quot;,&quot;precio&quot;:450,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" data-id="matcha-matcha-latte-pistacho" aria-label="Añadir Matcha Latte Pistacho al pedido">
+</button></li><li><span><b>Matcha Latte Pistacho</b></span><em>4,50 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;matcha-matcha-latte-pistacho&quot;,&quot;nombre&quot;:&quot;Matcha Latte Pistacho&quot;,&quot;en&quot;:&quot;Pistachio Matcha Latte&quot;,&quot;precio&quot;:450,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" data-id="matcha-matcha-latte-pistacho" aria-label="Añadir Matcha Latte Pistacho al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   
-</button></li><li><span><b>Pink Latte</b><small>Remolacha, canela, leche vegetal y agave.</small></span><em>4,20 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;tes-e-infusiones-pink-latte&quot;,&quot;nombre&quot;:&quot;Pink Latte&quot;,&quot;precio&quot;:420,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;]}]}" data-id="tes-e-infusiones-pink-latte" aria-label="Añadir Pink Latte al pedido">
+</button></li><li><span><b>Pink Latte</b><small>Remolacha, canela, leche vegetal y agave.</small></span><em>4,20 €</em><button type="button" class="bpd  hpanel__mas" data-add="{&quot;id&quot;:&quot;tes-e-infusiones-pink-latte&quot;,&quot;nombre&quot;:&quot;Pink Latte&quot;,&quot;precio&quot;:420,&quot;extras&quot;:[{&quot;nombre&quot;:&quot;Bebida vegetal&quot;,&quot;en&quot;:&quot;Plant-based milk&quot;,&quot;precio&quot;:20,&quot;valores&quot;:[&quot;Coco&quot;,&quot;Arroz&quot;,&quot;Avena&quot;,&quot;Soja&quot;,&quot;Almendra&quot;],&quot;valoresEn&quot;:[&quot;Coconut&quot;,&quot;Rice&quot;,&quot;Oat&quot;,&quot;Soy&quot;,&quot;Almond&quot;]},{&quot;nombre&quot;:&quot;Sirope de sabor&quot;,&quot;en&quot;:&quot;Flavoured syrup&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Vaso comestible&quot;,&quot;en&quot;:&quot;Edible cup&quot;,&quot;precio&quot;:150},{&quot;nombre&quot;:&quot;Proteína vegetal&quot;,&quot;en&quot;:&quot;Plant protein&quot;,&quot;precio&quot;:100},{&quot;nombre&quot;:&quot;Adaptógenos&quot;,&quot;en&quot;:&quot;Adaptogens&quot;,&quot;precio&quot;:150,&quot;valores&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Espirulina&quot;,&quot;Açaí&quot;],&quot;valoresEn&quot;:[&quot;Maca&quot;,&quot;Ashwagandha&quot;,&quot;Spirulina&quot;,&quot;Açaí&quot;]}]}" data-id="tes-e-infusiones-pink-latte" aria-label="Añadir Pink Latte al pedido">
   <span class="bpd__mas" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg></span>
   <span class="bpd__n" aria-hidden="true"></span>
   
@@ -1034,6 +1062,7 @@
             </div>
             <blockquote class="flex-1 text-brand-brown-80" data-astro-cid-2rnxis7c>
               <p class="leading-relaxed" data-astro-cid-2rnxis7c>“Un brunch excelente, un ambiente agradable y un personal muy atento. La comida es fresca y está muy bien preparada. Me encantó especialmente el mortadella bagel y el Nutella brioche, su pan también está buenísimo. ¡Lo recomiendo al 200%!”</p>
+              
             </blockquote>
             <figcaption class="mt-5 flex items-center gap-3" data-astro-cid-2rnxis7c>
               <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-brown text-sm font-bold text-brand-cream" data-astro-cid-2rnxis7c>B</span>
@@ -1053,6 +1082,7 @@
             </div>
             <blockquote class="flex-1 text-brand-brown-80" data-astro-cid-2rnxis7c>
               <p class="leading-relaxed" data-astro-cid-2rnxis7c>“He ido esta tarde por primera vez y me ha encantado, las galletas muy buenas y el local a pesar de ser pequeño es muy bonito y acogedor, hacía falta algo así en la ñora.”</p>
+              
             </blockquote>
             <figcaption class="mt-5 flex items-center gap-3" data-astro-cid-2rnxis7c>
               <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-brown text-sm font-bold text-brand-cream" data-astro-cid-2rnxis7c>A</span>
@@ -1072,6 +1102,7 @@
             </div>
             <blockquote class="flex-1 text-brand-brown-80" data-astro-cid-2rnxis7c>
               <p class="leading-relaxed" data-astro-cid-2rnxis7c>“Lugar único en la ñora, la comida súper rica y se nota que trabajan con productos frescos y pedí unos dulces italianos junto a un café. Se nota la calidad y sin olvidar mencionar que es un lugar donde puedes comer sin ruidos: tan solo el lugar te acoge y te hace sentir a gusto.”</p>
+              
             </blockquote>
             <figcaption class="mt-5 flex items-center gap-3" data-astro-cid-2rnxis7c>
               <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-brown text-sm font-bold text-brand-cream" data-astro-cid-2rnxis7c>P</span>
@@ -1090,7 +1121,7 @@
 
 </section>
 
-<script type="module">document.querySelectorAll(`#resenas`).forEach(e=>{let t=e.querySelector(`[data-rev-track]`),n=Array.from(e.querySelectorAll(`[data-rev-card]`)),r=e.querySelector(`[data-rev-dots]`),i=e.querySelector(`[data-rev-prev]`),a=e.querySelector(`[data-rev-next]`);if(!n.length)return;let o=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,s=0,c=n.map((e,t)=>{let n=document.createElement(`button`);n.className=`grid h-6 w-6 place-items-center`,n.setAttribute(`aria-label`,`Ir a la reseña ${t+1}`);let i=document.createElement(`span`);return i.className=`h-2.5 w-2.5 rounded-full bg-brand-brown/20 transition-all`,n.appendChild(i),n.addEventListener(`click`,()=>u(t,!0)),r.appendChild(n),i}),l=e=>{s=e,n.forEach((t,n)=>t.classList.toggle(`is-active`,n===e)),c.forEach((t,n)=>{t.classList.toggle(`bg-brand-brown`,n===e),t.classList.toggle(`w-6`,n===e),t.classList.toggle(`bg-brand-brown/20`,n!==e)})},u=(e,r=!1)=>{let i=(e+n.length)%n.length,a=n[i],s=a.offsetLeft-t.offsetLeft-(t.clientWidth-a.clientWidth)/2;t.scrollTo({left:Math.max(0,s),behavior:o?`auto`:`smooth`}),l(i)};if(i.addEventListener(`click`,()=>u(s-1,!0)),a.addEventListener(`click`,()=>u(s+1,!0)),`IntersectionObserver`in window){let e=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&l(n.indexOf(e.target))})},{root:t,threshold:.6});n.forEach(t=>e.observe(t))}l(0)});</script>
+<script type="module">document.querySelectorAll(`#resenas`).forEach(e=>{let t=e.querySelector(`[data-rev-track]`),n=Array.from(e.querySelectorAll(`[data-rev-card]`)),r=e.querySelector(`[data-rev-dots]`),i=e.querySelector(`[data-rev-prev]`),a=e.querySelector(`[data-rev-next]`);if(!n.length)return;let o=window.matchMedia(`(prefers-reduced-motion: reduce)`).matches,s=0,c=n.map((e,t)=>{let n=document.createElement(`button`);n.className=`grid h-6 w-6 place-items-center`,n.setAttribute(`aria-label`,document.documentElement.lang===`en`?`Go to review ${t+1}`:`Ir a la reseña ${t+1}`);let i=document.createElement(`span`);return i.className=`h-2.5 w-2.5 rounded-full bg-brand-brown/20 transition-all`,n.appendChild(i),n.addEventListener(`click`,()=>u(t,!0)),r.appendChild(n),i}),l=e=>{s=e,n.forEach((t,n)=>t.classList.toggle(`is-active`,n===e)),c.forEach((t,n)=>{t.classList.toggle(`bg-brand-brown`,n===e),t.classList.toggle(`w-6`,n===e),t.classList.toggle(`bg-brand-brown/20`,n!==e)})},u=(e,r=!1)=>{let i=(e+n.length)%n.length,a=n[i],s=a.offsetLeft-t.offsetLeft-(t.clientWidth-a.clientWidth)/2;t.scrollTo({left:Math.max(0,s),behavior:o?`auto`:`smooth`}),l(i)};if(i.addEventListener(`click`,()=>u(s-1,!0)),a.addEventListener(`click`,()=>u(s+1,!0)),`IntersectionObserver`in window){let e=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&l(n.indexOf(e.target))})},{root:t,threshold:.6});n.forEach(t=>e.observe(t))}l(0)});</script>
 
   
   <section class="mx-auto w-full max-w-6xl px-5 pb-20 sm:px-6">
@@ -1179,7 +1210,7 @@
     </div>
   </div>
 </footer>
-    <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus-visible:outline-none" aria-label="Escríbenos por WhatsApp">
+    <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="wa-float fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus-visible:outline-none" aria-label="Escríbenos por WhatsApp">
   <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.02h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.22 8.22 0 0 1-1.26-4.07c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.1-8.25 8.1Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.98-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.48-.01-.16 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.16 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"></path>
   </svg>
@@ -1251,7 +1282,7 @@
   <div id="pd-toast" class="pd-toast" role="status" aria-live="polite"></div>
 </div>
 
-<script type="module" src="/_astro/Pedido.astro_astro_type_script_index_0_lang.CO7LCNp2.js"></script>
+<script type="module" src="/_astro/Pedido.astro_astro_type_script_index_0_lang.BFfOopq0.js"></script>
     
     <script>(function(){const measurementId = "G-G8B3K41EGR";
 const analyticsEnabled = true;
@@ -1399,4 +1430,4 @@ const analyticsEnabled = true;
   </body>
 </html>
 
-<script type="module" src="/_astro/index.astro_astro_type_script_index_0_lang.BW2OKzGj.js"></script>
+<script type="module" src="/_astro/index.astro_astro_type_script_index_0_lang.Bhl1RvVy.js"></script>

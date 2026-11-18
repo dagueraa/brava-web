@@ -8,19 +8,25 @@
       "author": "Barrafite Marius",
       "rating": 5,
       "text": "Un brunch excelente, un ambiente agradable y un personal muy atento. La comida es fresca y está muy bien preparada. Me encantó especialmente el mortadella bagel y el Nutella brioche, su pan también está buenísimo. ¡Lo recomiendo al 200%!",
-      "relativeTime": "Hace 2 meses"
+      "relativeTime": "Hace 2 meses",
+      "textEn": "An excellent brunch, a lovely atmosphere and very attentive staff. The food is fresh and really well made. I especially loved the mortadella bagel and the Nutella brioche, and their bread is delicious too. I recommend it 200%!",
+      "relativeTimeEn": "2 months ago"
     },
     {
       "author": "Ana Marval",
       "rating": 5,
       "text": "He ido esta tarde por primera vez y me ha encantado, las galletas muy buenas y el local a pesar de ser pequeño es muy bonito y acogedor, hacía falta algo así en la ñora.",
-      "relativeTime": "Hace 2 meses"
+      "relativeTime": "Hace 2 meses",
+      "textEn": "I went this afternoon for the first time and loved it. The cookies are very good, and although the place is small it is really pretty and cosy. La Ñora needed something like this.",
+      "relativeTimeEn": "2 months ago"
     },
     {
       "author": "pedro castejon",
       "rating": 5,
       "text": "Lugar único en la ñora, la comida súper rica y se nota que trabajan con productos frescos y pedí unos dulces italianos junto a un café. Se nota la calidad y sin olvidar mencionar que es un lugar donde puedes comer sin ruidos: tan solo el lugar te acoge y te hace sentir a gusto.",
-      "relativeTime": "Hace 2 meses"
+      "relativeTime": "Hace 2 meses",
+      "textEn": "A unique place in La Ñora. The food is really tasty and you can tell they work with fresh produce. I ordered some Italian pastries with a coffee. You can taste the quality, and it is also a place where you can eat without noise: the place simply welcomes you and makes you feel at ease.",
+      "relativeTimeEn": "2 months ago"
     }
   ]
 }

@@ -1,0 +1,43 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import CartaNav from '../../components/CartaNav.astro';
+import MenuCategory from '../../components/MenuCategory.astro';
+import Button from '../../components/Button.astro';
+import Logo from '../../components/Logo.astro';
+import PromoBanner from '../../components/PromoBanner.astro';
+import { categorias, alergenos } from '../../data/menu';
+import { useLang } from '../../i18n';
+const { t, tr, l } = useLang(Astro.url);
+---
+<Base title={t('Carta', 'Menu')} description={t('La carta de Brava: combos, café de especialidad, brunch saludable, tostadas, batidos funcionales y repostería en La Ñora, Murcia.', 'Brava’s full menu in English: combos, specialty coffee, healthy brunch, toast, functional smoothies and pastries in La Ñora, Murcia.')} path="/carta">
+  <Section class="pt-12 pb-2 text-center">
+    <Logo as="h1" suffix={t('carta', 'menu')} class="text-5xl text-brand-brown sm:text-6xl" />
+    <p class="mx-auto mt-3 max-w-md text-brand-brown-80">
+      {t('Café de especialidad, brunch y repostería. Hecho con calma y buen producto.', 'Specialty coffee, brunch and pastries. Made with care and good ingredients.')}
+    </p>
+  </Section>
+
+  <Section>
+    <PromoBanner class="mt-6 mb-8" />
+    <CartaNav />
+
+    <div class="space-y-20">
+      {categorias.map((cat) => <MenuCategory cat={cat} />)}
+    </div>
+
+    <!-- El menú actualizado remite a la carta detallada de alérgenos en barra. -->
+    <div class="mt-16 rounded-3xl bg-brand-cream-2/60 p-7 text-center reveal">
+      <h2 class="text-xl font-bold text-brand-brown">{t('¿Tienes alguna alergia o intolerancia?', 'Any allergies or intolerances?')}</h2>
+      <p class="mx-auto mt-2 max-w-xl text-sm leading-relaxed text-brand-brown-80">{tr(alergenos)}</p>
+    </div>
+
+    <!-- CTA para llevar -->
+    <div class="mt-10 flex flex-col items-center gap-3 text-center">
+      <p class="text-lg font-semibold text-brand-brown">{t('¿Te lo llevas?', 'Taking it with you?')}</p>
+      <Button href={l('/to-go')} variant="accent" size="lg">{t('Pedir para llevar', 'Order to take away')}</Button>
+    </div>
+  </Section>
+</Base>

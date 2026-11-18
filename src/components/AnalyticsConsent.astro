@@ -1,5 +1,7 @@
 ---
 import { siteConfig } from '../../site.config';
+import { useLang } from '../i18n';
+const { t, l } = useLang(Astro.url);
 
 const measurementId = (
   import.meta.env.PUBLIC_GA_MEASUREMENT_ID || siteConfig.google.analyticsMeasurementId
@@ -127,10 +129,10 @@ const showConsent = analyticsEnabled || demoMode;
     >
       <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div class="max-w-xl">
-          <p id="analytics-consent-title" class="text-base font-bold">¿Nos ayudas a mejorar Brava?</p>
+          <p id="analytics-consent-title" class="text-base font-bold">{t('¿Nos ayudas a mejorar Brava?', 'Help us improve Brava?')}</p>
           <p id="analytics-consent-description" class="mt-1.5 text-sm leading-relaxed text-brand-brown-80">
-            Usamos Google Analytics únicamente si lo aceptas para conocer de forma anónima las visitas a la web.
-            <a href="/cookies" class="font-semibold text-brand-brown underline underline-offset-2">Más información</a>.
+            {t('Usamos Google Analytics únicamente si lo aceptas para conocer de forma anónima las visitas a la web.', 'We only use Google Analytics if you accept it, to count visits to the site anonymously.')}
+            <a href={l('/cookies')} class="font-semibold text-brand-brown underline underline-offset-2">{t('Más información', 'More information')}</a>.
           </p>
         </div>
         <div class="grid shrink-0 grid-cols-2 gap-2 sm:flex">
@@ -139,14 +141,14 @@ const showConsent = analyticsEnabled || demoMode;
             data-consent-deny
             class="min-h-11 rounded-full border-2 border-brand-brown px-4 py-2.5 text-sm font-bold text-brand-brown transition hover:bg-brand-cream-2"
           >
-            Rechazar
+            {t('Rechazar', 'Reject')}
           </button>
           <button
             type="button"
             data-consent-accept
             class="min-h-11 rounded-full bg-brand-brown px-4 py-2.5 text-sm font-bold text-brand-cream transition hover:bg-brand-brown-80"
           >
-            Aceptar
+            {t('Aceptar', 'Accept')}
           </button>
         </div>
       </div>

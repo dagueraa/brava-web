@@ -1,0 +1,50 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import LocationBlock from '../../components/LocationBlock.astro';
+import Button from '../../components/Button.astro';
+import { Image } from 'astro:assets';
+import { img } from '../../assets/images';
+import { siteConfig } from '../../../site.config';
+import { useLang } from '../../i18n';
+const { t, l } = useLang(Astro.url);
+---
+<Base title={t('Local & horario', 'Location & hours')} description={t(`Visítanos en ${siteConfig.direccion}. Horario, ubicación y cómo llegar a Brava, cafetería de especialidad y brunch en La Ñora, Murcia.`, `Visit us at ${siteConfig.direccion}. Opening hours, location and directions to Brava, specialty coffee and brunch in La Ñora, Murcia.`)} path="/local">
+  <Section width="wide" class="pt-12 pb-8">
+    <div class="mb-8 grid items-center gap-8 md:grid-cols-2">
+      <div>
+        <h1 class="text-4xl font-bold text-brand-brown sm:text-5xl">{t('Te esperamos en La Ñora', 'See you in La Ñora')}</h1>
+        <p class="mt-4 max-w-md leading-relaxed text-brand-brown-80">
+          {t('Un rincón pequeño y cálido donde tomarte tu café con calma o pasarte a recoger tu pedido para llevar.', 'A small, cosy spot to enjoy your coffee slowly or to pick up your takeaway order.')}
+        </p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <Button href={l('/to-go')} variant="accent" size="lg">{t('Pedir para llevar', 'Order to take away')}</Button>
+          <Button href={l('/carta')} variant="outline" size="lg">{t('Ver la carta', 'See the menu')}</Button>
+        </div>
+      </div>
+      <div class="relative">
+        <Image
+          src={img.entrada}
+          alt={t('Entrada de Brava con el rótulo brava sobre la pared vegetal y la puerta de cristal en La Ñora, Murcia', 'Brava’s entrance in La Ñora, Murcia: the brava sign on a living plant wall and the glass door')}
+          widths={[400, 600, 800]}
+          sizes="(max-width: 768px) 90vw, 480px"
+          class="mx-auto aspect-[3/4] w-full max-w-sm rounded-[2rem] object-cover shadow-lg"
+          loading="lazy"
+        />
+        <p class="mx-auto mt-3 max-w-sm text-center text-sm leading-relaxed text-brand-brown-80">
+          {t('El diseño vegetal de Brava fue realizado por Entre Musgo.', 'Brava’s living plant design is by Entre Musgo.')}
+          <a
+            href="https://entremusgo.com/brava/"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-semibold text-brand-brown underline underline-offset-2 hover:text-brand-brown-80"
+          >{t('Ver proyecto completo.', 'See the full project.')}</a>
+        </p>
+      </div>
+    </div>
+
+    <LocationBlock />
+  </Section>
+</Base>

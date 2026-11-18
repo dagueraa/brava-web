@@ -1,21 +1,33 @@
 ---
 import Logo from './Logo.astro';
-import { waLink } from '../../site.config';
-/* Header pegajoso, compacto en móvil, con "Para llevar" destacado como acción. */
+import { waLink, siteConfig, textosEn } from '../../site.config';
+import { useLang, rutaEs, rutaEn, RUTAS_BILINGUES } from '../i18n';
+/* Header pegajoso, compacto en móvil, con "Para llevar" destacado como acción
+   y el cambio de idioma (ES · EN) siempre a la vista, también en el móvil. */
+const { lang, t, l } = useLang(Astro.url);
 const nav = [
-  { href: '/', label: 'Inicio' },
-  { href: '/carta', label: 'Carta' },
+  { href: '/', label: t('Inicio', 'Home') },
+  { href: '/carta', label: t('Carta', 'Menu') },
   { href: '/brava-pass', label: 'Brava Pass' },
-  { href: '/historia', label: 'Historia' },
-  { href: '/local', label: 'Local' },
-  { href: '/contacto', label: 'Contacto' },
+  { href: '/historia', label: t('Historia', 'Our story') },
+  { href: '/local', label: t('Local', 'Visit us') },
+  { href: '/contacto', label: t('Contacto', 'Contact') },
 ];
-const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const path = rutaEs(Astro.url.pathname);
 const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+// la misma página en el otro idioma (si no existe, la portada)
+const bilingue = RUTAS_BILINGUES.includes(path);
+const urlEs = bilingue ? path.replace(/\/?$/, '/') : '/';
+const urlEn = bilingue ? rutaEn('en', path).replace(/\/?$/, '/') : '/en/';
+const idiomas = [
+  { code: 'es', label: 'ES', name: 'Español', href: urlEs },
+  { code: 'en', label: 'EN', name: 'English', href: urlEn },
+];
+const wa = waLink(t(siteConfig.toGo.mensajeWhatsApp, textosEn.mensajeWhatsApp));
 ---
 <header class="sticky top-0 z-50 border-b rule-soft bg-brand-cream/85 backdrop-blur-md">
-  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6" aria-label="Principal">
-    <a href="/" class="shrink-0" aria-label="Brava — Inicio">
+  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5 sm:px-6" aria-label={t('Principal', 'Main')}>
+    <a href={l('/')} class="shrink-0" aria-label={t('Brava — Inicio', 'Brava — Home')}>
       <Logo class="text-2xl text-brand-brown" />
     </a>
 
@@ -24,7 +36,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       {nav.map((item) => (
         <li>
           <a
-            href={item.href}
+            href={l(item.href)}
             class={`text-sm font-medium transition-colors hover:text-brand-brown ${isActive(item.href) ? 'text-brand-brown' : 'text-brand-brown-60'}`}
             aria-current={isActive(item.href) ? 'page' : undefined}
           >
@@ -34,27 +46,48 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
       ))}
       <li>
         <a
-          href="/to-go"
+          href={l('/to-go')}
           class={`rounded-full bg-brand-calm px-4 py-2 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105 ${isActive('/to-go') ? 'ring-2 ring-brand-brown/20' : ''}`}
         >
-          Para llevar
+          {t('Para llevar', 'Takeaway')}
         </a>
       </li>
     </ul>
 
-    <!-- Botón hamburguesa móvil -->
-    <button
-      id="nav-toggle"
-      class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden"
-      aria-label="Abrir menú"
-      aria-expanded="false"
-      aria-controls="mobile-menu"
-    >
-      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <path id="icon-open" d="M4 7h16M4 12h16M4 17h16" />
-        <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18" />
-      </svg>
-    </button>
+    <div class="ml-auto flex items-center gap-1 lg:ml-0">
+      <!-- Idioma: el que estás viendo, marcado -->
+      <div class="idioma" role="group" aria-label={t('Idioma', 'Language')}>
+        {idiomas.map((i) => (
+          <a
+            href={i.href}
+            hreflang={i.code}
+            lang={i.code}
+            data-idioma={i.code}
+            class={`idioma__op ${i.code === lang ? 'is-on' : ''}`}
+            aria-current={i.code === lang ? 'true' : undefined}
+            title={i.name}
+          >
+            <span aria-hidden="true">{i.label}</span><span class="sr-only">{i.name}</span>
+          </a>
+        ))}
+      </div>
+
+      <!-- Botón hamburguesa móvil -->
+      <button
+        id="nav-toggle"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden"
+        aria-label={t('Abrir menú', 'Open menu')}
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        data-abrir={t('Abrir menú', 'Open menu')}
+        data-cerrar={t('Cerrar menú', 'Close menu')}
+      >
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path id="icon-open" d="M4 7h16M4 12h16M4 17h16" />
+          <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
   </nav>
 
   <!-- Menú móvil -->
@@ -62,21 +95,32 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
     <ul class="space-y-1 px-5 py-4">
       {nav.map((item) => (
         <li>
-          <a href={item.href} class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+          <a href={l(item.href)} class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
             {item.label}
           </a>
         </li>
       ))}
       <li class="grid grid-cols-2 gap-3 pt-3">
-        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown">
-          Para llevar
+        <a href={l('/to-go')} class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown">
+          {t('Para llevar', 'Takeaway')}
         </a>
-        <a href={waLink()} target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white">
+        <a href={wa} target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white">
           WhatsApp
         </a>
       </li>
     </ul>
   </div>
+
+  <!-- Para quien tiene el móvil en otro idioma: aviso discreto de que la web está en inglés -->
+  {lang === 'es' && (
+    <div id="aviso-idioma" class="aviso-idioma" hidden lang="en">
+      <a href={urlEn} data-idioma="en" class="aviso-idioma__a">
+        <span class="aviso-idioma__t">This site is also in English</span>
+        <b>English →</b>
+      </a>
+      <button type="button" class="aviso-idioma__x" aria-label="Close" data-aviso-x>✕</button>
+    </div>
+  )}
 </header>
 
 <script>
@@ -87,9 +131,47 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
   toggle?.addEventListener('click', () => {
     const expanded = toggle.getAttribute('aria-expanded') === 'true';
     toggle.setAttribute('aria-expanded', String(!expanded));
-    toggle.setAttribute('aria-label', expanded ? 'Abrir menú' : 'Cerrar menú');
+    toggle.setAttribute('aria-label', (expanded ? toggle.dataset.abrir : toggle.dataset.cerrar) ?? '');
     menu?.classList.toggle('hidden');
     open?.classList.toggle('hidden');
     close?.classList.toggle('hidden');
   });
+
+  /* Idioma: se recuerda el que elige cada uno (al volver, entra directo en ese idioma) */
+  const guardar = (v: string) => { try { localStorage.setItem('brava.lang', v); } catch { /* modo privado */ } };
+  document.querySelectorAll<HTMLAnchorElement>('[data-idioma]').forEach((a) =>
+    a.addEventListener('click', () => {
+      guardar(a.dataset.idioma!);
+      (window as any).umami?.track('idioma', { a: a.dataset.idioma, desde: location.pathname });
+      // se lleva la parte de la página en la que estaba (#drinks…) y los datos del enlace (?s= del QR)
+      if (location.search || location.hash) { a.href = a.pathname + location.search + location.hash; }
+    }));
+
+  /* Aviso «This site is also in English»: solo si el móvil no está en español y no ha elegido idioma */
+  const aviso = document.getElementById('aviso-idioma');
+  if (aviso) {
+    let elegido: string | null = null;
+    try { elegido = localStorage.getItem('brava.lang') || localStorage.getItem('brava.lang.aviso'); } catch { /* */ }
+    const espanol = (navigator.languages?.length ? navigator.languages : [navigator.language]).some((x) => /^(es|ca|gl|eu)\b/i.test(x));
+    if (!elegido && !espanol) aviso.hidden = false;
+    aviso.querySelector('[data-aviso-x]')?.addEventListener('click', () => {
+      aviso.hidden = true;
+      try { localStorage.setItem('brava.lang.aviso', 'cerrado'); } catch { /* */ }
+    });
+  }
 </script>
+
+<style>
+  .idioma { display: inline-flex; align-items: center; gap: 2px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--color-brand-brown) 18%, transparent); padding: 2px; }
+  .idioma__op { display: grid; place-items: center; min-width: 2.2rem; height: 1.9rem; border-radius: 999px; padding: 0 .45rem; font-size: .75rem; font-weight: 800; letter-spacing: .06em; color: var(--color-brand-brown-60); transition: color .2s, background-color .2s; }
+  .idioma__op:hover { color: var(--color-brand-brown); }
+  .idioma__op.is-on { background: var(--color-brand-brown); color: var(--color-brand-cream); }
+  @media (min-width: 1024px) { .idioma { margin-left: .4rem; } }
+
+  .aviso-idioma { display: flex; align-items: center; justify-content: center; gap: .4rem; border-top: 1px solid color-mix(in srgb, var(--color-brand-brown) 10%, transparent); background: var(--color-brand-calm); color: var(--color-brand-brown); font-size: .85rem; }
+  .aviso-idioma[hidden] { display: none; }
+  .aviso-idioma__a { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: .2rem .7rem; padding: .5rem 0 .5rem 1rem; }
+  .aviso-idioma__a b { font-weight: 800; }
+  .aviso-idioma__x { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 999px; font-size: .75rem; }
+  .aviso-idioma__x:hover { background: rgba(68,54,49,.08); }
+</style>

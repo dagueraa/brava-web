@@ -6,15 +6,17 @@ import Blob from './Blob.astro';
 import ToGoOrder from './ToGoOrder.astro';
 import BrandIcon from './BrandIcon.astro';
 import { img } from '../assets/images';
-import { siteConfig } from '../../site.config';
+import { siteConfig, textosEn } from '../../site.config';
+import { useLang } from '../i18n';
+const { t, l } = useLang(Astro.url);
 /* Bloque destacado "Brava To Go" reutilizable (home e interior de /to-go).
    variant="compact" para el teaser de la home; "full" para la página. */
 interface Props { variant?: 'compact' | 'full' }
 const { variant = 'compact' } = Astro.props;
 const pasos = [
-  { icon: 'cookie', titulo: 'Elige de la carta', desc: 'Mira la carta y decide tus favoritos.' },
-  { icon: 'cafe', titulo: 'Escríbenos o llámanos', desc: 'Haz tu pedido por WhatsApp o teléfono.' },
-  { icon: 'bolsa', titulo: 'Pásate a recogerlo', desc: 'Lo dejamos listo para llevar.' },
+  { icon: 'cookie', titulo: t('Elige de la carta', 'Pick from the menu'), desc: t('Mira la carta y decide tus favoritos.', 'Browse the menu and choose your favourites.') },
+  { icon: 'cafe', titulo: t('Escríbenos o llámanos', 'Message or call us'), desc: t('Haz tu pedido por WhatsApp o teléfono.', 'Place your order on WhatsApp or by phone.') },
+  { icon: 'bolsa', titulo: t('Pásate a recogerlo', 'Come and pick it up'), desc: t('Lo dejamos listo para llevar.', 'We’ll have it ready to go.') },
 ] as const;
 ---
 <section class="relative overflow-hidden rounded-[2.5rem] bg-brand-brown text-brand-cream">
@@ -25,7 +27,7 @@ const pasos = [
     <div>
       <Logo as={variant === 'full' ? 'h1' : 'h2'} suffix="to go" class="text-4xl text-brand-cream sm:text-5xl" />
       <p class="mt-4 max-w-md text-lg leading-relaxed text-brand-cream/80">
-        Tu Brava favorito, para llevar. Pídelo por WhatsApp o teléfono y pásate a recogerlo. Sin esperas, sin complicaciones.
+        {t('Tu Brava favorito, para llevar. Pídelo por WhatsApp o teléfono y pásate a recogerlo. Sin esperas, sin complicaciones.', 'Your Brava favourites, to take away. Order on WhatsApp or by phone and come and pick it up. No waiting, no fuss.')}
       </p>
 
       {variant === 'full' && (
@@ -48,16 +50,16 @@ const pasos = [
           <ToGoOrder />
         ) : (
           <div class="flex flex-wrap gap-3">
-            <Button href="/to-go" variant="accent" size="lg">Pedir para llevar</Button>
-            <Button href="/carta" variant="ghost" size="lg" class="text-brand-cream hover:bg-brand-cream/10">Ver la carta</Button>
+            <Button href={l('/to-go')} variant="accent" size="lg">{t('Pedir para llevar', 'Order to take away')}</Button>
+            <Button href={l('/carta')} variant="ghost" size="lg" class="text-brand-cream hover:bg-brand-cream/10">{t('Ver la carta', 'See the menu')}</Button>
           </div>
         )}
       </div>
 
       <p class="mt-6 text-sm text-brand-cream/70">
-        <span class="font-semibold text-brand-cream">Recogida:</span> {siteConfig.horarioResumen}
+        <span class="font-semibold text-brand-cream">{t('Recogida:', 'Pick-up:')}</span> {t(siteConfig.horarioResumen, textosEn.horarioResumen)}
         {variant === 'full' && siteConfig.toGo.tiempoPreparacionMin && (
-          <> · Preparación aprox. {siteConfig.toGo.tiempoPreparacionMin} min</>
+          <> · {t('Preparación aprox.', 'Ready in approx.')} {siteConfig.toGo.tiempoPreparacionMin} min</>
         )}
       </p>
     </div>
@@ -67,7 +69,7 @@ const pasos = [
         <Blob class="inset-0 -z-0 h-full w-full scale-125 text-brand-cream/10" variant={1} />
         <Image
           src={img.smoothieStreet}
-          alt="Smoothie Brava en vaso para llevar, sostenido en la calle"
+          alt={t('Smoothie Brava en vaso para llevar, sostenido en la calle', 'A Brava smoothie in a takeaway cup, held up in the street')}
           widths={[280, 400, 520]}
           sizes="(max-width: 768px) 70vw, 320px"
           class="relative aspect-[3/4] w-full rounded-[2rem] object-cover shadow-xl"

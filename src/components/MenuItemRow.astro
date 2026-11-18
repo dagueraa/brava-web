@@ -2,13 +2,15 @@
 import type { MenuItem } from '../data/menu';
 import type { Anadible } from '../data/pedido';
 import BotonPedido from './BotonPedido.astro';
+import { useLang } from '../i18n';
+const { tr } = useLang(Astro.url);
 /* Fila de carta: nombre, precio y descripción como en el menú impreso. */
 interface Props { item: MenuItem; a?: Anadible }
 const { item, a } = Astro.props;
 ---
 <li class="py-2.5">
   <div class="flex items-center gap-3">
-    <span class="font-semibold text-brand-brown">{item.nombre}</span>
+    <span class="font-semibold text-brand-brown">{tr(item.nombre)}</span>
     {item.precio && (
       <>
         <span class="mx-1 hidden h-px flex-1 translate-y-[-3px] border-b border-dotted rule-soft sm:block"></span>
@@ -19,5 +21,5 @@ const { item, a } = Astro.props;
     )}
     {a && <BotonPedido a={a} class={item.precio ? '' : 'ml-auto'} />}
   </div>
-  {item.desc && <p class="mt-0.5 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
+  {item.desc && <p class="mt-0.5 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{tr(item.desc)}</p>}
 </li>

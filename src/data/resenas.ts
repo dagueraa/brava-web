@@ -13,7 +13,9 @@ export interface Resena {
   author: string;
   rating: number;
   text: string;
+  textEn?: string;          // traducción para la web en inglés (se marca «Translated from Spanish»)
   relativeTime?: string;
+  relativeTimeEn?: string;
   profilePhoto?: string;
 }
 

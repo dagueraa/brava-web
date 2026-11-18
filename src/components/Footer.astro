@@ -1,31 +1,34 @@
 ---
 import Logo from './Logo.astro';
-import { siteConfig, telLink, waLink } from '../../site.config';
+import { siteConfig, telLink, waLink, textosEn } from '../../site.config';
 import { alergenos } from '../data/menu';
+import { useLang } from '../i18n';
+const { t, tr, l } = useLang(Astro.url);
 const year = new Date().getFullYear();
 const analyticsAvailable = Boolean(
   import.meta.env.PUBLIC_GA_MEASUREMENT_ID || siteConfig.google.analyticsMeasurementId,
 ) || import.meta.env.DEV;
 const nav = [
-  { href: '/carta', label: 'Carta' },
-  { href: '/to-go', label: 'Para llevar' },
+  { href: '/carta', label: t('Carta', 'Menu') },
+  { href: '/to-go', label: t('Para llevar', 'Takeaway') },
   { href: '/brava-pass', label: 'Brava Pass' },
-  { href: '/historia', label: 'Historia' },
-  { href: '/local', label: 'Local' },
-  { href: '/contacto', label: 'Contacto' },
+  { href: '/historia', label: t('Historia', 'Our story') },
+  { href: '/local', label: t('Local', 'Visit us') },
+  { href: '/contacto', label: t('Contacto', 'Contact') },
 ];
 const legal = [
-  { href: siteConfig.legal.aviso, label: 'Aviso legal' },
-  { href: siteConfig.legal.privacidad, label: 'Privacidad' },
+  { href: siteConfig.legal.aviso, label: t('Aviso legal', 'Legal notice') },
+  { href: siteConfig.legal.privacidad, label: t('Privacidad', 'Privacy') },
   { href: siteConfig.legal.cookies, label: 'Cookies' },
 ];
+const wa = waLink(t(siteConfig.toGo.mensajeWhatsApp, textosEn.mensajeWhatsApp));
 ---
 <footer class="mt-24 bg-brand-brown text-brand-cream">
   <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
     <div>
       <Logo variant="lockup" class="text-3xl text-brand-cream" />
       <p class="mt-4 max-w-xs text-sm leading-relaxed text-brand-cream/75">
-        Café de especialidad, brunch y repostería en La Ñora, Murcia. Hecho con calma y buen producto.
+        {t('Café de especialidad, brunch y repostería en La Ñora, Murcia. Hecho con calma y buen producto.', 'Specialty coffee, brunch and pastries in La Ñora, Murcia. Made with care and good ingredients.')}
       </p>
       <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
         <a
@@ -57,23 +60,23 @@ const legal = [
       </div>
     </div>
 
-    <nav aria-label="Pie de página">
-      <h2 class="text-xs font-semibold uppercase tracking-wider text-brand-cream/55">Explora</h2>
+    <nav aria-label={t('Pie de página', 'Footer')}>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-brand-cream/55">{t('Explora', 'Explore')}</h2>
       <ul class="mt-4 space-y-2.5 text-sm">
         {nav.map((i) => (
-          <li><a href={i.href} class="text-brand-cream/85 hover:text-brand-cream">{i.label}</a></li>
+          <li><a href={l(i.href)} class="text-brand-cream/85 hover:text-brand-cream">{i.label}</a></li>
         ))}
       </ul>
     </nav>
 
     <div>
-      <h2 class="text-xs font-semibold uppercase tracking-wider text-brand-cream/55">Visítanos</h2>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-brand-cream/55">{t('Visítanos', 'Visit us')}</h2>
       <address class="mt-4 space-y-2.5 text-sm not-italic text-brand-cream/85">
         <p>{siteConfig.direccion}</p>
-        <p>{siteConfig.horarioResumen}</p>
+        <p>{t(siteConfig.horarioResumen, textosEn.horarioResumen)}</p>
         <p><a href={telLink} class="hover:text-brand-cream">{siteConfig.telefono}</a></p>
         <p>
-          <a href={waLink()} target="_blank" rel="noopener noreferrer" class="hover:text-brand-cream">Pedir por WhatsApp</a>
+          <a href={wa} target="_blank" rel="noopener noreferrer" class="hover:text-brand-cream">{t('Pedir por WhatsApp', 'Order on WhatsApp')}</a>
         </p>
       </address>
     </div>
@@ -81,21 +84,21 @@ const legal = [
 
   <div class="border-t border-brand-cream/15">
     <div class="mx-auto max-w-6xl px-5 py-3 sm:px-6">
-      <p class="text-xs leading-relaxed text-brand-cream/55">{alergenos}</p>
+      <p class="text-xs leading-relaxed text-brand-cream/55">{tr(alergenos)}</p>
     </div>
   </div>
 
   <div class="border-t border-brand-cream/15">
     <div class="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-5 text-xs text-brand-cream/55 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-      <p>© {year} {siteConfig.nombre}. Todos los derechos reservados.</p>
+      <p>© {year} {siteConfig.nombre}. {t('Todos los derechos reservados.', 'All rights reserved.')}</p>
       <ul class="flex flex-wrap gap-x-5 gap-y-1">
         {legal.map((i) => (
-          <li><a href={i.href} class="hover:text-brand-cream">{i.label}</a></li>
+          <li><a href={l(i.href)} class="hover:text-brand-cream">{i.label}</a></li>
         ))}
         {analyticsAvailable && (
           <li>
             <button type="button" data-open-cookie-preferences class="hover:text-brand-cream">
-              Configurar cookies
+              {t('Configurar cookies', 'Cookie settings')}
             </button>
           </li>
         )}

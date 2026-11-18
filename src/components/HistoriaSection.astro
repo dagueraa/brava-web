@@ -4,7 +4,9 @@ import Logo from './Logo.astro';
 import Button from './Button.astro';
 import Blob from './Blob.astro';
 import { img } from '../assets/images';
-import { siteConfig } from '../../site.config';
+import { siteConfig, textosEn } from '../../site.config';
+import { useLang } from '../i18n';
+const { t, l } = useLang(Astro.url);
 /* El Alma de Brava — corazón emocional de la web.
    Retrato + historia en 3 beats + galería editorial + valores + CTA.
    COPY PROVISIONAL de calidad (lo valida/ajusta la fundadora). No se inventan
@@ -13,7 +15,7 @@ import { siteConfig } from '../../site.config';
 // Foto de la fundadora: usa la oficial del config si existe; si no, foto real del local (marcada como provisional).
 const retrato = img.founderEntrance;
 
-const beats = [
+const beatsEs = [
   {
     titulo: 'Cómo nació Brava',
     // PROVISIONAL — ajustar con la historia real de la fundadora
@@ -32,18 +34,48 @@ const beats = [
   },
 ];
 
-const valores = [
+const valoresEs = [
   { titulo: 'Cercanía', desc: 'Trato de tú, como en casa.' },
   { titulo: 'Producto de calidad', desc: 'Café de especialidad y materia prima de verdad.' },
   { titulo: 'Sentirse bien', desc: 'Un espacio para desconectar y disfrutar con calma.' },
 ];
 
-const galeria = [
+const galeriaEs = [
   { src: img.gallery1, alt: 'Interior de Brava con el rótulo de musgo brava coffee and brunch y sofá' },
   { src: img.gallery2, alt: 'Barista vertiendo leche para un latte art en una taza azul de Brava' },
   { src: img.gallery3, alt: 'Máquina de espresso preparando dos cafés en Brava' },
   { src: img.gallery4, alt: 'Fachada de Brava con el rótulo brava sobre pared vegetal en La Ñora' },
 ];
+
+/* En inglés (el texto de la fundadora, traducido) */
+const beats = t(beatsEs, [
+  {
+    titulo: 'How Brava began',
+    texto:
+      'Brava was born from a simple idea: to create a small place where coffee is treated with respect and where anyone feels at home from the very first “hello”. It started with more hope than certainty, and with the conviction of doing things properly even when nobody was watching.',
+  },
+  {
+    titulo: 'What inspired me to create it',
+    texto:
+      'I wanted a place you would always feel like coming back to. A corner of La Ñora where breakfast wasn’t a rush but a pause: real ingredients, brunch made with love and coffee that tastes like coffee. That mix of honesty, warmth and good taste is what pushed me to open Brava.',
+  },
+  {
+    titulo: 'Our philosophy',
+    texto:
+      'At Brava we look after the details: where our coffee comes from, the bread, the vegan and gluten-free options, the smile we serve with. We believe eating well doesn’t have to be complicated, and that a good coffee can change your day. That’s what we put on the table, every morning.',
+  },
+]);
+const valores = t(valoresEs, [
+  { titulo: 'Warmth', desc: 'We treat you like family, just like at home.' },
+  { titulo: 'Quality ingredients', desc: 'Specialty coffee and real, honest ingredients.' },
+  { titulo: 'Feeling good', desc: 'A space to switch off and enjoy at your own pace.' },
+]);
+const galeria = t(galeriaEs, [
+  { src: img.gallery1, alt: 'Inside Brava, with the moss sign “brava coffee and brunch” and a sofa' },
+  { src: img.gallery2, alt: 'A barista pouring milk for latte art in a blue Brava cup' },
+  { src: img.gallery3, alt: 'The espresso machine making two coffees at Brava' },
+  { src: img.gallery4, alt: 'Brava’s shopfront in La Ñora, with the brava sign on a living plant wall' },
+]);
 ---
 <div class="reveal">
   <!-- Apertura -->
@@ -51,10 +83,10 @@ const galeria = [
     <Blob class="-top-12 left-1/2 h-40 w-40 -translate-x-1/2 opacity-60" variant={2} />
     <Logo class="relative text-2xl text-brand-brown-60" />
     <h1 class="relative mt-1 font-hand text-6xl font-bold text-brand-brown sm:text-7xl">
-      El <span class="text-brand-calm-ink">Alma</span> de Brava
+      {t('El ', 'The ')}<span class="text-brand-calm-ink">{t('Alma', 'Soul')}</span>{t(' de Brava', ' of Brava')}
     </h1>
     <p class="relative mx-auto mt-5 max-w-xl text-lg leading-relaxed text-brand-brown-80 italic">
-      {siteConfig.historia.frase}
+      {t(siteConfig.historia.frase, textosEn.historia.frase)}
     </p>
   </div>
 
@@ -65,7 +97,7 @@ const galeria = [
         <Blob class="inset-0 -z-10 h-full w-full scale-110" variant={3} />
         <Image
           src={retrato}
-          alt="La fundadora de Brava sentada en el local, junto al rótulo de musgo brava"
+          alt={t('La fundadora de Brava sentada en el local, junto al rótulo de musgo brava', 'Brava’s founder sitting inside the shop, next to the moss brava sign')}
           widths={[320, 480, 640]}
           sizes="(max-width: 768px) 85vw, 384px"
           class="aspect-[4/5] w-full rounded-[2rem] object-cover shadow-xl"
@@ -115,10 +147,10 @@ const galeria = [
 
   <!-- CTA final -->
   <div class="mt-14 flex flex-wrap justify-center gap-3">
-    <Button href="/local" variant="primary" size="lg">Ven a conocernos</Button>
-    <Button href={siteConfig.redes.instagram} variant="outline" size="lg" target="_blank">Síguenos en Instagram</Button>
+    <Button href={l('/local')} variant="primary" size="lg">{t('Ven a conocernos', 'Come and meet us')}</Button>
+    <Button href={siteConfig.redes.instagram} variant="outline" size="lg" target="_blank">{t('Síguenos en Instagram', 'Follow us on Instagram')}</Button>
     {siteConfig.redes.tiktok && (
-      <Button href={siteConfig.redes.tiktok} variant="outline" size="lg" target="_blank">Síguenos en TikTok</Button>
+      <Button href={siteConfig.redes.tiktok} variant="outline" size="lg" target="_blank">{t('Síguenos en TikTok', 'Follow us on TikTok')}</Button>
     )}
   </div>
 </div>

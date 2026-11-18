@@ -3,7 +3,10 @@
    y el botón que aplica el código y abre el pedido. Sale en la portada y en /black-week.
    Se quita sola cuando pasa la última fecha. */
 import { siteConfig } from '../../site.config';
-import { fechasPromo } from '../data/promo';
+import { fechasDe } from '../data/promo';
+import { useLang } from '../i18n';
+const { t, tr, lang } = useLang(Astro.url);
+const fechasPromo = fechasDe(lang);
 import { categorias } from '../data/menu';
 import { anadible, extraDeNota } from '../data/pedido';
 import Plato from './Plato.astro';
@@ -16,33 +19,37 @@ const p = siteConfig.promo;
 const combos = categorias.find((c) => c.id === 'combos')!;
 const zumo = extraDeNota(combos.nota); // el extra opcional de los combos (zumo) se paga aparte
 const items = combos.items!.filter((c) => (p.combos as readonly string[]).includes(c.nombre));
-const pasos = [
+const pasos = t([
   ['Añade dos combos', 'Los que quieras, aquí mismo. Pueden ser distintos.'],
   [`Aplica el código ${p.codigo}`, 'Con el botón de abajo o escribiéndolo en tu pedido.'],
   ['Envía el pedido por WhatsApp', 'Llega con el 2x1 ya descontado. Pagas al recoger.'],
-];
+], [
+  ['Add two combos', 'Any two you like, right here. They can be different.'],
+  [`Apply the code ${p.codigo}`, 'With the button below, or type it in your order.'],
+  ['Send your order on WhatsApp', 'It arrives with the 2-for-1 already taken off. You pay at pick-up.'],
+]);
 ---
 {p.activo && (
-  <section id="black-week" class={`bw ${className}`} data-promo-hasta={p.hasta} aria-labelledby="bw-t">
+  <section id="black-week" class={`bw ${className}`} data-promo-hasta={p.hasta} aria-labelledby="bw-t" lang={lang}>
     <div class="bw__in">
       <header class="bw__cab">
         <p class="bw__tag">{p.nombre} · {fechasPromo}</p>
-        <H id="bw-t" class="bw__t">Dos combos al precio de uno.</H>
-        <p class="bw__lead">Elige con quién: el segundo lo invita Brava. <b>Solo pidiendo por la web</b>, con el código <b class="bw__cod">{p.codigo}</b>.</p>
+        <H id="bw-t" class="bw__t">{t('Dos combos al precio de uno.', 'Two combos for the price of one.')}</H>
+        <p class="bw__lead">{t('Elige con quién: el segundo lo invita Brava. ', 'Pick who you’re sharing with: the second one is on Brava. ')}<b>{t('Solo pidiendo por la web', 'Only when you order online')}</b>{t(', con el código ', ', with the code ')}<b class="bw__cod">{p.codigo}</b>.</p>
       </header>
 
-      <ul class="bw__combos" aria-label="Combos que entran en la promoción">
+      <ul class="bw__combos" aria-label={t('Combos que entran en la promoción', 'Combos included in the offer')}>
         {items.map((c, i) => (
           <li class="bw__combo">
             <div class="bw__fotos">
               <Blob class="absolute inset-0 m-auto h-full w-full text-brand-fresh/60" variant={((i % 3) + 1) as 1 | 2 | 3} />
-              <Plato foto={c.cafe as MenuFotoKey} alt="Café de especialidad" nombre={c.nombre} precio={c.precio} desc={c.desc} widths={[160, 240, 360]} sizes="(max-width: 640px) 34vw, 140px" class="!absolute left-0 top-0 z-10 w-[58%]" />
-              <Plato foto={c.foto as MenuFotoKey} alt={c.nombre} nombre={c.nombre} precio={c.precio} desc={c.desc} widths={[192, 280, 400]} sizes="(max-width: 640px) 40vw, 170px" class="!absolute bottom-0 right-0 z-20 w-[66%]" />
+              <Plato foto={c.cafe as MenuFotoKey} alt={t('Café de especialidad', 'Specialty coffee')} nombre={tr(c.nombre)} precio={c.precio} desc={tr(c.desc)} widths={[160, 240, 360]} sizes="(max-width: 640px) 34vw, 140px" class="!absolute left-0 top-0 z-10 w-[58%]" />
+              <Plato foto={c.foto as MenuFotoKey} alt={tr(c.nombre)} nombre={tr(c.nombre)} precio={c.precio} desc={tr(c.desc)} widths={[192, 280, 400]} sizes="(max-width: 640px) 40vw, 170px" class="!absolute bottom-0 right-0 z-20 w-[66%]" />
             </div>
-            <h3 class="bw__nombre">{c.nombre}</h3>
-            <p class="bw__desc">{c.desc}</p>
-            <p class="bw__precio">{c.precio} €<small>el segundo, gratis</small></p>
-            <BotonPedido a={anadible(c, '', zumo)} texto="Añadir" class="bw__add" />
+            <h3 class="bw__nombre">{tr(c.nombre)}</h3>
+            <p class="bw__desc">{tr(c.desc)}</p>
+            <p class="bw__precio">{c.precio} €<small>{t('el segundo, gratis', 'second one free')}</small></p>
+            <BotonPedido a={anadible(c, '', zumo)} texto={t('Añadir', 'Add')} class="bw__add" />
           </li>
         ))}
       </ul>
@@ -54,8 +61,8 @@ const pasos = [
       </ol>
 
       <div class="bw__cta">
-        <button type="button" class="bw__btn" data-aplicar-codigo={p.codigo}>Aplicar {p.codigo} y ver mi pedido</button>
-        <p class="bw__nota">Por cada dos combos, el más barato sale gratis; los extras se pagan. Solo para llevar, pidiendo por esta web {fechasPromo}.</p>
+        <button type="button" class="bw__btn" data-aplicar-codigo={p.codigo}>{t(`Aplicar ${p.codigo} y ver mi pedido`, `Apply ${p.codigo} and view my order`)}</button>
+        <p class="bw__nota">{t(`Por cada dos combos, el más barato sale gratis; los extras se pagan. Solo para llevar, pidiendo por esta web ${fechasPromo}.`, `For every two combos, the cheaper one is free; extras are paid. Takeaway only, ordering on this website, ${fechasPromo}.`)}</p>
       </div>
     </div>
   </section>

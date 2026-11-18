@@ -1,15 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
 import Section from './Section.astro';
+import { useLang } from '../i18n';
+const { t, l } = useLang(Astro.url);
 interface Props { title: string; path: string; updated?: string }
 const { title, path, updated } = Astro.props;
 ---
 <Base title={title} path={path} noindex>
   <Section width="narrow" class="py-14">
-    <a href="/" class="text-sm font-medium text-brand-brown-60 hover:text-brand-brown">← Volver al inicio</a>
+    <a href={l('/')} class="text-sm font-medium text-brand-brown-60 hover:text-brand-brown">{t('← Volver al inicio', '← Back to home')}</a>
     <h1 class="mt-4 text-4xl font-bold text-brand-brown">{title}</h1>
-    {updated && <p class="mt-2 text-sm text-brand-brown-60">Última actualización: {updated}</p>}
+    {updated && <p class="mt-2 text-sm text-brand-brown-60">{t('Última actualización', 'Last updated')}: {updated}</p>}
 
+    <slot name="aviso" />
     <article class="prose-brava mt-8 space-y-4 leading-relaxed text-brand-brown-80">
       <slot />
     </article>

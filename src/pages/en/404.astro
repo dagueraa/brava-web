@@ -1,0 +1,20 @@
+---
+/* Página de error de la web en inglés (public/en/.htaccess la usa para todo lo que no existe en /en/) */
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import Button from '../../components/Button.astro';
+import Logo from '../../components/Logo.astro';
+import BrandIcon from '../../components/BrandIcon.astro';
+---
+<Base title="Page not found" path="/404" noindex>
+  <Section width="narrow" class="py-24 text-center">
+    <BrandIcon name="cafe" class="mx-auto mb-6 h-16 w-16 text-brand-brown-60" />
+    <Logo class="text-4xl text-brand-brown-60" />
+    <h1 class="mt-6 text-6xl font-bold text-brand-brown">404</h1>
+    <p class="mt-3 text-lg text-brand-brown-80">This page got away from us. But the coffee is still hot.</p>
+    <div class="mt-8 flex flex-wrap justify-center gap-3">
+      <Button href="/en/" variant="primary" size="lg">Go to the home page</Button>
+      <Button href="/en/carta/" variant="outline" size="lg">See the menu</Button>
+    </div>
+  </Section>
+</Base>

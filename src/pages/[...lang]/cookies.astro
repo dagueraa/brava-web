@@ -1,0 +1,92 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import LegalLayout from '../../components/LegalLayout.astro';
+import { useLang } from '../../i18n';
+const { t, en } = useLang(Astro.url);
+---
+<LegalLayout title={t('Política de cookies', 'Cookie policy')} path="/cookies" updated={t('29 de septiembre de 2026', '29 September 2026')}>
+  {en && <p slot="aviso" class="mt-6 rounded-2xl bg-brand-cream-2/60 px-4 py-3 text-sm text-brand-brown-80">This is a courtesy translation. The <a href="/cookies/" class="underline" lang="es" data-idioma="es">Spanish version</a> is the legally binding one.</p>}
+  {en ? (
+    <>
+      <h2>1. What are cookies?</h2>
+      <p>
+        Cookies are small files that a website stores on your device to remember information about your visit.
+      </p>
+
+      <h2>2. Technical cookies</h2>
+      <p>
+        The website may store a technical preference in your browser to remember whether you accepted or rejected
+        analytics, and which language you chose. These preferences are needed to respect your choices and are not
+        used to track your activity.
+      </p>
+      <p>
+        The location map is loaded from Google Maps; when you interact with it, Google may set its own cookies
+        according to its privacy policy.
+      </p>
+
+      <h2>3. Google Analytics cookies</h2>
+      <p>
+        With your consent we use Google Analytics 4, a service provided by Google Ireland Limited, to understand in
+        aggregate how the website is used and how many visits it gets. Google Analytics may use cookies such as
+        {' '}<code>_ga</code> and <code>_ga_&lt;identifier&gt;</code> to tell browsers and sessions apart. These cookies
+        may be kept for up to two years.
+      </p>
+      <p>
+        Analytics stays switched off until you press “Accept”. We do not use Google Analytics for advertising,
+        remarketing or ad personalisation.
+      </p>
+
+      <h2>4. Managing cookies</h2>
+      <p>
+        You can accept or reject analytics from the notice shown when you visit the website. You can also change your
+        decision at any time with “Cookie settings”, in the footer, or delete cookies from your browser settings.
+      </p>
+      <p>
+        You will find more information about how Google processes data in its
+        {' '}<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a>.
+      </p>
+    </>
+  ) : (
+    <>
+      <h2>1. ¿Qué son las cookies?</h2>
+      <p>
+        Las cookies son pequeños archivos que un sitio web guarda en tu dispositivo para recordar información
+        sobre tu visita.
+      </p>
+
+      <h2>2. Cookies técnicas</h2>
+      <p>
+        La web puede guardar una preferencia técnica en tu navegador para recordar si aceptaste o rechazaste la analítica
+        y el idioma que elegiste. Estas preferencias son necesarias para respetar tus decisiones y no se utilizan para seguir tu actividad.
+      </p>
+      <p>
+        El mapa de ubicación se carga desde Google Maps; al interactuar con él, Google puede instalar sus propias
+        cookies conforme a su política de privacidad.
+      </p>
+
+      <h2>3. Cookies de Google Analytics</h2>
+      <p>
+        Con tu consentimiento utilizamos Google Analytics 4, un servicio prestado por Google Ireland Limited, para
+        conocer de forma agregada cómo se utiliza la web y cuántas visitas recibe.
+        Google Analytics puede utilizar cookies como <code>_ga</code> y <code>_ga_&lt;identificador&gt;</code> para distinguir
+        navegadores y sesiones. Estas cookies pueden conservarse hasta dos años.
+      </p>
+      <p>
+        La analítica permanece desactivada hasta que pulses «Aceptar». No utilizamos Google Analytics para publicidad,
+        remarketing ni personalización de anuncios.
+      </p>
+
+      <h2>4. Gestión de cookies</h2>
+      <p>
+        Puedes aceptar o rechazar la analítica desde el aviso mostrado al visitar la web. También puedes cambiar tu
+        decisión en cualquier momento mediante «Configurar cookies», disponible en el pie de página, o eliminar las
+        cookies desde los ajustes de tu navegador.
+      </p>
+      <p>
+        Encontrarás más información sobre el tratamiento de datos de Google en su
+        <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">política de privacidad</a>.
+      </p>
+    </>
+  )}
+</LegalLayout>

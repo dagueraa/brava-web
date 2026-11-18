@@ -1,12 +1,14 @@
 ---
 import { categorias } from '../data/menu';
+import { useLang } from '../i18n';
+const { t } = useLang(Astro.url);
 /* Navegación por categorías pegajosa para la carta (Combos · Drinks · Brunch · Treats).
    Scrollspy ligero resalta la categoría visible. */
 ---
 <nav
   id="carta-nav"
   class="sticky top-16 z-30 -mx-5 mb-10 border-b rule-soft bg-brand-cream/90 px-5 backdrop-blur-md sm:mx-0 sm:rounded-full sm:border sm:px-2"
-  aria-label="Categorías de la carta"
+  aria-label={t('Categorías de la carta', 'Menu sections')}
 >
   <ul class="flex gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
     {categorias.map((c) => (

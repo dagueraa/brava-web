@@ -1,40 +1,44 @@
 ---
 /* =====================================================================
- *  Pedido para llevar (en toda la web).
+ *  Pedido para llevar (en toda la web, en los dos idiomas).
  *  - Cualquier botón [data-add] (ver BotonPedido) añade al pedido.
  *  - Si la carta da a elegir (croissant o napolitana, sabor…) se abre un selector.
  *  - Barra flotante con el total → hoja con el pedido, nombre, hora de recogida
  *    (según el horario real) y notas → mensaje completo por WhatsApp.
- *  El pedido se guarda en el móvil (localStorage) hasta que se envía.
+ *  El pedido se guarda en el móvil (localStorage) hasta que se envía, y es el mismo
+ *  en español y en inglés. Al WhatsApp le llega cada cosa con su nombre en español
+ *  (desde la web inglesa, con el inglés entre paréntesis), para que Brava lo entienda.
  * ===================================================================== */
 import { siteConfig } from '../../site.config';
-import { fechasPromo } from '../data/promo';
+import { fechasDe } from '../data/promo';
+import { useLang } from '../i18n';
+const { t, lang } = useLang(Astro.url);
 const p = siteConfig.promo;
 const datos = {
   wa: siteConfig.whatsapp, horario: siteConfig.horario, prep: siteConfig.toGo.tiempoPreparacionMin,
   // código promocional: solo vale en la web, en estas fechas, y hace 2x1 en los combos
-  promo: p.activo ? { nombre: p.nombre, codigo: p.codigo.toUpperCase(), desde: p.desde, hasta: p.hasta, combos: p.combos, fechas: fechasPromo } : null,
+  promo: p.activo ? { nombre: p.nombre, codigo: p.codigo.toUpperCase(), desde: p.desde, hasta: p.hasta, combos: p.combos, fechas: fechasDe(lang) } : null,
 };
 ---
 <div id="pd" data-cfg={JSON.stringify(datos)}>
   <button id="pd-barra" class="pd-barra" type="button" hidden>
     <span class="pd-barra__n" id="pd-barra-n">0</span>
-    <span class="pd-barra__t">Tu pedido</span>
+    <span class="pd-barra__t">{t('Tu pedido', 'Your order')}</span>
     <span class="pd-barra__total" id="pd-barra-total">0,00 €</span>
-    <span class="pd-barra__ver">Ver <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
+    <span class="pd-barra__ver">{t('Ver', 'View')} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></span>
   </button>
 
   <!-- Selector de opciones -->
   <dialog id="pd-elegir" class="pd-hoja pd-hoja--peq">
     <form method="dialog" class="pd-hoja__in">
-      <div class="pd-hoja__cab"><h2 id="pd-e-nombre"></h2><button class="pd-x" value="cancel" aria-label="Cerrar">✕</button></div>
+      <div class="pd-hoja__cab"><h2 id="pd-e-nombre"></h2><button class="pd-x" value="cancel" aria-label={t('Cerrar', 'Close')}>✕</button></div>
       <p class="pd-e-precio" id="pd-e-precio"></p>
       <fieldset id="pd-e-opc" class="pd-opc"><legend id="pd-e-opc-t"></legend><div id="pd-e-opc-v" class="pd-chips"></div></fieldset>
       <fieldset id="pd-e-ext" class="pd-opc"><legend>Extras</legend><div id="pd-e-ext-v" class="pd-chips"></div></fieldset>
-      <label class="pd-campo"><span id="pd-e-nota-t">Nota (opcional)</span><input id="pd-e-nota" maxlength="80" placeholder="Ej. con leche de avena"></label>
+      <label class="pd-campo"><span id="pd-e-nota-t">{t('Nota (opcional)', 'Note (optional)')}</span><input id="pd-e-nota" maxlength="80" placeholder={t('Ej. con leche de avena', 'E.g. with oat milk')}></label>
       <div class="pd-e-pie">
-        <div class="pd-cant"><button type="button" data-c="-1" aria-label="Uno menos">−</button><span id="pd-e-cant">1</span><button type="button" data-c="1" aria-label="Uno más">+</button></div>
-        <button id="pd-e-ok" class="pd-btn" value="ok">Añadir · <span id="pd-e-total"></span></button>
+        <div class="pd-cant"><button type="button" data-c="-1" aria-label={t('Uno menos', 'One less')}>−</button><span id="pd-e-cant">1</span><button type="button" data-c="1" aria-label={t('Uno más', 'One more')}>+</button></div>
+        <button id="pd-e-ok" class="pd-btn" value="ok">{t('Añadir', 'Add')} · <span id="pd-e-total"></span></button>
       </div>
     </form>
   </dialog>
@@ -42,21 +46,21 @@ const datos = {
   <!-- El pedido -->
   <dialog id="pd-hoja" class="pd-hoja">
     <div class="pd-hoja__in">
-      <div class="pd-hoja__cab"><h2>Tu pedido para llevar</h2><button class="pd-x" type="button" data-cerrar aria-label="Cerrar">✕</button></div>
+      <div class="pd-hoja__cab"><h2>{t('Tu pedido para llevar', 'Your takeaway order')}</h2><button class="pd-x" type="button" data-cerrar aria-label={t('Cerrar', 'Close')}>✕</button></div>
       <ul id="pd-lineas" class="pd-lineas"></ul>
-      <p id="pd-vacio" class="pd-vacio" hidden>Aún no has añadido nada. Toca el <b>+</b> de cualquier cosa de la carta.</p>
+      <p id="pd-vacio" class="pd-vacio" hidden>{t('Aún no has añadido nada. Toca el ', 'Nothing here yet. Tap the ')}<b>+</b>{t(' de cualquier cosa de la carta.', ' next to anything on the menu.')}</p>
       <div id="pd-datos">
         <!-- Código promocional (solo si hay promo activa) -->
         <div id="pd-promo" class="pd-promo" hidden>
           <div id="pd-promo-form" class="pd-promo__form">
-            <label class="pd-campo"><span>¿Tienes un código?</span><input id="pd-codigo" maxlength="24" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Código promocional"></label>
-            <button id="pd-codigo-ok" class="pd-btn pd-btn--peq" type="button">Aplicar</button>
+            <label class="pd-campo"><span>{t('¿Tienes un código?', 'Got a promo code?')}</span><input id="pd-codigo" maxlength="24" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder={t('Código promocional', 'Promo code')}></label>
+            <button id="pd-codigo-ok" class="pd-btn pd-btn--peq" type="button">{t('Aplicar', 'Apply')}</button>
           </div>
           <p id="pd-promo-msg" class="pd-promo__msg" role="alert" hidden></p>
           <div id="pd-promo-on" class="pd-promo__on" hidden>
             <span class="pd-promo__chk" aria-hidden="true">✓</span>
             <span class="pd-promo__txt"><b id="pd-promo-cod"></b> <span id="pd-promo-det"></span></span>
-            <button id="pd-codigo-x" class="pd-promo__x" type="button" aria-label="Quitar el código">✕</button>
+            <button id="pd-codigo-x" class="pd-promo__x" type="button" aria-label={t('Quitar el código', 'Remove the code')}>✕</button>
           </div>
         </div>
         <div id="pd-resumen" class="pd-resumen" hidden>
@@ -64,19 +68,19 @@ const datos = {
           <div class="pd-resumen__dto"><span id="pd-dto-t"></span><span id="pd-dto"></span></div>
         </div>
         <div class="pd-total"><span>Total</span><b id="pd-total">0,00 €</b></div>
-        <p id="pd-vitrina" class="pd-aviso" hidden>Los productos de vitrina se cobran en tienda según lo que haya ese día.</p>
+        <p id="pd-vitrina" class="pd-aviso" hidden>{t('Los productos de vitrina se cobran en tienda según lo que haya ese día.', 'Items from the display case are paid in the shop, depending on what we have that day.')}</p>
         <div class="pd-grid">
-          <label class="pd-campo"><span>Tu nombre</span><input id="pd-nombre" maxlength="40" autocomplete="given-name" placeholder="Para llamarte al recoger" required></label>
-          <label class="pd-campo"><span>¿Cuándo lo recoges?</span><select id="pd-hora"></select></label>
+          <label class="pd-campo"><span>{t('Tu nombre', 'Your name')}</span><input id="pd-nombre" maxlength="40" autocomplete="given-name" placeholder={t('Para llamarte al recoger', 'So we can call you at pick-up')} required></label>
+          <label class="pd-campo"><span>{t('¿Cuándo lo recoges?', 'When will you pick it up?')}</span><select id="pd-hora"></select></label>
         </div>
-        <label class="pd-campo"><span>Algo más (opcional)</span><textarea id="pd-notas" rows="2" maxlength="300" placeholder="Alergias, sin azúcar, para una persona mayor…"></textarea></label>
+        <label class="pd-campo"><span>{t('Algo más (opcional)', 'Anything else? (optional)')}</span><textarea id="pd-notas" rows="2" maxlength="300" placeholder={t('Alergias, sin azúcar, para una persona mayor…', 'Allergies, no sugar, extra hot…')}></textarea></label>
         <p id="pd-error" class="pd-error" role="alert" hidden></p>
         <button id="pd-enviar" class="pd-btn pd-btn--wa" type="button">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Z"/></svg>
-          Enviar pedido por WhatsApp
+          {t('Enviar pedido por WhatsApp', 'Send order on WhatsApp')}
         </button>
-        <p class="pd-pie">Se abre WhatsApp con el pedido escrito. Brava te confirma y lo pagas al recoger.</p>
-        <button id="pd-vaciar" class="pd-vaciar" type="button">Vaciar pedido</button>
+        <p class="pd-pie">{t('Se abre WhatsApp con el pedido escrito. Brava te confirma y lo pagas al recoger.', 'WhatsApp opens with your order already written. Brava confirms it and you pay when you pick it up.')}</p>
+        <button id="pd-vaciar" class="pd-vaciar" type="button">{t('Vaciar pedido', 'Clear order')}</button>
       </div>
     </div>
   </dialog>
@@ -84,8 +88,10 @@ const datos = {
 </div>
 
 <script>
-  type Anadible = { id: string; nombre: string; precio: number | null; opciones?: { titulo: string; valores: string[] }; extras?: { nombre: string; precio: number; valores?: string[] }[]; pista?: string };
-  type Linea = { key: string; id: string; nombre: string; precio: number | null; cant: number; opcion?: string; extras: { nombre: string; precio: number }[]; nota?: string };
+  type Opciones = { titulo: string; valores: string[]; en?: { titulo: string; valores: string[] } };
+  type Anadible = { id: string; nombre: string; en?: string; precio: number | null; opciones?: Opciones; extras?: { nombre: string; en?: string; precio: number; valores?: string[]; valoresEn?: string[] }[]; pista?: string; pistaEn?: string };
+  type ExtraL = { nombre: string; en?: string; precio: number };
+  type Linea = { key: string; id: string; nombre: string; en?: string; precio: number | null; cant: number; opcion?: string; opcionEn?: string; extras: ExtraL[]; nota?: string };
   const CLAVE = 'brava.pedido.v1';
   const root = document.getElementById('pd')!;
   type Promo = { nombre: string; codigo: string; desde: string; hasta: string; combos: string[]; fechas: string };
@@ -93,6 +99,19 @@ const datos = {
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
   const eur = (c: number) => (c / 100).toFixed(2).replace('.', ',') + ' €';
   const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  /* ---------- idioma ---------- */
+  const EN = document.documentElement.lang === 'en';
+  const t = (es: string, en: string) => (EN ? en : es);
+  /** Lo que ve el cliente: en inglés si hay traducción */
+  const ver = (x: { nombre: string; en?: string }) => (EN ? x.en ?? x.nombre : x.nombre);
+  /** Lo que lee Brava en el WhatsApp: el español, y desde la web inglesa con el inglés al lado */
+  //   («Napolitana (chocolate pastry)» ya lleva el español dentro: se pone solo una vez)
+  const msj = (x: { nombre: string; en?: string }) =>
+    !EN || !x.en || x.en === x.nombre ? x.nombre : x.en.toLowerCase().startsWith(x.nombre.toLowerCase()) ? x.en : `${x.nombre} (${x.en})`;
+  const opcionVer = (l: Linea) => (EN ? l.opcionEn ?? l.opcion : l.opcion);
+  /* La opción elegida: en español entre paréntesis, como siempre; desde la web inglesa, tras « · » (sin paréntesis dentro de paréntesis) */
+  const opcionMsj = (l: Linea) => (EN ? ` · ${msj({ nombre: l.opcion!, en: l.opcionEn })}` : ` (${l.opcion})`);
 
   let lineas: Linea[] = [];
   try { lineas = JSON.parse(localStorage.getItem(CLAVE) || '[]'); } catch { lineas = []; }
@@ -130,16 +149,20 @@ const datos = {
     if (!codigo) return;
     const nCombos = lineas.filter((l) => promo.combos.includes(l.nombre)).reduce((a, l) => a + l.cant, 0);
     $('pd-promo-cod').textContent = codigo;
-    $('pd-promo-det').textContent = d > 0 ? `· 2x1 en combos: −${eur(d)}` : nCombos === 1 ? '· añade otro combo y el más barato sale gratis' : '· añade dos combos y el más barato sale gratis';
+    $('pd-promo-det').textContent = d > 0
+      ? t(`· 2x1 en combos: −${eur(d)}`, `· 2-for-1 on combos: −${eur(d)}`)
+      : nCombos === 1
+        ? t('· añade otro combo y el más barato sale gratis', '· add another combo and the cheaper one is free')
+        : t('· añade dos combos y el más barato sale gratis', '· add two combos and the cheaper one is free');
     $('pd-subtotal').textContent = eur(total());
-    $('pd-dto-t').textContent = `${promo.nombre} · 2x1 en combos`;
+    $('pd-dto-t').textContent = t(`${promo.nombre} · 2x1 en combos`, `${promo.nombre} · 2-for-1 on combos`);
     $('pd-dto').textContent = `−${eur(d)}`;
   }
   function validarCodigo(v: string) {
-    if (!v) return 'Escribe el código.';
-    if (v !== promo!.codigo) return 'Ese código no existe. Revisa que esté bien escrito.';
-    if (hoyMadrid() < promo!.desde) return `Este código vale ${promo!.fechas}. ¡Guárdalo!`;
-    if (hoyMadrid() > promo!.hasta) return 'Esta promoción ya ha terminado.';
+    if (!v) return t('Escribe el código.', 'Type in the code.');
+    if (v !== promo!.codigo) return t('Ese código no existe. Revisa que esté bien escrito.', 'That code doesn’t exist. Check the spelling.');
+    if (hoyMadrid() < promo!.desde) return t(`Este código vale ${promo!.fechas}. ¡Guárdalo!`, `This code is valid ${promo!.fechas}. Keep it handy!`);
+    if (hoyMadrid() > promo!.hasta) return t('Esta promoción ya ha terminado.', 'This offer has ended.');
     return null;
   }
   function ponerCodigo(v: string) {
@@ -164,7 +187,9 @@ const datos = {
     if (err) { toast(esc(err)); return; }
     ponerCodigo(v);
     const n = lineas.filter((l) => promo.combos.includes(l.nombre)).reduce((a, l) => a + l.cant, 0);
-    toast(n >= 2 ? `<b>${esc(v)}</b> aplicado: 2x1 en combos` : `<b>${esc(v)}</b> aplicado. Añade ${n === 1 ? 'otro combo' : 'dos combos'}`);
+    toast(n >= 2
+      ? t(`<b>${esc(v)}</b> aplicado: 2x1 en combos`, `<b>${esc(v)}</b> applied: 2-for-1 combos`)
+      : t(`<b>${esc(v)}</b> aplicado. Añade ${n === 1 ? 'otro combo' : 'dos combos'}`, `<b>${esc(v)}</b> applied. Add ${n === 1 ? 'another combo' : 'two combos'}`));
     if (lineas.length) { horas(); dlg.showModal(); }
   });
   if (promo) {
@@ -173,14 +198,15 @@ const datos = {
     $('pd-codigo-x').addEventListener('click', () => { codigo = null; try { localStorage.removeItem(CLAVE_COD); } catch {} pintar(); });
   }
 
-  function anadir(a: Anadible, cant = 1, opcion?: string, extras: Linea['extras'] = [], nota?: string) {
+  function anadir(a: Anadible, cant = 1, opcion?: string, opcionEn?: string, extras: ExtraL[] = [], nota?: string) {
     const key = [a.id, opcion ?? '', extras.map((e) => e.nombre).join('+'), nota ?? ''].join('|');
     const ya = lineas.find((l) => l.key === key);
     if (ya) ya.cant += cant;
-    else lineas.push({ key, id: a.id, nombre: a.nombre, precio: a.precio, cant, opcion, extras, nota });
+    else lineas.push({ key, id: a.id, nombre: a.nombre, en: a.en, precio: a.precio, cant, opcion, opcionEn, extras, nota });
     guardar();
     pintar();
-    toast(`Añadido: <b>${esc(a.nombre)}${opcion ? ` (${esc(opcion)})` : ''}</b>`);
+    const op = EN ? opcionEn ?? opcion : opcion;
+    toast(`${t('Añadido', 'Added')}: <b>${esc(ver(a))}${op ? ` (${esc(op)})` : ''}</b>`);
   }
 
   /* ---------- botones + de toda la web ---------- */
@@ -205,36 +231,42 @@ const datos = {
   /* ---------- selector de opciones ---------- */
   const dlgE = $<HTMLDialogElement>('pd-elegir');
   let actual: Anadible | null = null, cantE = 1;
+  const pista = (a: Anadible) => (EN ? a.pistaEn ?? a.pista : a.pista);
   function totalE() {
     if (!actual) return;
     const ex = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input[type="checkbox"]:checked')].reduce((a, i) => a + Number(i.value), 0);
     // con sirope, la nota pregunta el sabor (la carta no los enumera)
     const sirope = !!dlgE.querySelector('#pd-e-ext-v input[data-n="Sirope de sabor"]:checked');
     const nota = $<HTMLInputElement>('pd-e-nota');
-    if (!actual.pista) { nota.placeholder = sirope ? '¿De qué sabor quieres el sirope?' : 'Ej. bien caliente'; $('pd-e-nota-t').textContent = sirope ? 'Sabor del sirope (nota)' : 'Nota (opcional)'; }
+    if (!actual.pista) {
+      nota.placeholder = sirope ? t('¿De qué sabor quieres el sirope?', 'Which syrup flavour would you like?') : t('Ej. bien caliente', 'E.g. extra hot');
+      $('pd-e-nota-t').textContent = sirope ? t('Sabor del sirope (nota)', 'Syrup flavour (note)') : t('Nota (opcional)', 'Note (optional)');
+    }
     // el tipo (avena, maca…) solo se ve con su extra marcado
     dlgE.querySelectorAll<HTMLElement>('.pd-sub').forEach((s) => { s.hidden = !(s.previousElementSibling!.querySelector('input') as HTMLInputElement).checked; });
-    $('pd-e-total').textContent = actual.precio == null ? 'precio en tienda' : eur((actual.precio + ex) * cantE);
+    $('pd-e-total').textContent = actual.precio == null ? t('precio en tienda', 'price in shop') : eur((actual.precio + ex) * cantE);
     $('pd-e-cant').textContent = String(cantE);
   }
   function elegir(a: Anadible) {
     actual = a; cantE = 1;
-    $('pd-e-nombre').textContent = a.nombre;
-    $('pd-e-precio').textContent = a.precio == null ? 'Precio en tienda' : eur(a.precio);
+    $('pd-e-nombre').textContent = ver(a);
+    $('pd-e-precio').textContent = a.precio == null ? t('Precio en tienda', 'Price in shop') : eur(a.precio);
     $('pd-e-opc').hidden = !a.opciones;
+    $('pd-e-opc-v').innerHTML = '';
     if (a.opciones) {
-      $('pd-e-opc-t').textContent = a.opciones.titulo;
-      $('pd-e-opc-v').innerHTML = a.opciones.valores.map((v, i) => `<label class="pd-chip"><input type="radio" name="pd-opc" value="${esc(v)}" ${i === 0 ? 'checked' : ''}><span>${esc(v)}</span></label>`).join('');
+      const o = a.opciones, etiquetas = EN && o.en ? o.en.valores : o.valores;
+      $('pd-e-opc-t').textContent = EN && o.en ? o.en.titulo : o.titulo;
+      // el valor es el español (lo que va al WhatsApp); la etiqueta, en el idioma de la página
+      $('pd-e-opc-v').innerHTML = o.valores.map((v, i) => `<label class="pd-chip"><input type="radio" name="pd-opc" value="${esc(v)}" data-en="${esc(o.en?.valores[i] ?? v)}" ${i === 0 ? 'checked' : ''}><span>${esc(etiquetas[i])}</span></label>`).join('');
     }
     $('pd-e-ext').hidden = !a.extras;
-    $('pd-e-opc-v').innerHTML = a.opciones ? $('pd-e-opc-v').innerHTML : ''; // nada de restos del plato anterior
     $('pd-e-ext-v').innerHTML = '';
-    if (a.extras) $('pd-e-ext-v').innerHTML = a.extras.map((e, k) => `<label class="pd-chip"><input type="checkbox" value="${e.precio}" data-n="${esc(e.nombre)}"><span>${esc(e.nombre)} +${eur(e.precio)}</span></label>` +
-      (e.valores ? `<div class="pd-sub" hidden>${e.valores.map((v, i) => `<label class="pd-chip pd-chip--peq"><input type="radio" name="pd-sub-${k}" value="${esc(v)}" ${i === 0 ? 'checked' : ''}><span>${esc(v)}</span></label>`).join('')}</div>` : '')).join('');
-    $('pd-e-nota-t').textContent = a.pista ? `${a.pista} (nota)` : 'Nota (opcional)';
+    if (a.extras) $('pd-e-ext-v').innerHTML = a.extras.map((e, k) => `<label class="pd-chip"><input type="checkbox" value="${e.precio}" data-n="${esc(e.nombre)}" data-en="${esc(e.en ?? e.nombre)}"><span>${esc(ver(e))} +${eur(e.precio)}</span></label>` +
+      (e.valores ? `<div class="pd-sub" hidden>${e.valores.map((v, i) => `<label class="pd-chip pd-chip--peq"><input type="radio" name="pd-sub-${k}" value="${esc(v)}" data-en="${esc(e.valoresEn?.[i] ?? v)}" ${i === 0 ? 'checked' : ''}><span>${esc(EN ? e.valoresEn?.[i] ?? v : v)}</span></label>`).join('')}</div>` : '')).join('');
+    $('pd-e-nota-t').textContent = pista(a) ? `${pista(a)} (${t('nota', 'note')})` : t('Nota (opcional)', 'Note (optional)');
     const nota = $<HTMLInputElement>('pd-e-nota');
     nota.value = '';
-    nota.placeholder = a.pista ? 'Escríbelo aquí' : 'Ej. bien caliente';
+    nota.placeholder = a.pista ? t('Escríbelo aquí', 'Type it here') : t('Ej. bien caliente', 'E.g. extra hot');
     totalE();
     dlgE.showModal();
   }
@@ -242,13 +274,17 @@ const datos = {
   dlgE.querySelectorAll<HTMLButtonElement>('[data-c]').forEach((b) => b.addEventListener('click', () => { cantE = Math.max(1, Math.min(20, cantE + Number(b.dataset.c))); totalE(); }));
   dlgE.addEventListener('close', () => {
     if (dlgE.returnValue !== 'ok' || !actual) return;
-    const opcion = dlgE.querySelector<HTMLInputElement>('#pd-e-opc-v input:checked')?.value;
+    const op = dlgE.querySelector<HTMLInputElement>('#pd-e-opc-v input:checked');
     const extras = [...dlgE.querySelectorAll<HTMLInputElement>('#pd-e-ext-v input[type="checkbox"]:checked')].map((i) => {
       const sub = i.parentElement!.nextElementSibling as HTMLElement | null;
-      const tipo = sub?.classList.contains('pd-sub') ? sub.querySelector<HTMLInputElement>('input:checked')?.value : undefined;
-      return { nombre: tipo ? `${i.dataset.n}: ${tipo.toLowerCase()}` : i.dataset.n!, precio: Number(i.value) };
+      const tipo = sub?.classList.contains('pd-sub') ? sub.querySelector<HTMLInputElement>('input:checked') : null;
+      const nombre = tipo ? `${i.dataset.n}: ${tipo.value.toLowerCase()}` : i.dataset.n!;
+      const en = tipo ? `${i.dataset.en}: ${tipo.dataset.en!.toLowerCase()}` : i.dataset.en!;
+      return { nombre, en: en !== nombre ? en : undefined, precio: Number(i.value) };
     });
-    anadir(actual, cantE, actual.opciones ? opcion : undefined, extras, $<HTMLInputElement>('pd-e-nota').value.trim() || undefined);
+    const opcion = actual.opciones ? op?.value : undefined;
+    const opcionEn = actual.opciones && op?.dataset.en !== op?.value ? op?.dataset.en : undefined;
+    anadir(actual, cantE, opcion, opcionEn, extras, $<HTMLInputElement>('pd-e-nota').value.trim() || undefined);
   });
   dlgE.addEventListener('click', (e) => { if (e.target === dlgE) dlgE.close(); });
 
@@ -267,10 +303,10 @@ const datos = {
     $('pd-datos').hidden = n === 0;
     $('pd-lineas').innerHTML = lineas.map((l, i) => {
       const p = precioLinea(l);
-      const det = [l.opcion, ...l.extras.map((e) => `+ ${e.nombre}`), l.nota && `«${l.nota}»`].filter(Boolean).map((x) => esc(String(x))).join(' · ');
-      return `<li class="pd-linea"><div class="pd-linea__txt"><b>${esc(l.nombre)}</b>${det ? `<small>${det}</small>` : ''}</div>
-        <div class="pd-cant pd-cant--peq"><button type="button" data-l="${i}" data-c="-1" aria-label="Uno menos">${l.cant === 1 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>' : '−'}</button><span>${l.cant}</span><button type="button" data-l="${i}" data-c="1" aria-label="Uno más">+</button></div>
-        <span class="pd-linea__p">${p == null ? 'en tienda' : eur(p)}</span></li>`;
+      const det = [opcionVer(l), ...l.extras.map((e) => `+ ${ver(e)}`), l.nota && `«${l.nota}»`].filter(Boolean).map((x) => esc(String(x))).join(' · ');
+      return `<li class="pd-linea"><div class="pd-linea__txt"><b>${esc(ver(l))}</b>${det ? `<small>${det}</small>` : ''}</div>
+        <div class="pd-cant pd-cant--peq"><button type="button" data-l="${i}" data-c="-1" aria-label="${t('Uno menos', 'One less')}">${l.cant === 1 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>' : '−'}</button><span>${l.cant}</span><button type="button" data-l="${i}" data-c="1" aria-label="${t('Uno más', 'One more')}">+</button></div>
+        <span class="pd-linea__p">${p == null ? t('en tienda', 'in shop') : eur(p)}</span></li>`;
     }).join('');
     pintarBotones();
   }
@@ -286,7 +322,7 @@ const datos = {
   $('pd-barra').addEventListener('click', () => { horas(); dlg.showModal(); });
   dlg.querySelector('[data-cerrar]')!.addEventListener('click', () => dlg.close());
   dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
-  $('pd-vaciar').addEventListener('click', () => { if (confirm('¿Vaciar el pedido?')) { lineas = []; guardar(); pintar(); dlg.close(); } });
+  $('pd-vaciar').addEventListener('click', () => { if (confirm(t('¿Vaciar el pedido?', 'Clear your order?'))) { lineas = []; guardar(); pintar(); dlg.close(); } });
   try { $<HTMLInputElement>('pd-nombre').value = localStorage.getItem('brava.pedido.nombre') || ''; } catch {}
 
   /* ---------- horas de recogida según el horario de Brava ---------- */
@@ -301,11 +337,11 @@ const datos = {
       const dia = new Date(ahoraMadrid); dia.setDate(dia.getDate() + d);
       const tramos = (cfg.horario[dias[dia.getDay()]] || '').match(/\d{1,2}:\d{2}–\d{1,2}:\d{2}/g) ?? [];
       const ahoraMin = d === 0 ? ahoraMadrid.getHours() * 60 + ahoraMadrid.getMinutes() : -1;
-      const etiqueta = d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : dia.toLocaleDateString('es-ES', { weekday: 'long' }).replace(/^./, (c) => c.toUpperCase());
-      for (const t of tramos) {
-        const [a, b] = t.split('–').map((s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; });
-        if (d === 0 && ahoraMin >= a && ahoraMin < b - prep && opciones.length === 0) opciones.push(`Lo antes posible (unos ${cfg.prep} min)`);
-        for (let m = Math.ceil(Math.max(a + prep, ahoraMin + prep) / 15) * 15; m <= b - 15; m += 15) opciones.push(`${etiqueta} a las ${hm(m)}`);
+      const etiqueta = d === 0 ? t('Hoy', 'Today') : d === 1 ? t('Mañana', 'Tomorrow') : dia.toLocaleDateString(EN ? 'en-GB' : 'es-ES', { weekday: 'long' }).replace(/^./, (c) => c.toUpperCase());
+      for (const tr of tramos) {
+        const [a, b] = tr.split('–').map((s) => { const [h, m] = s.split(':').map(Number); return h * 60 + m; });
+        if (d === 0 && ahoraMin >= a && ahoraMin < b - prep && opciones.length === 0) opciones.push(t(`Lo antes posible (unos ${cfg.prep} min)`, `As soon as possible (about ${cfg.prep} min)`));
+        for (let m = Math.ceil(Math.max(a + prep, ahoraMin + prep) / 15) * 15; m <= b - 15; m += 15) opciones.push(t(`${etiqueta} a las ${hm(m)}`, `${etiqueta} at ${hm(m)}`));
       }
     }
     const previa = sel.value;
@@ -317,46 +353,47 @@ const datos = {
   $('pd-enviar').addEventListener('click', () => {
     const nombre = $<HTMLInputElement>('pd-nombre').value.trim();
     const err = $('pd-error');
-    if (!nombre) { err.textContent = 'Dinos tu nombre para tenerlo preparado.'; err.hidden = false; $('pd-nombre').focus(); return; }
+    if (!nombre) { err.textContent = t('Dinos tu nombre para tenerlo preparado.', 'Tell us your name so we can have it ready.'); err.hidden = false; $('pd-nombre').focus(); return; }
     err.hidden = true;
     try { localStorage.setItem('brava.pedido.nombre', nombre); } catch {}
     const notas = $<HTMLTextAreaElement>('pd-notas').value.trim();
     const filas = lineas.map((l) => {
       const p = precioLinea(l);
-      let t = `• ${l.cant} x ${l.nombre}${l.opcion ? ` (${l.opcion})` : ''} — ${p == null ? 'precio en tienda' : eur(p)}`;
-      l.extras.forEach((e) => { t += `\n   + ${e.nombre} (+${eur(e.precio)}${l.cant > 1 ? ' c/u' : ''})`; });
-      if (l.nota) t += `\n   Nota: ${l.nota}`;
-      return t;
+      let r = `• ${l.cant} x ${msj(l)}${l.opcion ? opcionMsj(l) : ''} — ${p == null ? t('precio en tienda', 'price in shop') : eur(p)}`;
+      l.extras.forEach((e) => { r += `\n   + ${msj(e)} (+${eur(e.precio)}${l.cant > 1 ? t(' c/u', ' each') : ''})`; });
+      if (l.nota) r += `\n   ${t('Nota', 'Note')}: ${l.nota}`;
+      return r;
     });
     const d = descuento();
     const msg = [
-      '¡Hola Brava! Quiero hacer un *pedido para llevar*:',
+      // desde la web inglesa, la primera línea avisa a Brava (en español) de que el cliente habla inglés
+      ...(EN ? ['🇬🇧 Pedido desde la web en inglés', 'Hi Brava! I’d like to place a *takeaway order*:'] : ['¡Hola Brava! Quiero hacer un *pedido para llevar*:']),
       '',
       ...filas,
       '',
       // con código, el personal ve el subtotal, el descuento y el total ya calculado
-      ...(d > 0 ? [`Subtotal: ${eur(total())}`, `Código ${codigo} (${promo!.nombre}, 2x1 en combos): −${eur(d)}`] : []),
-      `*Total: ${eur(totalFinal())}*${lineas.some((l) => l.precio == null) ? ' + productos de vitrina' : ''}`,
+      ...(d > 0 ? [`Subtotal: ${eur(total())}`, t(`Código ${codigo} (${promo!.nombre}, 2x1 en combos): −${eur(d)}`, `Code ${codigo} (${promo!.nombre}, 2x1 en combos / 2-for-1 on combos): −${eur(d)}`)] : []),
+      `*Total: ${eur(totalFinal())}*${lineas.some((l) => l.precio == null) ? t(' + productos de vitrina', ' + display case items') : ''}`,
       '',
-      `Nombre: ${nombre}`,
-      `Recogida: ${$<HTMLSelectElement>('pd-hora').value || 'a confirmar'}`,
-      ...(notas ? [`Notas: ${notas}`] : []),
+      `${t('Nombre', 'Name')}: ${nombre}`,
+      `${t('Recogida', 'Pick-up')}: ${$<HTMLSelectElement>('pd-hora').value || t('a confirmar', 'to be confirmed')}`,
+      ...(notas ? [`${t('Notas', 'Notes')}: ${notas}`] : []),
       '',
-      '¿Me lo confirmáis? ¡Gracias!',
+      t('¿Me lo confirmáis? ¡Gracias!', 'Could you confirm it? Thank you!'),
     ].join('\n');
-    (window as any).umami?.track('pedido-whatsapp', { productos: lineas.reduce((n, l) => n + l.cant, 0) });
+    (window as any).umami?.track('pedido-whatsapp', { productos: lineas.reduce((n, l) => n + l.cant, 0), idioma: EN ? 'en' : 'es' });
     window.open(`https://wa.me/${cfg.wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
   });
 
   /* ---------- aviso ---------- */
   let tt = 0;
   function toast(html: string) {
-    const t = $('pd-toast');
-    t.innerHTML = `<span class="pd-toast__t">${html}</span><button type="button">Ver pedido</button>`;
-    t.querySelector('button')!.onclick = () => { t.classList.remove('on'); horas(); dlg.showModal(); };
-    t.classList.add('on');
+    const el = $('pd-toast');
+    el.innerHTML = `<span class="pd-toast__t">${html}</span><button type="button">${t('Ver pedido', 'View order')}</button>`;
+    el.querySelector('button')!.onclick = () => { el.classList.remove('on'); horas(); dlg.showModal(); };
+    el.classList.add('on');
     clearTimeout(tt);
-    tt = window.setTimeout(() => t.classList.remove('on'), 2600);
+    tt = window.setTimeout(() => el.classList.remove('on'), 2600);
   }
 
   window.addEventListener('pedido:anadir', (e) => anadir((e as CustomEvent<Anadible>).detail));
@@ -386,7 +423,7 @@ const datos = {
   .pd-barra__total { margin-left: auto; font-weight: 800; }
   .pd-barra__ver { display: inline-flex; align-items: center; gap: .2rem; border-radius: 999px; background: color-mix(in srgb, var(--color-brand-cream) 14%, transparent); padding: .55rem .8rem; font-weight: 700; font-size: .9rem; }
   .pd-barra__ver svg { width: 1rem; height: 1rem; }
-  html.con-pedido a.fixed[aria-label="Escríbenos por WhatsApp"] { opacity: 0; pointer-events: none; }
+  html.con-pedido .wa-float { opacity: 0; pointer-events: none; }
 
   /* hojas */
   .pd-hoja { width: min(100vw, 34rem); max-width: none; max-height: 92dvh; margin: auto auto 0; padding: 0; border: 0; border-radius: 1.8rem 1.8rem 0 0; background: var(--color-brand-cream); color: var(--color-brand-brown); box-shadow: 0 -20px 60px -20px rgba(0,0,0,.5); }

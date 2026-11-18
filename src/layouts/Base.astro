@@ -8,6 +8,7 @@ import WhatsAppFloat from '../components/WhatsAppFloat.astro';
 import AnalyticsConsent from '../components/AnalyticsConsent.astro';
 import Pedido from '../components/Pedido.astro';
 import Seo from '../components/Seo.astro';
+import { useLang, rutaEs, rutaEn, RUTAS_BILINGUES } from '../i18n';
 // Preload de la fuente principal (evita el reflow del wordmark → CLS ≈ 0)
 import dmSansWoff2 from '@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2?url';
 
@@ -20,25 +21,33 @@ interface Props {
   showWhatsApp?: boolean;
 }
 const { title, description, path, ogImage, noindex = false, showWhatsApp = true } = Astro.props;
+const { lang, t } = useLang(Astro.url);
+// la misma página en el otro idioma (solo si existe en los dos)
+const es = rutaEs(Astro.url.pathname);
+const bilingue = RUTAS_BILINGUES.includes(es);
+const urlEs = es === '/' ? '/' : es + '/';
+const urlEn = bilingue ? rutaEn('en', es).replace(/\/?$/, '/') : '';
 ---
 <!doctype html>
-<html lang="es" class="bg-stripes">
+<html lang={lang} class="bg-stripes" data-es={bilingue ? urlEs : undefined} data-en={bilingue ? urlEn : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#fef9f5" />
     <script is:inline>document.documentElement.classList.add('js')</script>
+    <!-- Quien eligió el inglés, vuelve siempre a la web en inglés (también desde el QR de la barra o un enlace en español) -->
+    <script is:inline>try{var d=document.documentElement;if(d.lang==='es'&&d.dataset.en&&localStorage.getItem('brava.lang')==='en')location.replace(d.dataset.en+location.search+location.hash)}catch(e){}</script>
     <link rel="preload" href={dmSansWoff2} as="font" type="font/woff2" crossorigin="anonymous" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <Seo title={title} description={description} path={path} ogImage={ogImage} noindex={noindex} />
+    <Seo title={title} description={description} path={path} ogImage={ogImage} noindex={noindex} bilingue={bilingue} />
     <slot name="head" />
     {siteConfig.google.umami && <script defer src="https://cloud.umami.is/script.js" data-website-id={siteConfig.google.umami} data-domains="hellobrava.es"></script>}
   </head>
   <body class="flex min-h-screen flex-col">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:z-[60] focus:rounded-full focus:bg-brand-brown focus:px-4 focus:py-2 focus:text-brand-cream">
-      Saltar al contenido
+      {t('Saltar al contenido', 'Skip to content')}
     </a>
     <PromoBanner variant="strip" />
     <Header />

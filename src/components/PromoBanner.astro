@@ -4,29 +4,33 @@
    - variant="strip": franja fina encima de la cabecera (todas las páginas, se ve nada más entrar).
    - variant="card" (por defecto): tarjeta amarilla dentro de la página. */
 import { siteConfig } from '../../site.config';
-import { fechasPromo, fechasPromoCortas } from '../data/promo';
+import { fechasDe, fechasCortasDe } from '../data/promo';
+import { textosEn } from '../../site.config';
+import { useLang } from '../i18n';
+const { t, l, lang } = useLang(Astro.url);
+const fechasPromo = fechasDe(lang), fechasPromoCortas = fechasCortasDe(lang);
 interface Props { class?: string; variant?: 'strip' | 'card' }
 const { class: className = '', variant = 'card' } = Astro.props;
 const p = siteConfig.promo;
 ---
 {p.activo && variant === 'strip' && (
-  <a href="/black-week" class={`promo-strip ${className}`} data-promo-hasta={p.hasta}>
+  <a href={l('/black-week')} class={`promo-strip ${className}`} data-promo-hasta={p.hasta}>
     <span class="promo-strip__in">
       <b class="promo-strip__tag">{p.nombre}</b>
-      <span class="promo-strip__largo">2x1 en combos <b>{fechasPromo}</b>, solo por la web con el código <b class="promo-strip__cod">{p.codigo}</b></span>
-      <span class="promo-strip__corto">2x1 en combos {fechasPromoCortas} · código <b class="promo-strip__cod">{p.codigo}</b></span>
-      <span class="promo-strip__cta">Pedir →</span>
+      <span class="promo-strip__largo">{t('2x1 en combos', '2-for-1 on combos')} <b>{fechasPromo}</b>{t(', solo por la web con el código ', ', online only with the code ')}<b class="promo-strip__cod">{p.codigo}</b></span>
+      <span class="promo-strip__corto">{t('2x1 en combos', '2-for-1 combos')} {fechasPromoCortas} · {t('código', 'code')} <b class="promo-strip__cod">{p.codigo}</b></span>
+      <span class="promo-strip__cta">{t('Pedir →', 'Order →')}</span>
     </span>
   </a>
 )}
 {p.activo && variant === 'card' && (
   <div class={`promo-banner reveal ${className}`} data-promo-hasta={p.hasta}>
-    <a href="/black-week" class="promo-banner__main">
+    <a href={l('/black-week')} class="promo-banner__main">
       <span class="promo-banner__tag">{p.nombre} · 2x1</span>
-      <span class="promo-banner__txt">{p.frase} <b>Solo {fechasPromo}</b> y solo pidiendo por la web, con el código <b class="promo-banner__cod">{p.codigo}</b>.</span>
-      <span class="promo-banner__cta">Pedir ahora →</span>
+      <span class="promo-banner__txt">{t(p.frase, textosEn.promo.frase)} <b>{t(`Solo ${fechasPromo}`, `Only ${fechasPromo}`)}</b>{t(' y solo pidiendo por la web, con el código ', ', and only when you order online with the code ')}<b class="promo-banner__cod">{p.codigo}</b>.</span>
+      <span class="promo-banner__cta">{t('Pedir ahora →', 'Order now →')}</span>
     </a>
-    <a href="/comparte" class="promo-banner__comparte">¿Estudiante? Comparte el cartel y te invitamos a {p.recompensaComparte} →</a>
+    <a href={l('/comparte')} class="promo-banner__comparte">{t(`¿Estudiante? Comparte el cartel y te invitamos a ${p.recompensaComparte} →`, `Student? Share the poster and we’ll treat you to ${textosEn.promo.recompensaComparte} →`)}</a>
   </div>
 )}
 

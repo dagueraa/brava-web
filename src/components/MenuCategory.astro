@@ -13,6 +13,8 @@ import MenuIcon from './MenuIcon.astro';
 import { menuFotos } from '../assets/menuImages';
 import starBrava from '../assets/menu/star-brava.png';
 import type { Categoria } from '../data/menu';
+import { useLang } from '../i18n';
+const { t, tr } = useLang(Astro.url);
 /* Carta adaptada a pantalla con los textos, fotos y acentos del menú impreso actualizado. */
 interface Props { cat: Categoria }
 const { cat } = Astro.props;
@@ -33,13 +35,13 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
       <div class="space-y-12">
         {cat.items.map((item, i) => (
           <ComboCard
-            nombre={item.nombre}
+            nombre={tr(item.nombre)}
             precio={item.precio!}
-            desc={item.desc}
+            desc={tr(item.desc)}
             image={item.foto as MenuFotoKey}
-            alt={`${item.nombre}: ${item.desc ?? ''}`}
+            alt={`${tr(item.nombre)}: ${tr(item.desc) ?? ''}`}
             coffee={item.cafe as MenuFotoKey | undefined}
-            coffeeAlt="Café de especialidad"
+            coffeeAlt={t('Café de especialidad', 'Specialty coffee')}
             reverse={i % 2 === 1}
             index={i}
             a={anadible(item, '', zumo)}
@@ -48,7 +50,7 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
       </div>
       {cat.nota && (
         <p class="mt-10 border-t rule-soft pt-5 text-sm text-brand-brown-80">
-          <span class="font-semibold text-brand-brown">Opcional:</span> {cat.nota.replace(/^Opcional:\s*/i, '')}
+          <span class="font-semibold text-brand-brown">{t('Opcional:', 'Optional:')}</span> {tr(cat.nota)!.replace(/^(Opcional|Optional):\s*/i, '')}
         </p>
       )}
     </>
@@ -69,15 +71,15 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
           {column.map((sub) => (
             <div>
               <div class="mb-3 flex items-center justify-between gap-3 border-b rule-soft pb-2">
-                <h3 class="text-xl font-bold text-brand-brown">{sub.titulo}</h3>
+                <h3 class="text-xl font-bold text-brand-brown">{tr(sub.titulo)}</h3>
                 {sub.icono && <MenuIcon name={sub.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
               </div>
               {foto(sub.foto) && (
-                <Image src={foto(sub.foto)!} alt={`${sub.titulo} de Brava`} widths={[400, 640, 960]} sizes="(max-width: 768px) 90vw, 460px" class="mx-auto mb-4 block h-auto w-full max-w-md object-contain" loading="lazy" />
+                <Image src={foto(sub.foto)!} alt={t(`${sub.titulo} de Brava`, `${tr(sub.titulo)} at Brava`)} widths={[400, 640, 960]} sizes="(max-width: 768px) 90vw, 460px" class="mx-auto mb-4 block h-auto w-full max-w-md object-contain" loading="lazy" />
               )}
               <ul>{sub.items.map((item) => <MenuItemRow item={item} a={sub.titulo === 'Extras' ? undefined : anadible(item, sub.titulo)} />)}</ul>
-              {sub.titulo === 'Extras' && <p class="mt-2 text-sm font-semibold text-brand-calm-ink">Añádelos al pedir cada bebida.</p>}
-              {sub.nota && <p class="mt-3 rounded-xl bg-brand-cream-2/60 px-4 py-3 text-xs leading-relaxed text-brand-brown-80">{sub.nota}</p>}
+              {sub.titulo === 'Extras' && <p class="mt-2 text-sm font-semibold text-brand-calm-ink">{t('Añádelos al pedir cada bebida.', 'Add them when you order each drink.')}</p>}
+              {sub.nota && <p class="mt-3 rounded-xl bg-brand-cream-2/60 px-4 py-3 text-xs leading-relaxed text-brand-brown-80">{tr(sub.nota)}</p>}
             </div>
           ))}
         </div>
@@ -89,13 +91,13 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
   {cat.tostadas && (
     <div class="mb-12">
       <div class="mb-4 flex items-center justify-between gap-3 border-b rule-soft pb-2">
-        <h3 class="text-xl font-bold text-brand-brown">{cat.tostadas.titulo}</h3>
+        <h3 class="text-xl font-bold text-brand-brown">{tr(cat.tostadas.titulo)}</h3>
         {cat.tostadas.icono && <MenuIcon name={cat.tostadas.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
       </div>
       {foto(cat.tostadas.foto) && (
-        <Image src={foto(cat.tostadas.foto)!} alt="Panes para tostadas: blanco, de semillas e integral" widths={[640, 960, 1200]} sizes="(max-width: 768px) 90vw, 720px" class="mx-auto mb-6 block h-auto w-full max-w-xl object-contain" loading="lazy" />
+        <Image src={foto(cat.tostadas.foto)!} alt={t('Panes para tostadas: blanco, de semillas e integral', 'Bread for toast: white, seeded and wholemeal')} widths={[640, 960, 1200]} sizes="(max-width: 768px) 90vw, 720px" class="mx-auto mb-6 block h-auto w-full max-w-xl object-contain" loading="lazy" />
       )}
-      <TostadasTable columnas={cat.tostadas.columnas} bases={cat.tostadas.bases} toppings={cat.tostadas.toppings} />
+      <TostadasTable columnas={cat.tostadas.columnas.map((c) => tr(c)) as [string, string]} bases={cat.tostadas.bases} toppings={cat.tostadas.toppings} />
       <MontaTostada bases={cat.tostadas.bases} toppings={cat.tostadas.toppings} />
     </div>
   )}
@@ -104,7 +106,7 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
   {cat.especiales && (
     <div class={cat.tostadas ? 'mt-12' : ''}>
       <div class="mb-5 flex items-center justify-between gap-3 border-b rule-soft pb-2">
-        <h3 class="text-xl font-bold text-brand-brown">{cat.especiales.titulo}</h3>
+        <h3 class="text-xl font-bold text-brand-brown">{tr(cat.especiales.titulo)}</h3>
         {cat.especiales.icono && <MenuIcon name={cat.especiales.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
       </div>
 
@@ -114,18 +116,18 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
           {espFoto.map((item) => (
             <li class="overflow-hidden rounded-2xl border border-brand-line bg-brand-cream-2/25">
               <div class={`relative grid aspect-square place-items-center overflow-hidden p-3 ${item.destacado ? 'bg-[#d1eff8]' : 'bg-brand-cream'}`}>
-                <Plato foto={item.foto as MenuFotoKey} alt={item.nombre} nombre={item.nombre} precio={item.precio} desc={item.desc} widths={[320, 480, 640]} sizes="(max-width: 640px) 80vw, 320px" class="w-[86%]" />
+                <Plato foto={item.foto as MenuFotoKey} alt={tr(item.nombre)} nombre={tr(item.nombre)} precio={item.precio} desc={tr(item.desc)} a={anadible(item, cat.especiales!.titulo)} widths={[320, 480, 640]} sizes="(max-width: 640px) 80vw, 320px" class="w-[86%]" />
                 {item.destacado && (
                   <Image src={starBrava} alt="" widths={[56, 112]} sizes="56px" class="absolute right-2 top-2 h-14 w-14 object-contain" loading="eager" />
                 )}
               </div>
               <div class="p-4">
                 <div class="flex items-baseline gap-2 border-b rule-soft pb-1">
-                  <span class="font-bold text-brand-brown">{item.nombre}</span>
+                  <span class="font-bold text-brand-brown">{tr(item.nombre)}</span>
                   {item.precio && <span class="ml-auto shrink-0 font-bold text-brand-brown">{item.precio} €</span>}
                   <BotonPedido a={anadible(item, cat.especiales!.titulo)} class="self-center" />
                 </div>
-                {item.desc && <p class="mt-1.5 text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
+                {item.desc && <p class="mt-1.5 text-sm leading-relaxed text-brand-brown-80 italic">{tr(item.desc)}</p>}
               </div>
             </li>
           ))}
@@ -138,17 +140,17 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
           {espTexto.map((item) => (
             <li class="py-4 first:pt-0">
               <div class="flex items-center gap-3">
-                <span class="font-bold text-brand-brown">{item.nombre}</span>
+                <span class="font-bold text-brand-brown">{tr(item.nombre)}</span>
                 {item.precio && <span class="ml-auto shrink-0 font-bold text-brand-brown">{item.precio} €</span>}
                 <BotonPedido a={anadible(item, cat.especiales!.titulo)} />
               </div>
-              {item.desc && <p class="mt-1 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
+              {item.desc && <p class="mt-1 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{tr(item.desc)}</p>}
             </li>
           ))}
         </ul>
       )}
       {cat.id === 'brunch' && cat.nota && (
-        <p class="mt-8 border-t rule-soft pt-5 text-sm text-brand-brown-80">{cat.nota}</p>
+        <p class="mt-8 border-t rule-soft pt-5 text-sm text-brand-brown-80">{tr(cat.nota)}</p>
       )}
     </div>
   )}
@@ -157,20 +159,20 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
   {cat.horneado && (
     <div class="mt-12">
       <div class="mb-2 flex items-center justify-between gap-3 border-b rule-soft pb-2">
-        <h3 class="text-xl font-bold text-brand-brown">{cat.horneado.titulo}</h3>
+        <h3 class="text-xl font-bold text-brand-brown">{tr(cat.horneado.titulo)}</h3>
         {cat.horneado.icono && <MenuIcon name={cat.horneado.icono} class="h-6 w-6 sm:h-7 sm:w-7" />}
       </div>
-      <p class="mb-6 mt-3 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{cat.horneado.intro}</p>
+      <p class="mb-6 mt-3 max-w-prose text-sm leading-relaxed text-brand-brown-80 italic">{tr(cat.horneado.intro)}</p>
       <ul class="grid grid-cols-2 gap-5">
         {hornFoto.map((item) => (
           <li class="overflow-hidden rounded-2xl border border-brand-line bg-brand-cream-2/25">
             <div class="grid aspect-square place-items-center overflow-hidden bg-brand-cream">
-              <Plato foto={item.foto as MenuFotoKey} alt={item.nombre} nombre={item.nombre} desc={item.desc} widths={[200, 320, 480]} sizes="(max-width: 640px) 45vw, 300px" class="w-[74%]" />
+              <Plato foto={item.foto as MenuFotoKey} alt={tr(item.nombre)} nombre={tr(item.nombre)} desc={tr(item.desc)} a={anadible(item, 'Horneado')} widths={[200, 320, 480]} sizes="(max-width: 640px) 45vw, 300px" class="w-[74%]" />
             </div>
             <div class="flex items-center justify-center gap-2 px-3 pb-3 pt-2.5 text-center">
-              <span class="font-bold text-brand-brown">{item.nombre}</span>
+              <span class="font-bold text-brand-brown">{tr(item.nombre)}</span>
               <BotonPedido a={anadible(item, 'Horneado')} />
-              {item.desc && <p class="mt-1 text-xs leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
+              {item.desc && <p class="mt-1 text-xs leading-relaxed text-brand-brown-80 italic">{tr(item.desc)}</p>}
             </div>
           </li>
         ))}
@@ -178,8 +180,8 @@ const zumo = cat.id === 'combos' ? extraDeNota(cat.nota) : undefined;
       <ul class="mt-5 grid gap-5 sm:grid-cols-2">
         {hornTexto.map((item) => (
           <li class="border-b rule-soft pb-3">
-            <div class="flex items-center justify-between gap-3"><span class="font-bold text-brand-brown">{item.nombre}</span><BotonPedido a={anadible(item, 'Horneado')} /></div>
-            {item.desc && <p class="mt-1 text-sm leading-relaxed text-brand-brown-80 italic">{item.desc}</p>}
+            <div class="flex items-center justify-between gap-3"><span class="font-bold text-brand-brown">{tr(item.nombre)}</span><BotonPedido a={anadible(item, 'Horneado')} /></div>
+            {item.desc && <p class="mt-1 text-sm leading-relaxed text-brand-brown-80 italic">{tr(item.desc)}</p>}
           </li>
         ))}
       </ul>

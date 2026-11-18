@@ -152,6 +152,32 @@ export const siteConfig = {
 
 export type SiteConfig = typeof siteConfig;
 
+/* =====================================================================
+ *  Textos de arriba EN INGLÉS (la web en inglés vive en hellobrava.es/en/).
+ *  Si cambias uno de arriba, cambia también aquí su versión en inglés.
+ *  La carta en inglés está en src/i18n/carta-en.ts.
+ * ===================================================================== */
+export const textosEn = {
+  claim: 'Specialty coffee and brunch, made with care.',
+  descripcionSEO:
+    'Brava — specialty coffee, brunch and pastries in La Ñora (Murcia, Spain). Full menu in English, combos, healthy brunch and takeaway.',
+  horarioResumen: 'Mon–Sat 8:00–14:00 & 17:00–20:00',
+  mensajeWhatsApp: 'Hi Brava! I’d like to order to go:',
+  promo: {
+    frase: 'Two combos for the price of one. Pick who you’re sharing with: the second one is on Brava.',
+    recompensaComparte: 'a sweet treat', // (confirmar) = «un dulce»
+  },
+  privilegios: [
+    { titulo: '10 coffees = 1 free', desc: 'Get a stamp with every coffee. When you reach 10, the next one is on us.' },
+    { titulo: 'Free brunch on your birthday', desc: 'Save your date and celebrate with us: brunch is on the house.' },
+    { titulo: 'Early access', desc: 'Events and the new menu before anyone else.' },
+  ],
+  historia: {
+    titulo: 'The Soul of Brava',
+    frase: 'It’s not just a coffee. It’s a place you always want to come back to.',
+  },
+};
+
 /* Helpers de contacto reutilizables en toda la web */
 export const waLink = (text = siteConfig.toGo.mensajeWhatsApp) =>
   `https://wa.me/${siteConfig.whatsapp}?text=${encodeURIComponent(text)}`;

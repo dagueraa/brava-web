@@ -2,19 +2,27 @@
  *  Pedido para llevar: cómo se añade cada cosa de la carta.
  *  Las opciones salen SOLO de lo que dice la carta (menu.ts). Si la carta
  *  no concreta (p. ej. el sabor del sirope), se pide como nota libre.
+ *  Cada cosa lleva su nombre en español (el que le llega a Brava por WhatsApp)
+ *  y en inglés (el que se ve en la web en inglés; src/i18n/carta-en.ts).
  * ===================================================================== */
 import { categorias, type MenuItem } from './menu';
+import { trCarta } from '../i18n';
+
+/* Inglés de un texto de la carta, solo si cambia (para no repetirlo en el HTML) */
+const en = (s: string) => { const t = trCarta(s, 'en')!; return t !== s ? t : undefined; };
 
 export interface Anadible {
   id: string;
-  nombre: string;           // como saldrá en el mensaje
+  nombre: string;           // como saldrá en el mensaje (siempre en español: es lo que lee Brava)
+  en?: string;              // el nombre en inglés, si cambia
   precio: number | null;    // céntimos; null = precio en tienda (vitrina)
-  opciones?: { titulo: string; valores: string[] };
+  opciones?: { titulo: string; valores: string[]; en?: { titulo: string; valores: string[] } };
   extras?: Extra[];
   pista?: string;           // texto de ayuda para la nota (cuando la carta deja elegir sin decir qué)
+  pistaEn?: string;
 }
 
-export interface Extra { nombre: string; precio: number; valores?: string[] }
+export interface Extra { nombre: string; en?: string; precio: number; valores?: string[]; valoresEn?: string[] }
 
 export const centimos = (p?: string | null) =>
   p ? Math.round(parseFloat(p.replace('+', '').replace(',', '.')) * 100) : null;
@@ -23,7 +31,7 @@ const slug = (t: string) =>
   t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 /* Opciones que la propia carta enumera */
-const OPCIONES: Record<string, Anadible['opciones']> = {
+const OPCIONES: Record<string, { titulo: string; valores: string[] }> = {
   'Desayuno Brava': { titulo: 'Para acompañar', valores: ['Croissant', 'Napolitana'] },
   'Capricho Brava': { titulo: 'Para acompañar', valores: ['Cookie de pistacho', 'Dubai', 'Brownie'] },
   'Iced Latte Macchiato a elegir': { titulo: 'Sabor', valores: ['Caramelo salado', 'Vainilla', 'Avellana tostada', 'Pistacho'] },
@@ -38,36 +46,44 @@ const PISTAS: Record<string, string> = {
   'Cookies': '¿De cuál? Te decimos las de hoy',
   'Hojaldres': '¿De cuál? Te decimos los de hoy',
 };
+/* Opciones con su inglés al lado */
+const conIngles = (o?: { titulo: string; valores: string[] }) =>
+  o && { ...o, en: { titulo: trCarta(o.titulo, 'en')!, valores: o.valores.map((v) => trCarta(v, 'en')!) } };
 
 /* Extras de bebida: los del apartado «Extras» de Drinks, con sus tipos si la carta los da
    (bebida vegetal: coco, arroz…; adaptógenos: maca, ashwagandha…). */
 const apartadoExtras = categorias.find((c) => c.id === 'drinks')?.subsecciones?.find((s) => s.titulo === 'Extras');
 export const extrasBebida: Extra[] = (apartadoExtras?.items ?? []).map((i) => ({
   nombre: i.nombre,
+  en: en(i.nombre),
   precio: centimos(i.precio)!,
   valores: OPCIONES[i.nombre]?.valores,
+  valoresEn: OPCIONES[i.nombre]?.valores.map((v) => trCarta(v, 'en')!),
 }));
 /* Apartados de Drinks donde se ofrecen esos extras (todas las bebidas: la carta no los limita) */
 export const APARTADOS_BEBIDA = ['Clásicos', 'Latte Macchiato Especiales', 'Tés e infusiones', 'Matcha', 'Batidos funcionales'];
 
-/* contexto: subsección de la carta, para que el mensaje no sea ambiguo
+/* contexto: subsección de la carta (en español), para que el mensaje no sea ambiguo
    ("Vainilla" → "Latte macchiato Vainilla"; "Bebida vegetal" → "Extra: Bebida vegetal") */
 export function anadible(item: MenuItem, contexto = '', extraCombo?: Extra): Anadible {
   let nombre = item.nombre.replace(/\s+a elegir$/i, ''); // lo elegido va entre paréntesis o en la nota
-  if (contexto === 'Latte Macchiato Especiales' && !/latte|brava coffee/i.test(nombre)) nombre = `Latte macchiato ${nombre}`;
-  if (contexto === 'Extras') nombre = `Extra: ${nombre}`;
+  let ingles = trCarta(nombre, 'en')!;
+  if (contexto === 'Latte Macchiato Especiales' && !/latte|brava coffee/i.test(nombre)) { nombre = `Latte macchiato ${nombre}`; ingles = `${ingles} latte macchiato`; }
+  if (contexto === 'Extras') { nombre = `Extra: ${nombre}`; ingles = `Extra: ${ingles}`; }
   return {
     id: slug(`${contexto}-${item.nombre}`),
     nombre,
+    en: ingles !== nombre ? ingles : undefined,
     precio: centimos(item.precio),
-    opciones: OPCIONES[item.nombre],
+    opciones: conIngles(OPCIONES[item.nombre]),
     extras: extraCombo ? [extraCombo] : APARTADOS_BEBIDA.includes(contexto) ? extrasBebida : undefined,
     pista: PISTAS[item.nombre],
+    pistaEn: PISTAS[item.nombre] && trCarta(PISTAS[item.nombre], 'en'),
   };
 }
 
 /* "Opcional: Añade Zumo natural por +2,80 €" → extra para los combos */
-export function extraDeNota(nota?: string) {
+export function extraDeNota(nota?: string): Extra | undefined {
   const m = nota?.match(/A[ñn]ade\s+(.+?)\s+por\s+\+?([\d,]+)/i);
-  return m ? { nombre: m[1].trim(), precio: centimos(m[2])! } : undefined;
+  return m ? { nombre: m[1].trim(), en: en(m[1].trim()), precio: centimos(m[2])! } : undefined;
 }

@@ -1,0 +1,26 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import BlackWeek from '../../components/BlackWeek.astro';
+import { siteConfig } from '../../../site.config';
+import { fechasDe } from '../../data/promo';
+import { textosEn } from '../../../site.config';
+import { useLang } from '../../i18n';
+const { t, l, lang } = useLang(Astro.url);
+const fechasPromo = fechasDe(lang);
+/* Página de la promoción: la misma sección que en la portada, con su propia URL para
+   compartirla (Instagram, WhatsApp, carteles). */
+const p = siteConfig.promo;
+---
+<Base title={t(`${p.nombre}: 2x1 en combos`, `${p.nombre}: 2-for-1 on combos`)} description={t(`${p.nombre} en Brava: dos combos al precio de uno ${fechasPromo}, solo pidiendo por la web con el código ${p.codigo}.`, `${p.nombre} at Brava: two combos for the price of one, ${fechasPromo}, only when you order online with the code ${p.codigo}.`)} path="/black-week" ogImage="/promo/black-week-post-cafe.jpg">
+  <div class="pt-8 pb-4 sm:pt-12">
+    <BlackWeek as="h1" />
+  </div>
+  <Section class="pb-20 text-center">
+    <p class="text-brand-brown-80">
+      {t('¿Estudiante? ', 'Student? ')}<a href={l('/comparte')} class="font-bold text-brand-brown underline underline-offset-4">{t(`Comparte el cartel y te invitamos a ${p.recompensaComparte} →`, `Share the poster and we’ll treat you to ${textosEn.promo.recompensaComparte} →`)}</a>
+    </p>
+  </Section>
+</Base>

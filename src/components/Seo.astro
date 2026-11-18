@@ -1,24 +1,30 @@
 ---
-import { siteConfig, horarioDias } from '../../site.config';
+import { siteConfig, horarioDias, textosEn } from '../../site.config';
+import { useLang, rutaEn } from '../i18n';
 /* Metadatos por página: title, description, Open Graph, Twitter Card,
-   canonical y JSON-LD (Restaurant / LocalBusiness). */
+   canonical, hreflang (español / inglés) y JSON-LD (Restaurant / LocalBusiness). */
 interface Props {
   title: string;
   description?: string;
-  path?: string;       // ruta canónica, p. ej. "/carta"
+  path?: string;       // ruta canónica EN ESPAÑOL, p. ej. "/carta" (en inglés se le pone /en delante)
   ogImage?: string;    // ruta a imagen OG (en /public)
   noindex?: boolean;
+  bilingue?: boolean;  // la página existe en los dos idiomas → hreflang
 }
+const { lang, t } = useLang(Astro.url);
 const {
   title,
-  description = siteConfig.descripcionSEO,
+  description = t(siteConfig.descripcionSEO, textosEn.descripcionSEO),
   path = '',
   ogImage = '/og-image.png',
   noindex = false,
+  bilingue = false,
 } = Astro.props;
 
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
-const canonical = `${siteUrl}${path.replace(/\/?$/, '/')}`; // con barra final, como el sitemap
+// con barra final, como el sitemap
+const url = (l: 'es' | 'en') => `${siteUrl}${rutaEn(l, path || '/').replace(/\/?$/, '/')}`;
+const canonical = url(lang);
 const ogUrl = `${siteUrl}${ogImage}`;
 const fullTitle = path === '' ? `${siteConfig.nombre} · ${siteConfig.tagline}` : `${title} · ${siteConfig.nombre}`;
 
@@ -27,7 +33,7 @@ const diaSchema: Record<string, string> = {
   Lunes: 'Monday', Martes: 'Tuesday', Miércoles: 'Wednesday', Jueves: 'Thursday',
   Viernes: 'Friday', Sábado: 'Saturday', Domingo: 'Sunday',
 };
-const pad = (t: string) => (t.length === 4 ? '0' + t : t); // 8:00 → 08:00
+const pad = (h: string) => (h.length === 4 ? '0' + h : h); // 8:00 → 08:00
 const opening = horarioDias
   .filter((d) => /\d/.test(d.horas))
   // Soporta jornada partida: cada tramo (separado por ·) genera su propia franja.
@@ -47,8 +53,8 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': ['Restaurant', 'CafeOrCoffeeShop'],
   name: siteConfig.nombre,
-  description: siteConfig.descripcionSEO,
-  servesCuisine: ['Café de especialidad', 'Brunch', 'Repostería'],
+  description: t(siteConfig.descripcionSEO, textosEn.descripcionSEO),
+  servesCuisine: t(['Café de especialidad', 'Brunch', 'Repostería'], ['Specialty coffee', 'Brunch', 'Pastries']),
   priceRange: '€',
   url: siteUrl || undefined,
   telephone: siteConfig.telefonoE164,
@@ -64,7 +70,7 @@ const jsonLd = {
   geo: { '@type': 'GeoCoordinates', latitude: siteConfig.geo.lat, longitude: siteConfig.geo.lng },
   openingHoursSpecification: opening,
   sameAs: [siteConfig.redes.instagram, siteConfig.redes.tiktok].filter(Boolean),
-  hasMenu: `${siteUrl}/carta`,
+  hasMenu: `${siteUrl}${rutaEn(lang, '/carta')}/`,
   acceptsReservations: 'False',
 };
 ---
@@ -72,6 +78,13 @@ const jsonLd = {
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
 {noindex && <meta name="robots" content="noindex, nofollow" />}
+{bilingue && !noindex && (
+  <>
+    <link rel="alternate" hreflang="es" href={url('es')} />
+    <link rel="alternate" hreflang="en" href={url('en')} />
+    <link rel="alternate" hreflang="x-default" href={url('es')} />
+  </>
+)}
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={siteConfig.nombre} />
@@ -79,7 +92,8 @@ const jsonLd = {
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />
 <meta property="og:image" content={ogUrl} />
-<meta property="og:locale" content="es_ES" />
+<meta property="og:locale" content={t('es_ES', 'en_GB')} />
+{bilingue && <meta property="og:locale:alternate" content={t('en_GB', 'es_ES')} />}
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={fullTitle} />

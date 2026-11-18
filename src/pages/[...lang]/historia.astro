@@ -1,0 +1,15 @@
+---
+import { rutasIdioma } from '../../i18n';
+export const getStaticPaths = rutasIdioma;
+import Base from '../../layouts/Base.astro';
+import Section from '../../components/Section.astro';
+import HistoriaSection from '../../components/HistoriaSection.astro';
+import { textosEn, siteConfig } from '../../../site.config';
+import { useLang } from '../../i18n';
+const { t } = useLang(Astro.url);
+---
+<Base title={t(siteConfig.historia.titulo, textosEn.historia.titulo)} description={t('La historia de Brava: una cafetería de especialidad en La Ñora creada con cariño para disfrutar, desconectar y sentirse como en casa.', 'The story of Brava: a specialty coffee shop in La Ñora, made with love so you can enjoy, switch off and feel at home.')} path="/historia">
+  <Section width="wide" class="py-14">
+    <HistoriaSection />
+  </Section>
+</Base>

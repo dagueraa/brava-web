@@ -1,10 +1,12 @@
 <!DOCTYPE html>
-<html lang="es" class="bg-stripes">
+<html lang="es" class="bg-stripes" data-es="/to-go/" data-en="/en/to-go/">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#fef9f5">
     <script>document.documentElement.classList.add('js')</script>
+    <!-- Quien eligió el inglés, vuelve siempre a la web en inglés (también desde el QR de la barra o un enlace en español) -->
+    <script>try{var d=document.documentElement;if(d.lang==='es'&&d.dataset.en&&localStorage.getItem('brava.lang')==='en')location.replace(d.dataset.en+location.search+location.hash)}catch(e){}</script>
     <link rel="preload" href="/_astro/dm-sans-latin-wght-normal.Xz1IZZA0.woff2" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -14,6 +16,11 @@
 <link rel="canonical" href="https://hellobrava.es/to-go/">
 
 
+    <link rel="alternate" hreflang="es" href="https://hellobrava.es/to-go/">
+    <link rel="alternate" hreflang="en" href="https://hellobrava.es/en/to-go/">
+    <link rel="alternate" hreflang="x-default" href="https://hellobrava.es/to-go/">
+  
+
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Brava">
 <meta property="og:title" content="Brava To Go · Para llevar · Brava">
@@ -21,16 +28,17 @@
 <meta property="og:url" content="https://hellobrava.es/to-go/">
 <meta property="og:image" content="https://hellobrava.es/og-image.png">
 <meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="en_GB">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Brava To Go · Para llevar · Brava">
 <meta name="twitter:description" content="Pide tu Brava favorito para llevar por WhatsApp o teléfono. Café de especialidad, brunch y batidos listos para recoger en La Ñora, Murcia.">
 <meta name="twitter:image" content="https://hellobrava.es/og-image.png">
 
-<script type="application/ld+json">{"@context":"https://schema.org","@type":["Restaurant","CafeOrCoffeeShop"],"name":"Brava","description":"Brava — cafetería de especialidad, brunch y repostería en La Ñora (Murcia). Carta digital, combos, brunch saludable y opciones para llevar.","servesCuisine":["Café de especialidad","Brunch","Repostería"],"priceRange":"€","url":"https://hellobrava.es","telephone":"+34868620516","image":"https://hellobrava.es/og-image.png","address":{"@type":"PostalAddress","streetAddress":"Calle Mayor, 71","addressLocality":"La Ñora","addressRegion":"Murcia","postalCode":"30830","addressCountry":"ES"},"geo":{"@type":"GeoCoordinates","latitude":38.0009,"longitude":-1.1869},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"17:00","closes":"20:00"}],"sameAs":["https://instagram.com/hellobravaes","https://tiktok.com/@hellobravaes"],"hasMenu":"https://hellobrava.es/carta","acceptsReservations":"False"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":["Restaurant","CafeOrCoffeeShop"],"name":"Brava","description":"Brava — cafetería de especialidad, brunch y repostería en La Ñora (Murcia). Carta digital, combos, brunch saludable y opciones para llevar.","servesCuisine":["Café de especialidad","Brunch","Repostería"],"priceRange":"€","url":"https://hellobrava.es","telephone":"+34868620516","image":"https://hellobrava.es/og-image.png","address":{"@type":"PostalAddress","streetAddress":"Calle Mayor, 71","addressLocality":"La Ñora","addressRegion":"Murcia","postalCode":"30830","addressCountry":"ES"},"geo":{"@type":"GeoCoordinates","latitude":38.0009,"longitude":-1.1869},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Monday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Tuesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Wednesday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Thursday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"17:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"08:00","closes":"14:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":"Saturday","opens":"17:00","closes":"20:00"}],"sameAs":["https://instagram.com/hellobravaes","https://tiktok.com/@hellobravaes"],"hasMenu":"https://hellobrava.es/carta/","acceptsReservations":"False"}</script>
     
     
-  <link rel="stylesheet" href="/_astro/Base.Ca3xLV4C.css">
+  <link rel="stylesheet" href="/_astro/Base.DjjYe_wi.css">
 <style>@layer astro.images{:where([data-astro-image]){height:auto}:where([data-astro-image=full-width]){width:100%}:where([data-astro-image=constrained]){max-width:100%}[data-astro-image-fit=fill]{object-fit:fill}[data-astro-image-fit=contain]{object-fit:contain}[data-astro-image-fit=cover]{object-fit:cover}[data-astro-image-fit=scale-down]{object-fit:scale-down}[data-astro-image-pos=top]{object-position:top}[data-astro-image-pos=bottom]{object-position:bottom}[data-astro-image-pos=left]{object-position:left}[data-astro-image-pos=right]{object-position:right}[data-astro-image-pos=center]{object-position:center}[data-astro-image-pos=top-left]{object-position:top left}[data-astro-image-pos=top-right]{object-position:top right}[data-astro-image-pos=top-center]{object-position:top center}[data-astro-image-pos=bottom-left]{object-position:bottom left}[data-astro-image-pos=bottom-right]{object-position:bottom right}[data-astro-image-pos=bottom-center]{object-position:bottom center}[data-astro-image-pos=left-top]{object-position:left top}[data-astro-image-pos=left-bottom]{object-position:left bottom}[data-astro-image-pos=left-center]{object-position:left center}[data-astro-image-pos=right-top]{object-position:right top}[data-astro-image-pos=right-bottom]{object-position:right bottom}[data-astro-image-pos=right-center]{object-position:right center}[data-astro-image-pos=center-top]{object-position:center top}[data-astro-image-pos=center-bottom]{object-position:center bottom}[data-astro-image-pos=center-left]{object-position:center left}[data-astro-image-pos=center-right]{object-position:center right}}
 </style></head>
   <body class="flex min-h-screen flex-col">
@@ -48,98 +56,118 @@
 
 
 <script type="module">document.querySelectorAll(`[data-promo-hasta]`).forEach(e=>{new Date().toLocaleDateString(`en-CA`,{timeZone:`Europe/Madrid`})>e.dataset.promoHasta&&e.remove()});</script>
-    <header class="sticky top-0 z-50 border-b rule-soft bg-brand-cream/85 backdrop-blur-md">
-  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-6" aria-label="Principal">
-    <a href="/" class="shrink-0" aria-label="Brava — Inicio">
+    <header class="sticky top-0 z-50 border-b rule-soft bg-brand-cream/85 backdrop-blur-md" data-astro-cid-nen7h5rs>
+  <nav class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-3 px-5 sm:px-6" aria-label="Principal" data-astro-cid-nen7h5rs>
+    <a href="/" class="shrink-0" aria-label="Brava — Inicio" data-astro-cid-nen7h5rs>
       <span class="brava-logo inline-flex items-end leading-none text-2xl text-brand-brown" aria-label="brava" role="img">
   <span class="brava-mark shrink-0" aria-hidden="true" style="display:inline-block;height:0.78em;aspect-ratio:2.991253644314869;background-color:currentColor;-webkit-mask:url(/brand/wordmark.png) center/contain no-repeat;mask:url(/brand/wordmark.png) center/contain no-repeat;"></span>
   </span>
     </a>
 
     <!-- Nav escritorio -->
-    <ul class="hidden items-center gap-6 lg:flex">
-      <li>
-          <a href="/" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+    <ul class="hidden items-center gap-6 lg:flex" data-astro-cid-nen7h5rs>
+      <li data-astro-cid-nen7h5rs>
+          <a href="/" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Inicio
           </a>
-        </li><li>
-          <a href="/carta" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/carta" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Carta
           </a>
-        </li><li>
-          <a href="/brava-pass" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/brava-pass" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Brava Pass
           </a>
-        </li><li>
-          <a href="/historia" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/historia" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Historia
           </a>
-        </li><li>
-          <a href="/local" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/local" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Local
           </a>
-        </li><li>
-          <a href="/contacto" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/contacto" class="text-sm font-medium transition-colors hover:text-brand-brown text-brand-brown-60" data-astro-cid-nen7h5rs>
             Contacto
           </a>
         </li>
-      <li>
-        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-2 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105 ring-2 ring-brand-brown/20">
+      <li data-astro-cid-nen7h5rs>
+        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-2 text-sm font-semibold text-brand-brown shadow-sm transition hover:brightness-105 ring-2 ring-brand-brown/20" data-astro-cid-nen7h5rs>
           Para llevar
         </a>
       </li>
     </ul>
 
-    <!-- Botón hamburguesa móvil -->
-    <button id="nav-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu">
-      <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-        <path id="icon-open" d="M4 7h16M4 12h16M4 17h16"></path>
-        <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18"></path>
-      </svg>
-    </button>
+    <div class="ml-auto flex items-center gap-1 lg:ml-0" data-astro-cid-nen7h5rs>
+      <!-- Idioma: el que estás viendo, marcado -->
+      <div class="idioma" role="group" aria-label="Idioma" data-astro-cid-nen7h5rs>
+        <a href="/to-go/" hreflang="es" lang="es" data-idioma="es" class="idioma__op is-on" aria-current="true" title="Español" data-astro-cid-nen7h5rs>
+            <span aria-hidden="true" data-astro-cid-nen7h5rs>ES</span><span class="sr-only" data-astro-cid-nen7h5rs>Español</span>
+          </a><a href="/en/to-go/" hreflang="en" lang="en" data-idioma="en" class="idioma__op " title="English" data-astro-cid-nen7h5rs>
+            <span aria-hidden="true" data-astro-cid-nen7h5rs>EN</span><span class="sr-only" data-astro-cid-nen7h5rs>English</span>
+          </a>
+      </div>
+
+      <!-- Botón hamburguesa móvil -->
+      <button id="nav-toggle" class="inline-flex h-10 w-10 items-center justify-center rounded-full text-brand-brown lg:hidden" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" data-abrir="Abrir menú" data-cerrar="Cerrar menú" data-astro-cid-nen7h5rs>
+        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" data-astro-cid-nen7h5rs>
+          <path id="icon-open" d="M4 7h16M4 12h16M4 17h16" data-astro-cid-nen7h5rs></path>
+          <path id="icon-close" class="hidden" d="M6 6l12 12M18 6L6 18" data-astro-cid-nen7h5rs></path>
+        </svg>
+      </button>
+    </div>
   </nav>
 
   <!-- Menú móvil -->
-  <div id="mobile-menu" class="hidden border-t rule-soft bg-brand-cream lg:hidden">
-    <ul class="space-y-1 px-5 py-4">
-      <li>
-          <a href="/" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+  <div id="mobile-menu" class="hidden border-t rule-soft bg-brand-cream lg:hidden" data-astro-cid-nen7h5rs>
+    <ul class="space-y-1 px-5 py-4" data-astro-cid-nen7h5rs>
+      <li data-astro-cid-nen7h5rs>
+          <a href="/" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Inicio
           </a>
-        </li><li>
-          <a href="/carta" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/carta" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Carta
           </a>
-        </li><li>
-          <a href="/brava-pass" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/brava-pass" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Brava Pass
           </a>
-        </li><li>
-          <a href="/historia" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/historia" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Historia
           </a>
-        </li><li>
-          <a href="/local" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/local" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Local
           </a>
-        </li><li>
-          <a href="/contacto" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2">
+        </li><li data-astro-cid-nen7h5rs>
+          <a href="/contacto" class="block rounded-lg px-3 py-2.5 text-base font-medium text-brand-brown hover:bg-brand-cream-2" data-astro-cid-nen7h5rs>
             Contacto
           </a>
         </li>
-      <li class="grid grid-cols-2 gap-3 pt-3">
-        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown">
+      <li class="grid grid-cols-2 gap-3 pt-3" data-astro-cid-nen7h5rs>
+        <a href="/to-go" class="rounded-full bg-brand-calm px-4 py-3 text-center text-base font-semibold text-brand-brown" data-astro-cid-nen7h5rs>
           Para llevar
         </a>
-        <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white">
+        <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="rounded-full bg-[#25D366] px-4 py-3 text-center text-base font-semibold text-white" data-astro-cid-nen7h5rs>
           WhatsApp
         </a>
       </li>
     </ul>
   </div>
+
+  <!-- Para quien tiene el móvil en otro idioma: aviso discreto de que la web está en inglés -->
+  <div id="aviso-idioma" class="aviso-idioma" hidden lang="en" data-astro-cid-nen7h5rs>
+      <a href="/en/to-go/" data-idioma="en" class="aviso-idioma__a" data-astro-cid-nen7h5rs>
+        <span class="aviso-idioma__t" data-astro-cid-nen7h5rs>This site is also in English</span>
+        <b data-astro-cid-nen7h5rs>English →</b>
+      </a>
+      <button type="button" class="aviso-idioma__x" aria-label="Close" data-aviso-x data-astro-cid-nen7h5rs>✕</button>
+    </div>
 </header>
 
-<script type="module">var e=document.getElementById(`nav-toggle`),t=document.getElementById(`mobile-menu`),n=document.getElementById(`icon-open`),r=document.getElementById(`icon-close`);e?.addEventListener(`click`,()=>{let i=e.getAttribute(`aria-expanded`)===`true`;e.setAttribute(`aria-expanded`,String(!i)),e.setAttribute(`aria-label`,i?`Abrir menú`:`Cerrar menú`),t?.classList.toggle(`hidden`),n?.classList.toggle(`hidden`),r?.classList.toggle(`hidden`)});</script>
+<script type="module">var e=document.getElementById(`nav-toggle`),t=document.getElementById(`mobile-menu`),n=document.getElementById(`icon-open`),r=document.getElementById(`icon-close`);e?.addEventListener(`click`,()=>{let i=e.getAttribute(`aria-expanded`)===`true`;e.setAttribute(`aria-expanded`,String(!i)),e.setAttribute(`aria-label`,(i?e.dataset.abrir:e.dataset.cerrar)??``),t?.classList.toggle(`hidden`),n?.classList.toggle(`hidden`),r?.classList.toggle(`hidden`)});var i=e=>{try{localStorage.setItem(`brava.lang`,e)}catch{}};document.querySelectorAll(`[data-idioma]`).forEach(e=>e.addEventListener(`click`,()=>{i(e.dataset.idioma),window.umami?.track(`idioma`,{a:e.dataset.idioma,desde:location.pathname}),(location.search||location.hash)&&(e.href=e.pathname+location.search+location.hash)}));var a=document.getElementById(`aviso-idioma`);if(a){let e=null;try{e=localStorage.getItem(`brava.lang`)||localStorage.getItem(`brava.lang.aviso`)}catch{}let t=(navigator.languages?.length?navigator.languages:[navigator.language]).some(e=>/^(es|ca|gl|eu)\b/i.test(e));!e&&!t&&(a.hidden=!1),a.querySelector(`[data-aviso-x]`)?.addEventListener(`click`,()=>{a.hidden=!0;try{localStorage.setItem(`brava.lang.aviso`,`cerrado`)}catch{}})}</script>
     <main id="main" class="flex-1">
       
   <section class="mx-auto w-full max-w-6xl px-5 sm:px-6 pt-10 pb-6">
@@ -212,13 +240,11 @@
     
     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm4.52 11.86c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.98-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.42h-.48c-.16 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.16 1.75 2.67 4.24 3.74 2.07.9 2.49.72 2.94.68.45-.04 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"></path></svg>
     Pedir por WhatsApp
-  
   </a>
   <a href="tel:+34868620516" class="inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 active:scale-[0.98] focus-visible:outline-none px-8 py-4 text-lg border-2 border-brand-brown text-brand-brown hover:bg-brand-brown hover:text-brand-cream " aria-label="Llamar al 868 620 516">
     
     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z"></path></svg>
     Llamar
-  
   </a>
 
   
@@ -253,8 +279,7 @@
       <div class="rounded-3xl border rule-soft bg-brand-cream-2/40 p-7">
         <h2 class="text-xl font-bold text-brand-brown">Así de fácil</h2>
         <p class="mt-2 leading-relaxed text-brand-brown-80">
-          Elige lo que te apetece de la carta, escríbenos por WhatsApp o llámanos con tu pedido,
-          y pásate a recogerlo cuando esté listo. Nosotros lo dejamos todo preparado.
+          Elige lo que te apetece de la carta, escríbenos por WhatsApp o llámanos con tu pedido, y pásate a recogerlo cuando esté listo. Nosotros lo dejamos todo preparado.
         </p>
         <div class="mt-5">
           <a href="/carta" class="inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200 active:scale-[0.98] focus-visible:outline-none px-6 py-3 text-base border-2 border-brand-brown text-brand-brown hover:bg-brand-brown hover:text-brand-cream ">
@@ -340,7 +365,7 @@
     </div>
   </div>
 </footer>
-    <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus-visible:outline-none" aria-label="Escríbenos por WhatsApp">
+    <a href="https://wa.me/34658520040?text=%C2%A1Hola%20Brava!%20Me%20gustar%C3%ADa%20pedir%20para%20llevar%3A" target="_blank" rel="noopener noreferrer" class="wa-float fixed bottom-5 right-5 z-40 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition hover:scale-105 hover:shadow-xl focus-visible:outline-none" aria-label="Escríbenos por WhatsApp">
   <svg class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
     <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.02h-.01a8.2 8.2 0 0 1-4.18-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.22 8.22 0 0 1-1.26-4.07c0-4.54 3.7-8.23 8.24-8.23 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.1-8.25 8.1Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.98-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.16.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.42-.14-.01-.31-.01-.48-.01-.16 0-.43.06-.66.31-.23.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.16 1.75 2.67 4.24 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28Z"></path>
   </svg>
@@ -412,7 +437,7 @@
   <div id="pd-toast" class="pd-toast" role="status" aria-live="polite"></div>
 </div>
 
-<script type="module" src="/_astro/Pedido.astro_astro_type_script_index_0_lang.CO7LCNp2.js"></script>
+<script type="module" src="/_astro/Pedido.astro_astro_type_script_index_0_lang.BFfOopq0.js"></script>
     
     <script>(function(){const measurementId = "G-G8B3K41EGR";
 const analyticsEnabled = true;
