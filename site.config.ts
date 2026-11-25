@@ -79,7 +79,7 @@ export const siteConfig = {
     // Se completará al crear la propiedad de Analytics de Brava.
     analyticsMeasurementId: 'G-G8B3K41EGR',
     // Estadísticas sin cookies (Umami Cloud de D.AGUERAA). Pon el «Website ID» para activarlas. Vacío = sin Umami.
-    umami: '',
+    umami: '7df5d2f1-705a-4308-8242-3f6776dd3441', // cuenta Umami de Brava (estancolanoria), 25-11-2026
   },
 
   // --- Brava To Go (para llevar) ---
