@@ -30,17 +30,18 @@ export const siteConfig = {
   email: 'bravabrunch@gmail.com',
 
   // --- Horario (real) ---
-  // Lun-Sáb: 8:00–14:00 y 17:00–20:00 · Domingo cerrado
+  // Horario de invierno (cartel de Brava, 25-11-2026):
+  // Lun y Mar: 8:00–14:00 · Mié–Sáb: 8:00–14:00 y 16:00–20:00 · Domingo cerrado
   horario: {
-    lunes: '8:00–14:00 · 17:00–20:00',
-    martes: '8:00–14:00 · 17:00–20:00',
-    miercoles: '8:00–14:00 · 17:00–20:00',
-    jueves: '8:00–14:00 · 17:00–20:00',
-    viernes: '8:00–14:00 · 17:00–20:00',
-    sabado: '8:00–14:00 · 17:00–20:00',
+    lunes: '8:00–14:00',
+    martes: '8:00–14:00',
+    miercoles: '8:00–14:00 · 16:00–20:00',
+    jueves: '8:00–14:00 · 16:00–20:00',
+    viernes: '8:00–14:00 · 16:00–20:00',
+    sabado: '8:00–14:00 · 16:00–20:00',
     domingo: 'Cerrado',
   } as Record<string, string>,
-  horarioResumen: 'Lun–Sáb 8:00–14:00 y 17:00–20:00',
+  horarioResumen: 'Lun y Mar 8:00–14:00 · Mié–Sáb 8:00–14:00 y 16:00–20:00',
 
   // --- Ubicación / mapa ---
   // Enlace a la ficha EXACTA de Brava en Google Maps (por CID del local).
@@ -161,7 +162,7 @@ export const textosEn = {
   claim: 'Specialty coffee and brunch, made with care.',
   descripcionSEO:
     'Brava — specialty coffee, brunch and pastries in La Ñora (Murcia, Spain). Full menu in English, combos, healthy brunch and takeaway.',
-  horarioResumen: 'Mon–Sat 8:00–14:00 & 17:00–20:00',
+  horarioResumen: 'Mon & Tue 8:00–14:00 · Wed–Sat 8:00–14:00 & 16:00–20:00',
   mensajeWhatsApp: 'Hi Brava! I’d like to order to go:',
   promo: {
     frase: 'Two combos for the price of one. Pick who you’re sharing with: the second one is on Brava.',
